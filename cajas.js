@@ -1,0 +1,197 @@
+// ═══════════════════════════════════════════════════════════════
+// cajas.js — Modo cajas: cálculo, UI y exportación
+// ═══════════════════════════════════════════════════════════════
+// MODE SWITCHING
+// ═══════════════════════════════════════════════════════════════
+let currentMode = 'palets';
+
+function setMode(mode) {
+  currentMode = mode;
+  document.getElementById('mode-palets').style.display = mode==='palets' ? '' : 'none';
+  document.getElementById('mode-cajas').style.display  = mode==='cajas'  ? '' : 'none';
+  document.getElementById('tab-palets').className = 'mode-tab' + (mode==='palets'?' active-palets':'');
+  document.getElementById('tab-cajas').className  = 'mode-tab' + (mode==='cajas' ?' active-cajas':'');
+  if (mode==='cajas') renderCajaVisual();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// CAJAS STATE & HELPERS
+// ═══════════════════════════════════════════════════════════════
+let stateCajas = { prov: null };
+let blurCajasTO;
+let lastCajasRes = null;
+
+// ── BREAKPOINTS peso CEVA España (índices 0–9 precio fijo, 10–13 €/kg) ──
+const KG_BREAKS = [10,20,30,40,50,60,70,80,90,100];
+
+function calcCevaByKg(prov, totalKg) {
+  const upper = prov.toUpperCase();
+  let tarifa = CEVA_ESP[upper];
+  if (!tarifa) {
+    for (const k of Object.keys(CEVA_ESP)) {
+      if (k.includes(upper) || upper.includes(k)) { tarifa = CEVA_ESP[k]; break; }
+    }
+  }
+  if (!tarifa) return null;
+
+  let basePrice, rangeLabel;
+  const fixedIdx = KG_BREAKS.findIndex(b => totalKg <= b);
+  if (fixedIdx !== -1) {
+    basePrice = tarifa[fixedIdx];
+    rangeLabel = `≤${KG_BREAKS[fixedIdx]} kg → precio fijo`;
+  } else if (totalKg <= 500)  { basePrice = totalKg * tarifa[10]; rangeLabel = `${totalKg} kg × ${tarifa[10]}€/kg (101–500)`; }
+  else if (totalKg <= 1000)   { basePrice = totalKg * tarifa[11]; rangeLabel = `${totalKg} kg × ${tarifa[11]}€/kg (501–1000)`; }
+  else if (totalKg <= 2000)   { basePrice = totalKg * tarifa[12]; rangeLabel = `${totalKg} kg × ${tarifa[12]}€/kg (1001–2000)`; }
+  else                         { basePrice = totalKg * tarifa[13]; rangeLabel = `${totalKg} kg × ${tarifa[13]}€/kg (2001+)`; }
+
+  if (basePrice == null) return null;
+  const surcharge = basePrice * CONFIG.CEVA_RECARGO_PCT;
+  return { total: basePrice + surcharge, basePrice, surcharge, totalKg, rangeLabel };
+}
+
+function calcularCajas() {
+  const errEl = document.getElementById('error-cajas-msg');
+  errEl.style.display = 'none';
+
+  const numCajas = parseInt(document.getElementById('num-cajas').value);
+  if (!numCajas || numCajas < 1) { errEl.textContent='⚠ Introduce el número de cajas.'; errEl.style.display='block'; return; }
+  if (numCajas > CONFIG.CAJAS_MAX) { errEl.textContent=`⚠ Máximo ${CONFIG.CAJAS_MAX} cajas.`; errEl.style.display='block'; return; }
+  if (!stateCajas.prov) { errEl.textContent='⚠ Selecciona una provincia de destino.'; errEl.style.display='block'; return; }
+
+  // Lógica: nº cajas × 0.15 × 250 = kg
+  const altura = numCajas * CONFIG.CAJAS_ALTURA_POR_CAJA;
+  const totalKg = Math.round(altura * CONFIG.CAJAS_KG_POR_UD_ALTURA * 100) / 100;
+  const res = calcCevaByKg(stateCajas.prov, totalKg);
+
+  if (!res) { errEl.textContent='⚠ No se encontró tarifa para esta provincia.'; errEl.style.display='block'; return; }
+
+  lastCajasRes = { ...res, numCajas, altura, prov: stateCajas.prov };
+
+  // Render
+  document.getElementById('ceva-cajas-price').innerHTML =
+    res.total.toFixed(2).replace('.',',') + '<span class="price-eur">€</span>';
+
+  let html = '';
+  html += `<div class="breakdown-line"><span class="bl-label">Cajas</span><span class="bl-val">${numCajas} × 0,15 = ${altura.toFixed(2)} uds</span></div>`;
+  html += `<div class="breakdown-line"><span class="bl-label">Peso total</span><span class="bl-val">${altura.toFixed(2)} × 250 = ${totalKg} kg</span></div>`;
+  html += `<div class="breakdown-line"><span class="bl-label">Rango aplicado</span><span class="bl-val">${res.rangeLabel}</span></div>`;
+  html += `<div class="breakdown-line"><span class="bl-label">Precio base</span><span class="bl-val">${fmt(res.basePrice)}</span></div>`;
+  html += `<div class="breakdown-line"><span class="bl-label">Recargo (+${(CONFIG.CEVA_RECARGO_PCT*100).toFixed(1)}%)</span><span class="bl-val">+${fmt(res.surcharge)}</span></div>`;
+  html += `<div class="breakdown-line total"><span class="bl-label">TOTAL</span><span class="bl-val">${fmt(res.total)}</span></div>`;
+  document.getElementById('ceva-cajas-breakdown').innerHTML = html;
+  document.getElementById('results-cajas').style.display = 'block';
+  document.getElementById('results-cajas').scrollIntoView({behavior:'smooth', block:'start'});
+
+  // Historial
+  const now = new Date();
+  addToHistorial({
+    hora: now.toTimeString().substring(0,5),
+    provincia: stateCajas.prov, zona: '—',
+    palets: `${numCajas} cajas`, altura,
+    pw: 0, ceva: res.total,
+    winner: 'CEVA', ahorro: 0
+  });
+}
+
+// Caja counter
+function cambiarCajas(delta) {
+  const inp = document.getElementById('num-cajas');
+  let v = (parseInt(inp.value) || 0) + delta;
+  v = Math.max(1, Math.min(CONFIG.CAJAS_MAX, v));
+  inp.value = v;
+  onCajasInput();
+}
+
+function onCajasInput() {
+  const v = parseInt(document.getElementById('num-cajas').value) || 0;
+  document.getElementById('max-warn').className = 'max-warn' + (v >= CONFIG.CAJAS_MAX ? ' show' : '');
+  document.getElementById('results-cajas').style.display = 'none';
+  renderCajaVisual();
+  // Update peso info
+  const kg = Math.round(v * CONFIG.CAJAS_ALTURA_POR_CAJA * CONFIG.CAJAS_KG_POR_UD_ALTURA * 100) / 100;
+  document.getElementById('cajas-peso-info').innerHTML =
+    `<span style="font-family:var(--mono);font-size:0.75rem;color:var(--muted)">Altura total: <span style="color:var(--ceva-light)">${(v*CONFIG.CAJAS_ALTURA_POR_CAJA).toFixed(2)} uds</span> · Peso estimado: <span style="color:var(--ceva-light)">${kg} kg</span></span>`;
+}
+
+function renderCajaVisual() {
+  const v = parseInt(document.getElementById('num-cajas').value) || 0;
+  let html = '';
+  for (let i = 1; i <= CONFIG.CAJAS_MAX; i++) {
+    html += `<div class="caja-icon${i > v ? ' dim' : ''}">📦</div>`;
+  }
+  document.getElementById('caja-visual').innerHTML = html;
+}
+
+// Provincia search for cajas
+function onProvCajasInput() {
+  stateCajas.prov = null;
+  document.getElementById('zona-cajas-detected').className='';
+  document.getElementById('cp-cajas-input').value='';
+  showCajasSugg(document.getElementById('prov-cajas-input').value);
+}
+function onProvCajasFocus() { showCajasSugg(document.getElementById('prov-cajas-input').value); }
+function onProvCajasBlur() { blurCajasTO = setTimeout(()=>{ document.getElementById('sugg-cajas-box').className=''; }, 200); }
+
+function showCajasSugg(q) {
+  const box = document.getElementById('sugg-cajas-box');
+  if (!q || q.length < 1) { box.className=''; return; }
+  const upper = q.toUpperCase().trim();
+  const matches = ALL_PROVS.filter(p => p.includes(upper)).slice(0, 8);
+  if (!matches.length) { box.className=''; return; }
+  box.innerHTML = matches.map(p => {
+    const label = p.charAt(0) + p.slice(1).toLowerCase();
+    return `<div class="sugg-item" onmousedown="selectProvCajas('${p}')"><span>${label}</span><span class="sugg-zona" style="border-color:var(--ceva);color:var(--ceva-light)">CEVA</span></div>`;
+  }).join('');
+  box.className = 'open';
+}
+
+function selectProvCajas(p) {
+  clearTimeout(blurCajasTO);
+  stateCajas.prov = p;
+  const label = p.charAt(0) + p.slice(1).toLowerCase();
+  document.getElementById('prov-cajas-input').value = label;
+  document.getElementById('cp-cajas-input').value = '';
+  document.getElementById('sugg-cajas-box').className = '';
+  const zd = document.getElementById('zona-cajas-detected');
+  zd.innerHTML = `Provincia seleccionada: ${label}`;
+  zd.className = 'show';
+}
+
+function onCpCajasInput() {
+  const val = document.getElementById('cp-cajas-input').value.trim();
+  if (val.length < 2) return;
+  const prefix = val.substring(0,2);
+  const prov = CP_PROV[prefix];
+  if (!prov) return;
+  stateCajas.prov = prov;
+  const label = prov.charAt(0) + prov.slice(1).toLowerCase();
+  document.getElementById('prov-cajas-input').value = label;
+  document.getElementById('sugg-cajas-box').className = '';
+  const zd = document.getElementById('zona-cajas-detected');
+  zd.innerHTML = `📮 CP ${val} → ${label}`;
+  zd.className = 'show';
+}
+
+// Export cajas
+function exportarCajasCSV() {
+  if (!lastCajasRes) return;
+  const r = lastCajasRes;
+  const rows = [
+    ['Transportista','Total (€)','Base (€)','Recargo (€)','Provincia','Cajas','Peso (kg)'],
+    ['CEVA', r.total.toFixed(2), r.basePrice.toFixed(2), r.surcharge.toFixed(2), r.prov, r.numCajas, r.totalKg]
+  ];
+  downloadCSV(rows, `cajas_${r.prov}_${new Date().toISOString().split('T')[0]}.csv`);
+}
+function exportarCajasExcel() {
+  if (!lastCajasRes) return;
+  const r = lastCajasRes;
+  const rows = [
+    ['Transportista','Total (€)','Base (€)','Recargo (€)','Provincia','Cajas','Peso (kg)'],
+    ['CEVA', r.total.toFixed(2), r.basePrice.toFixed(2), r.surcharge.toFixed(2), r.prov, r.numCajas, r.totalKg]
+  ];
+  downloadXLS(rows, `cajas_${r.prov}_${new Date().toISOString().split('T')[0]}.xls`);
+}
+
+// Init
+updateHistorialUI();
+renderCajaVisual();

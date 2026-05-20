@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculadora de Transportes</title>
+<meta name="theme-color" content="#2979FF">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Transportes">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header>
+  <div class="logo-area">
+    <div class="logo-mark">🚛</div>
+    <div class="logo-text">
+      <h1>Calculadora de Portes</h1>
+      <p>PALLETWAYS + CEVA · COMPARADOR DE TARIFAS</p>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="badge badge-pw">PALLETWAYS</div>
+    <div class="badge badge-ceva">CEVA</div>
+    <button class="btn-historial-toggle" onclick="toggleHistorial()">📋 HISTORIAL <span id="hist-count-badge"></span></button>
+  </div>
+</header>
+
+<main>
+  <!-- MODE TABS -->
+  <div class="mode-tabs">
+    <button class="mode-tab active-palets" id="tab-palets" onclick="setMode('palets')">🏗 Palés</button>
+    <button class="mode-tab" id="tab-cajas" onclick="setMode('cajas')">📦 Cajas</button>
+  </div>
+
+  <!-- ═══ MODO PALÉS ═══ -->
+  <div id="mode-palets">
+    <!-- PASO 1 -->
+    <div class="section">
+      <div class="section-label">
+        <div class="section-num">01</div>
+        <span class="section-title">Datos del envío</span>
+      </div>
+      <div class="input-row">
+        <div class="field">
+          <label for="num-palets">Número de palés</label>
+          <input type="number" id="num-palets" min="1" max="99" placeholder="Ej: 4" oninput="onInputChange(); validatePalets()">
+          <span class="field-inline-error" id="err-palets"></span>
+        </div>
+        <div class="field">
+          <label for="altura-total">Altura total (en unidades de palé)</label>
+          <input type="number" id="altura-total" min="0.1" step="0.1" placeholder="Ej: 3.5" oninput="onInputChange(); validateAltura()">
+          <span class="field-hint">1 = 100 cm · 3.5 = 3 palés completos + 1 de 50cm</span>
+          <span class="field-inline-error" id="err-altura"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- PASO 2 -->
+    <div class="section">
+      <div class="section-label">
+        <div class="section-num">02</div>
+        <span class="section-title">Destino</span>
+      </div>
+      <div class="country-selector">
+        <button class="country-btn active-esp" id="btn-esp" onclick="setCountry('ESP')">🇪🇸 España</button>
+        <button class="country-btn" id="btn-prt" onclick="setCountry('PRT')">🇵🇹 Portugal</button>
+      </div>
+      <div id="fields-esp">
+        <div class="search-wrap">
+          <div class="field">
+            <label for="prov-input">Buscar por provincia</label>
+            <input type="text" id="prov-input" placeholder="Ej: Madrid, Barcelona, Sevilla…"
+              oninput="onProvInput()" onfocus="onProvFocus()" onblur="onProvBlur()" autocomplete="off"
+              role="combobox" aria-expanded="false" aria-autocomplete="list" aria-controls="sugg-box" aria-label="Buscar provincia de destino">
+          </div>
+          <div id="sugg-box" role="listbox" aria-label="Provincias sugeridas"></div>
+        </div>
+        <div class="field-or"><span>O BUSCA POR CÓDIGO POSTAL</span></div>
+        <div class="field" style="max-width:200px">
+          <label for="cp-input">Código postal España (5 dígitos)</label>
+          <input type="text" id="cp-input" maxlength="5" placeholder="Ej: 28001"
+            oninput="onCpInput()" autocomplete="off" aria-label="Código postal España" inputmode="numeric">
+          <span class="field-hint">Se detecta la provincia automáticamente</span>
+        </div>
+      </div>
+      <div id="fields-prt" style="display:none">
+        <div class="field" style="max-width:220px">
+          <label for="cp-prt-input">Código postal Portugal (2 o 4 dígitos)</label>
+          <input type="text" id="cp-prt-input" maxlength="4" placeholder="Ej: 17 o 3861"
+            oninput="onCpPrtInput()" autocomplete="off" aria-label="Código postal Portugal" inputmode="numeric">
+          <span class="field-hint">Introduce los 2 primeros dígitos del CP</span>
+        </div>
+        <div class="cp-disclaimer" id="cp-disclaimer">
+          ⚠ Si tu CP está entre 3860–3899 escribe los 4 primeros dígitos para detectar la zona correcta de Palletways
+        </div>
+        <div id="cp-prt-ambiguous" style="display:none;margin-top:8px;padding:9px 14px;background:#1a1200;border-left:3px solid var(--yellow);border:1px solid var(--yellow);font-family:var(--mono);font-size:0.75rem;color:var(--yellow);line-height:1.6;">
+          ⚠ <strong>Zona ambigua detectada (CP 38xx)</strong><br>
+          Con solo 2 dígitos no es posible determinar si corresponde a Zona 7 o Zona 8 de Palletways.<br>
+          <span style="color:var(--text)">Por favor, introduce los 4 primeros dígitos de tu CP para obtener el cálculo exacto.</span>
+        </div>
+      </div>
+      <div id="zona-detected"></div>
+    </div>
+
+    <button id="calc-btn" onclick="calcular()">▶ Calcular precio de envío</button>
+    <div id="error-msg"></div>
+    <div class="divider"></div>
+
+    <!-- RESULTADOS PALÉS -->
+    <div id="results">
+      <div id="winner-banner">
+        <div class="winner-icon">🏆</div>
+        <div class="winner-text">
+          <h3 id="winner-name">—</h3>
+          <p id="winner-desc">—</p>
+        </div>
+        <div class="saving-pill" id="saving-pill">—</div>
+      </div>
+      <div class="breakdown-grid">
+        <div class="result-card pw" id="pw-card">
+          <div class="card-header"><span style="font-size:1rem">🔵</span><span class="carrier-name">Palletways</span></div>
+          <div class="card-body">
+            <div class="price-main" id="pw-price">—<span class="price-eur">€</span></div>
+            <div class="price-breakdown" id="pw-breakdown"></div>
+            <div class="palets-visual" id="pw-visual"></div>
+          </div>
+        </div>
+        <div class="result-card ceva" id="ceva-card">
+          <div class="card-header"><span style="font-size:1rem">🟠</span><span class="carrier-name">CEVA</span></div>
+          <div class="card-body">
+            <div class="price-main" id="ceva-price">—<span class="price-eur">€</span></div>
+            <div class="price-breakdown" id="ceva-breakdown"></div>
+            <div class="palet-detail" id="ceva-detail"></div>
+          </div>
+        </div>
+      </div>
+      <div class="export-row">
+        <button class="btn-export btn-print" onclick="window.print()">🖨️ IMPRIMIR</button>
+        <button class="btn-export" onclick="exportarCSV()">📄 EXPORTAR CSV</button>
+        <button class="btn-export" onclick="exportarExcel()">📊 EXPORTAR EXCEL</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ MODO CAJAS ═══ -->
+  <div id="mode-cajas" style="display:none">
+    <!-- PASO 1 CAJAS -->
+    <div class="section">
+      <div class="section-label">
+        <div class="section-num">01</div>
+        <span class="section-title">Número de cajas</span>
+      </div>
+      <div class="cajas-info-strip">
+        <div class="cajas-pill">Cada caja: <span>0,15 uds</span></div>
+        <div class="cajas-pill">Peso por caja: <span>37,5 kg</span></div>
+        <div class="cajas-pill">Máximo: <span>14 cajas</span></div>
+        <div class="cajas-pill">Transportista: <span>CEVA</span></div>
+      </div>
+      <div class="field">
+        <label for="num-cajas">Número de cajas (1–14)</label>
+        <div class="caja-counter">
+          <button onclick="cambiarCajas(-1)" aria-label="Reducir número de cajas">−</button>
+          <input type="number" id="num-cajas" min="1" max="14" value="1" oninput="onCajasInput()" aria-label="Número de cajas">
+          <button onclick="cambiarCajas(1)" aria-label="Aumentar número de cajas">+</button>
+        </div>
+        <div class="max-warn" id="max-warn">⚠ Máximo 14 cajas (= 2,10 uds altura)</div>
+      </div>
+      <div class="caja-visual" id="caja-visual"></div>
+      <div id="cajas-peso-info" style="margin-top:12px;"></div>
+    </div>
+
+    <!-- PASO 2 CAJAS — provincia (solo España, solo CEVA) -->
+    <div class="section">
+      <div class="section-label">
+        <div class="section-num">02</div>
+        <span class="section-title">Provincia de destino</span>
+      </div>
+      <div class="search-wrap">
+        <div class="field">
+          <label for="prov-cajas-input">Buscar por provincia</label>
+          <input type="text" id="prov-cajas-input" placeholder="Ej: Madrid, Barcelona, Sevilla…"
+            oninput="onProvCajasInput()" onfocus="onProvCajasFocus()" onblur="onProvCajasBlur()" autocomplete="off"
+            role="combobox" aria-expanded="false" aria-autocomplete="list" aria-controls="sugg-cajas-box" aria-label="Buscar provincia de destino cajas">
+        </div>
+        <div id="sugg-cajas-box" role="listbox" aria-label="Provincias sugeridas"></div>
+      </div>
+      <div class="field-or"><span>O BUSCA POR CÓDIGO POSTAL</span></div>
+      <div class="field" style="max-width:200px">
+        <label for="cp-cajas-input">Código postal España (5 dígitos)</label>
+        <input type="text" id="cp-cajas-input" maxlength="5" placeholder="Ej: 28001"
+          oninput="onCpCajasInput()" autocomplete="off" aria-label="Código postal para cajas" inputmode="numeric">
+        <span class="field-hint">Se detecta la provincia automáticamente</span>
+      </div>
+      <div id="zona-cajas-detected"></div>
+    </div>
+
+    <button id="calc-cajas-btn" onclick="calcularCajas()" class="calc-btn-cajas">▶ Calcular precio de cajas</button>
+    <div id="error-cajas-msg" style="display:none;padding:11px 14px;border-left:3px solid #ff5252;background:#ff52520a;font-family:var(--mono);font-size:0.78rem;color:#ff8a80;margin-top:8px;"></div>
+
+    <div class="divider" style="margin:32px 0;border-top:1px solid var(--border);position:relative;">
+      <span style="position:absolute;top:-8px;left:50%;transform:translateX(-50%);background:var(--bg);padding:0 14px;font-family:var(--mono);font-size:0.62rem;color:var(--dim);letter-spacing:0.12em;">RESULTADO</span>
+    </div>
+
+    <!-- RESULTADO CAJAS -->
+    <div id="results-cajas" style="display:none;animation:fadeUp 0.35s ease;">
+      <div class="result-card ceva" id="ceva-cajas-card" style="max-width:500px;margin:0 auto 20px;">
+        <div class="card-header"><span style="font-size:1rem">🟠</span><span class="carrier-name">CEVA — Envío por Cajas</span></div>
+        <div class="card-body">
+          <div class="price-main" id="ceva-cajas-price">—<span class="price-eur">€</span></div>
+          <div class="price-breakdown" id="ceva-cajas-breakdown"></div>
+        </div>
+      </div>
+      <div class="export-row" style="justify-content:center;">
+        <button class="btn-export btn-print" onclick="window.print()">🖨️ IMPRIMIR</button>
+        <button class="btn-export" onclick="exportarCajasCSV()">📄 EXPORTAR CSV</button>
+        <button class="btn-export" onclick="exportarCajasExcel()">📊 EXPORTAR EXCEL</button>
+      </div>
+    </div>
+  </div>
+
+<!-- HISTORIAL PANEL -->
+<div id="historial-panel" role="dialog" aria-modal="true" aria-label="Historial del día">
+  <div class="historial-header">
+    <h2>📋 Historial del día</h2>
+    <button class="historial-close" onclick="toggleHistorial()">✕</button>
+  </div>
+  <div class="historial-stats">
+    <div class="stat-item">
+      <span class="stat-label">Cálculos hoy</span>
+      <span class="stat-value yellow" id="stat-total">0</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-label">Ahorro estimado</span>
+      <span class="stat-value green" id="stat-ahorro">0,00 €</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-label">Más barato</span>
+      <span class="stat-value" id="stat-winner" style="font-size:0.82rem">—</span>
+    </div>
+  </div>
+  <div class="historial-actions">
+    <button class="btn-hist-action" onclick="exportarHistorialCSV()">📄 Exportar CSV</button>
+    <button class="btn-hist-action" onclick="exportarHistorialExcel()">📊 Exportar Excel</button>
+    <button class="btn-hist-action danger" onclick="limpiarHistorial()">🗑 Limpiar</button>
+  </div>
+  <div class="historial-list" id="historial-list">
+    <div class="historial-empty">No hay cálculos registrados hoy.</div>
+  </div>
+</div>
+<script src="data.js"></script>
+<script src="state.js"></script>
+<script src="historial.js"></script>
+<script src="ui.js"></script>
+<script src="calcular.js"></script>
+<script src="cajas.js"></script>
+<script>
+  // ── Registro del Service Worker (PWA offline) ──
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js')
+        .then(reg => console.log('SW registrado:', reg.scope))
+        .catch(err => console.warn('SW error:', err));
+    });
+  }
+</script>
+</main>
+</body>
+</html>

@@ -1,0 +1,1628 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculadora de Transportes</title>
+<meta name="theme-color" content="#2979FF">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Transportes">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --font-sans: 'Lato', system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
+    --font-display: 'Syne', system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
+    --bg: #0e0e0e; --surface: #161616; --surface2: #1f1f1f; --surface3: #282828;
+    --border: #2a2a2a; --border2: #333; --text: #f0f0f0; --muted: #777; --dim: #444;
+    --pw: #2979FF; --pw-light: #82B1FF; --pw-bg: #0a1628;
+    --ceva: #FF6B35; --ceva-light: #FFAB91; --ceva-bg: #1a0d08;
+    --green: #00E676; --green-bg: #00291a;
+    --yellow: #FFD600; --yellow-bg: #1a1600;
+    --mono: 'DM Mono', monospace;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: var(--font-sans); min-height: 100vh; overflow-x: hidden; }
+  body::before {
+    content: ''; position: fixed; inset: 0; z-index: 0;
+    background-image: linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+    background-size: 48px 48px; pointer-events: none;
+  }
+
+  /* HEADER */
+  header {
+    position: relative; z-index: 10; padding: 20px 40px 18px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+  }
+  .logo-area { display: flex; align-items: center; gap: 16px; }
+  .logo-mark { width: 40px; height: 40px; border: 2px solid var(--border2); display: flex; align-items: center; justify-content: center; font-size: 20px; position: relative; }
+  .logo-mark::after { content: ''; position: absolute; bottom: -4px; right: -4px; width: 10px; height: 10px; background: var(--pw); }
+  .logo-text h1 { font-family: var(--font-display); font-size: 1.05rem; font-weight: 800; letter-spacing: -0.02em; line-height: 1; text-transform: uppercase; }
+  .logo-text p { font-size: 0.68rem; color: var(--muted); letter-spacing: 0.06em; margin-top: 3px; font-family: var(--mono); }
+  .header-right { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .badge { padding: 4px 10px; font-size: 0.68rem; font-family: var(--mono); border: 1px solid; letter-spacing: 0.04em; font-weight: 500; }
+  .badge-pw { border-color: var(--pw); color: var(--pw-light); background: #2979ff12; }
+  .badge-ceva { border-color: var(--ceva); color: var(--ceva-light); background: #ff6b3512; }
+  .btn-historial-toggle {
+    padding: 5px 14px; font-size: 0.72rem; font-family: var(--mono); border: 1px solid var(--border2);
+    background: var(--surface2); color: var(--muted); cursor: pointer; letter-spacing: 0.06em;
+    transition: all 0.2s;
+  }
+  .btn-historial-toggle:hover { border-color: var(--yellow); color: var(--yellow); }
+
+  /* MAIN */
+  main { position: relative; z-index: 5; max-width: 920px; margin: 0 auto; padding: 36px 24px 80px; }
+
+  /* SECTION */
+  .section { margin-bottom: 32px; }
+  .section-label { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .section-num { width: 24px; height: 24px; background: var(--surface3); border: 1px solid var(--border2); display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: 0.72rem; color: var(--muted); flex-shrink: 0; }
+  .section-title { font-family: var(--font-display); font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); }
+
+  /* INPUTS */
+  .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .input-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+  @media (max-width: 560px) { .input-row, .input-row-3 { grid-template-columns: 1fr; } }
+  .field { display: flex; flex-direction: column; gap: 6px; }
+  .field label { font-size: 0.7rem; font-family: var(--mono); color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; }
+  .field input, .field select {
+    background: var(--surface); border: 1px solid var(--border2); color: var(--text);
+    font-family: var(--font-sans); font-size: 1rem; padding: 12px 14px; outline: none; width: 100%;
+    transition: border-color 0.15s; -webkit-appearance: none;
+  }
+  .field input:focus, .field select:focus { border-color: var(--pw); }
+  .field input.input-error { border-color: #ff5252 !important; }
+  .field input.input-ok { border-color: var(--green) !important; }
+  .field-inline-error { font-size: 0.68rem; color: #ff8a80; font-family: var(--mono); margin-top: 3px; display: none; }
+  .field-inline-error.show { display: block; }
+  .field-hint { font-size: 0.68rem; color: var(--dim); font-family: var(--mono); }
+  .field-or { display: flex; align-items: center; gap: 10px; margin: 8px 0 4px; }
+  .field-or span { font-size: 0.68rem; font-family: var(--mono); color: var(--dim); white-space: nowrap; }
+  .field-or::before, .field-or::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  /* PROVINCIA SEARCH */
+  .search-wrap { position: relative; }
+  #sugg-box { display: none; position: absolute; top: calc(100% + 2px); left: 0; right: 0; z-index: 99; background: #1a1a1a; border: 1px solid var(--border2); max-height: 220px; overflow-y: auto; }
+  #sugg-box.open { display: block; }
+  .sugg-item { padding: 9px 14px; cursor: pointer; font-size: 0.85rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); transition: background 0.1s; }
+  .sugg-item:hover { background: var(--surface3); }
+  .sugg-zona { font-family: var(--mono); font-size: 0.68rem; color: var(--pw-light); border: 1px solid var(--pw); padding: 1px 6px; }
+  #zona-detected { display: none; margin-top: 8px; padding: 7px 12px; background: var(--surface2); border-left: 3px solid var(--pw); font-family: var(--mono); font-size: 0.75rem; color: var(--pw-light); }
+  #zona-detected.show { display: block; }
+
+  /* DIVIDER */
+  .divider { border: none; border-top: 1px solid var(--border); margin: 32px 0; position: relative; }
+  .divider::after { content: 'RESULTADO'; position: absolute; top: -8px; left: 50%; transform: translateX(-50%); background: var(--bg); padding: 0 14px; font-family: var(--mono); font-size: 0.62rem; color: var(--dim); letter-spacing: 0.12em; }
+
+  /* CALC BUTTON */
+  #calc-btn {
+    width: 100%; padding: 15px; margin-top: 6px; background: var(--surface2); border: 1px solid var(--border2);
+    color: var(--text); font-family: var(--font-display); font-size: 0.88rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.12em; cursor: pointer; transition: all 0.2s; position: relative; overflow: hidden;
+  }
+  #calc-btn::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--pw); transition: width 0.3s; }
+  #calc-btn:hover { background: var(--surface3); border-color: var(--pw); }
+  #calc-btn:hover::before { width: 100%; opacity: 0.06; }
+  #calc-btn:active { transform: scale(0.99); }
+  .calc-btn-cajas {
+    width: 100%; padding: 15px; margin-top: 6px; background: var(--surface2); border: 1px solid var(--border2);
+    color: var(--text); font-family: var(--font-display); font-size: 0.88rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.12em; cursor: pointer; transition: all 0.2s; position: relative; overflow: hidden;
+  }
+  .calc-btn-cajas::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--ceva); transition: width 0.3s; }
+  .calc-btn-cajas:hover { background: var(--surface3); border-color: var(--ceva); }
+  .calc-btn-cajas:hover::before { width: 100%; opacity: 0.06; }
+  .calc-btn-cajas:active { transform: scale(0.99); }
+
+  /* LOADING SPINNER */
+  .btn-loading { pointer-events: none; opacity: 0.7; }
+  .btn-loading::after { content: ' ⏳'; }
+
+  /* RESULTS */
+  #results { display: none; }
+  #results.show { display: block; animation: fadeUp 0.35s ease; }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:none; } }
+
+  .breakdown-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+  @media (max-width: 580px) { .breakdown-grid { grid-template-columns: 1fr; } }
+
+  .result-card { border: 1px solid; padding: 0; overflow: hidden; position: relative; }
+  .result-card.pw { border-color: var(--pw); background: var(--pw-bg); }
+  .result-card.ceva { border-color: var(--ceva); background: var(--ceva-bg); }
+  .result-card.winner::after { content: '✓ MÁS BARATO'; position: absolute; top: 12px; right: 12px; font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.08em; background: var(--green); color: #000; padding: 2px 8px; font-weight: 700; }
+  .card-header { padding: 13px 16px 11px; border-bottom: 1px solid; display: flex; align-items: center; gap: 10px; }
+  .result-card.pw .card-header { border-color: #2979ff33; }
+  .result-card.ceva .card-header { border-color: #ff6b3533; }
+  .carrier-name { font-family: var(--font-display); font-size: 0.82rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; }
+  .result-card.pw .carrier-name { color: var(--pw-light); }
+  .result-card.ceva .carrier-name { color: var(--ceva-light); }
+  .card-body { padding: 16px; }
+  .price-main { font-family: var(--font-display); font-size: 2.4rem; font-weight: 800; line-height: 1; letter-spacing: -0.04em; margin-bottom: 4px; }
+  .result-card.pw .price-main { color: var(--pw-light); }
+  .result-card.ceva .price-main { color: var(--ceva-light); }
+  .price-eur { font-size: 1.1rem; opacity: 0.7; margin-left: 3px; }
+  .price-breakdown { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); }
+  .breakdown-line { display: flex; justify-content: space-between; align-items: baseline; font-size: 0.76rem; padding: 3px 0; font-family: var(--mono); }
+  .breakdown-line .bl-label { color: var(--muted); }
+  .breakdown-line .bl-val { color: var(--text); font-weight: 500; }
+  .breakdown-line.total { margin-top: 6px; padding-top: 8px; border-top: 1px dashed var(--border2); font-size: 0.8rem; }
+  .breakdown-line.total .bl-label { color: var(--text); font-weight: 700; }
+  .result-card.pw .breakdown-line.total .bl-val { color: var(--pw-light); font-weight: 700; }
+  .result-card.ceva .breakdown-line.total .bl-val { color: var(--ceva-light); font-weight: 700; }
+  .palet-detail { margin-top: 10px; padding: 9px 11px; background: rgba(255,255,255,0.03); border: 1px solid var(--border); font-family: var(--mono); font-size: 0.68rem; color: var(--muted); line-height: 1.8; }
+  .palet-detail span { color: var(--text); }
+  .palets-visual { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+  .palet-box { border: 1px solid; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: var(--mono); font-size: 0.6rem; padding: 5px 7px; min-width: 50px; gap: 3px; }
+  .palet-box.full-p { border-color: var(--pw); color: var(--pw-light); background: #2979ff0a; }
+  .palet-box.partial-p { border-color: #2979ff55; color: #2979ff88; background: #2979ff05; }
+  .palet-box .pb-icon { font-size: 0.95rem; }
+  .palet-box .pb-label { text-align: center; line-height: 1.3; }
+
+  /* WINNER BANNER */
+  #winner-banner { display: none; margin-bottom: 20px; padding: 16px 22px; background: var(--green-bg); border: 1px solid var(--green); position: relative; overflow: hidden; }
+  #winner-banner.show { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+  #winner-banner::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--green); }
+  .winner-icon { font-size: 1.5rem; flex-shrink: 0; }
+  .winner-text h3 { font-family: var(--font-display); font-size: 0.95rem; font-weight: 800; color: var(--green); text-transform: uppercase; letter-spacing: 0.06em; }
+  .winner-text p { font-size: 0.8rem; color: #aaa; margin-top: 2px; }
+  .saving-pill { margin-left: auto; background: var(--green); color: #000; font-family: var(--mono); font-size: 0.82rem; font-weight: 700; padding: 5px 14px; }
+
+  /* EXPORT BUTTONS */
+  .export-row { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+  .btn-export {
+    padding: 9px 18px; font-size: 0.72rem; font-family: var(--mono); border: 1px solid var(--border2);
+    background: var(--surface2); color: var(--muted); cursor: pointer; letter-spacing: 0.06em;
+    transition: all 0.2s; display: flex; align-items: center; gap: 7px;
+  }
+  .btn-export:hover { border-color: var(--yellow); color: var(--yellow); }
+  .btn-export.btn-print:hover { border-color: var(--pw-light); color: var(--pw-light); }
+
+  /* ERROR */
+  #error-msg { display: none; padding: 11px 14px; border-left: 3px solid #ff5252; background: #ff52520a; font-family: var(--mono); font-size: 0.78rem; color: #ff8a80; }
+  #error-msg.show { display: block; }
+
+  /* ── HISTORIAL PANEL ── */
+  #historial-panel {
+    display: none; position: fixed; top: 0; right: 0; bottom: 0; width: 420px; max-width: 95vw;
+    background: #111; border-left: 1px solid var(--border2); z-index: 1000;
+    flex-direction: column; box-shadow: -8px 0 40px rgba(0,0,0,0.6);
+    animation: slideIn 0.25s ease;
+  }
+  #historial-panel.open { display: flex; }
+  @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+  .historial-header {
+    padding: 18px 20px; border-bottom: 1px solid var(--border2);
+    display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;
+  }
+  .historial-header h2 { font-family: var(--font-display); font-size: 0.9rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; }
+  .historial-close { background: none; border: 1px solid var(--border2); color: var(--muted); width: 28px; height: 28px; cursor: pointer; font-size: 1rem; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+  .historial-close:hover { border-color: #ff5252; color: #ff5252; }
+
+  /* Day stats bar */
+  .historial-stats {
+    padding: 14px 20px; background: var(--surface2); border-bottom: 1px solid var(--border);
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; flex-shrink: 0;
+  }
+  .stat-item { display: flex; flex-direction: column; gap: 3px; }
+  .stat-label { font-family: var(--mono); font-size: 0.62rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+  .stat-value { font-family: var(--font-display); font-size: 1.1rem; font-weight: 700; }
+  .stat-value.green { color: var(--green); }
+  .stat-value.yellow { color: var(--yellow); }
+
+  /* Historial actions */
+  .historial-actions { padding: 10px 20px; border-bottom: 1px solid var(--border); display: flex; gap: 8px; flex-shrink: 0; }
+  .btn-hist-action { padding: 6px 12px; font-size: 0.68rem; font-family: var(--mono); border: 1px solid var(--border2); background: none; color: var(--muted); cursor: pointer; letter-spacing: 0.04em; transition: all 0.15s; }
+  .btn-hist-action:hover { border-color: var(--yellow); color: var(--yellow); }
+  .btn-hist-action.danger:hover { border-color: #ff5252; color: #ff5252; }
+
+  /* Historial list */
+  .historial-list { flex: 1; overflow-y: auto; padding: 12px 20px; display: flex; flex-direction: column; gap: 10px; }
+  .historial-empty { text-align: center; padding: 40px 20px; font-family: var(--mono); font-size: 0.78rem; color: var(--dim); }
+  .hist-item {
+    border: 1px solid var(--border2); background: var(--surface); padding: 12px 14px;
+    display: flex; flex-direction: column; gap: 6px; cursor: pointer; transition: border-color 0.15s;
+  }
+  .hist-item:hover { border-color: var(--border2); background: var(--surface2); }
+  .hist-item-top { display: flex; justify-content: space-between; align-items: center; }
+  .hist-item-dest { font-family: var(--font-display); font-size: 0.82rem; font-weight: 700; }
+  .hist-item-time { font-family: var(--mono); font-size: 0.64rem; color: var(--dim); }
+  .hist-item-detail { font-family: var(--mono); font-size: 0.7rem; color: var(--muted); }
+  .hist-item-prices { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .hist-price { font-family: var(--mono); font-size: 0.78rem; }
+  .hist-price.pw { color: var(--pw-light); }
+  .hist-price.ceva { color: var(--ceva-light); }
+  .hist-price.winner-tag { font-size: 0.62rem; background: var(--green); color: #000; padding: 1px 6px; font-weight: 700; }
+  .hist-saving { font-family: var(--mono); font-size: 0.68rem; color: var(--green); margin-left: auto; }
+
+  /* MODE TABS */
+  .mode-tabs { display: flex; gap: 0; margin-bottom: 28px; border-bottom: 2px solid var(--border2); }
+  .mode-tab {
+    padding: 12px 28px; font-family: var(--font-display); font-size: 0.85rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.1em; border: none; background: none;
+    color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent;
+    margin-bottom: -2px; transition: all 0.2s; display: flex; align-items: center; gap: 8px;
+  }
+  .mode-tab:hover { color: var(--text); }
+  .mode-tab.active-palets { color: var(--pw-light); border-bottom-color: var(--pw); }
+  .mode-tab.active-cajas { color: var(--ceva-light); border-bottom-color: var(--ceva); }
+
+  /* CAJAS specific */
+  .cajas-info-strip {
+    display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap;
+  }
+  .cajas-pill {
+    padding: 5px 12px; border: 1px solid var(--border2); background: var(--surface2);
+    font-family: var(--mono); font-size: 0.7rem; color: var(--muted);
+  }
+  .cajas-pill span { color: var(--ceva-light); font-weight: 700; }
+  .caja-counter {
+    display: flex; align-items: center; gap: 0; margin-top: 6px;
+  }
+  .caja-counter button {
+    width: 42px; height: 42px; border: 1px solid var(--border2); background: var(--surface2);
+    color: var(--text); font-size: 1.3rem; cursor: pointer; transition: all 0.15s;
+    display: flex; align-items: center; justify-content: center; font-family: var(--mono);
+  }
+  .caja-counter button:hover { background: var(--surface3); border-color: var(--ceva); color: var(--ceva-light); }
+  .caja-counter input {
+    width: 70px; height: 42px; text-align: center; border: 1px solid var(--border2);
+    border-left: none; border-right: none; background: var(--surface);
+    color: var(--text); font-family: var(--font-display); font-size: 1.2rem; font-weight: 700;
+    outline: none;
+  }
+  .caja-visual { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 10px; align-items: flex-end; }
+  .caja-icon { font-size: 1.4rem; line-height: 1; transition: all 0.2s; }
+  .caja-icon.dim { opacity: 0.2; }
+  .max-warn { font-family: var(--mono); font-size: 0.7rem; color: var(--yellow); margin-top: 6px; display: none; }
+  .max-warn.show { display: block; }
+
+  /* COUNTRY SELECTOR */
+  .country-selector { display: flex; gap: 0; margin-bottom: 16px; }
+  .country-btn {
+    flex: 1; padding: 11px; font-family: var(--font-display); font-size: 0.82rem;
+    font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
+    border: 1px solid var(--border2); background: var(--surface); color: var(--muted);
+    cursor: pointer; transition: all 0.2s;
+  }
+  .country-btn:first-child { border-right: none; }
+  .country-btn.active-esp { background: #0a1628; border-color: var(--pw); color: var(--pw-light); }
+  .country-btn.active-prt { background: #1a0800; border-color: #cc3300; color: #ff7755; }
+  .cp-disclaimer {
+    margin-top: 8px; padding: 7px 12px; background: #1a1200;
+    border-left: 3px solid var(--yellow); font-family: var(--mono);
+    font-size: 0.72rem; color: var(--yellow); display: none;
+  }
+  .cp-disclaimer.show { display: block; }
+
+  /* PRINT STYLES */
+  @media print {
+    body::before, header .header-right, #historial-panel,
+    #calc-btn, .calc-btn-cajas, .section, #error-msg, .export-row,
+    .btn-historial-toggle, .mode-tabs, #error-cajas-msg { display: none !important; }
+    #results, #results-cajas { display: block !important; }
+    body { background: #fff !important; color: #000 !important; font-size: 11pt; }
+    header { background: #fff !important; border-bottom: 2px solid #333 !important; padding: 12px 20px !important; }
+    .logo-text h1 { color: #000 !important; }
+    .logo-text p { color: #555 !important; }
+    .logo-mark { border-color: #333 !important; }
+    .logo-mark::after { background: #2979FF !important; }
+    main { max-width: 100% !important; padding: 16px !important; }
+    .breakdown-grid { grid-template-columns: 1fr 1fr !important; gap: 12px !important; }
+    .result-card.pw { background: #e8f0fe !important; border-color: #2979FF !important; color: #000 !important; }
+    .result-card.ceva { background: #fff3ee !important; border-color: #FF6B35 !important; color: #000 !important; }
+    .result-card.pw .price-main, .result-card.pw .carrier-name { color: #1565C0 !important; }
+    .result-card.ceva .price-main, .result-card.ceva .carrier-name { color: #bf360c !important; }
+    .result-card.pw .card-header { background: #bbdefb !important; border-color: #90caf9 !important; }
+    .result-card.ceva .card-header { background: #ffe0b2 !important; border-color: #ffcc80 !important; }
+    .breakdown-line .bl-label, .breakdown-line .bl-val { color: #333 !important; }
+    .breakdown-line.total .bl-label { color: #000 !important; font-weight: 700 !important; }
+    .result-card.pw .breakdown-line.total .bl-val { color: #1565C0 !important; font-weight: 700 !important; }
+    .result-card.ceva .breakdown-line.total .bl-val { color: #bf360c !important; font-weight: 700 !important; }
+    .palet-detail { background: #f5f5f5 !important; border-color: #ddd !important; color: #555 !important; }
+    .palet-detail span { color: #000 !important; }
+    #winner-banner { background: #e8fff0 !important; border-color: #00c853 !important; display: flex !important; }
+    .winner-text h3 { color: #1b5e20 !important; }
+    .winner-text p { color: #333 !important; }
+    .saving-pill { background: #00c853 !important; color: #000 !important; }
+    .result-card.winner::after { background: #00c853 !important; color: #000 !important; }
+    .price-eur { color: inherit !important; }
+    @page { margin: 1.5cm; }
+  }
+
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-area">
+    <div class="logo-mark">🚛</div>
+    <div class="logo-text">
+      <h1>Calculadora de Portes</h1>
+      <p>PALLETWAYS + CEVA · COMPARADOR DE TARIFAS</p>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="badge badge-pw">PALLETWAYS</div>
+    <div class="badge badge-ceva">CEVA</div>
+    <button class="btn-historial-toggle" onclick="toggleHistorial()">📋 HISTORIAL <span id="hist-count-badge"></span></button>
+  </div>
+</header>
+
+<main>
+  <!-- MODE TABS -->
+  <div class="mode-tabs">
+    <button class="mode-tab active-palets" id="tab-palets" onclick="setMode('palets')">🏗 Palés</button>
+    <button class="mode-tab" id="tab-cajas" onclick="setMode('cajas')">📦 Cajas</button>
+  </div>
+
+  <!-- ═══ MODO PALÉS ═══ -->
+  <div id="mode-palets">
+    <!-- PASO 1 -->
+    <div class="section">
+      <div class="section-label">
+        <div class="section-num">01</div>
+        <span class="section-title">Datos del envío</span>
+      </div>
+      <div class="input-row">
+        <div class="field">
+          <label for="num-palets">Número de palés</label>
+          <input type="number" id="num-palets" min="1" max="99" placeholder="Ej: 4" oninput="onInputChange(); validatePalets()">
+          <span class="field-inline-error" id="err-palets"></span>
+        </div>
+        <div class="field">
+          <label for="altura-total">Altura total (en unidades de palé)</label>
+          <input type="number" id="altura-total" min="0.1" step="0.1" placeholder="Ej: 3.5" oninput="onInputChange(); validateAltura()">
+          <span class="field-hint">1 = 100 cm · 3.5 = 3 palés completos + 1 de 50cm</span>
+          <span class="field-inline-error" id="err-altura"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- PASO 2 -->
+    <div class="section">
+      <div class="section-label">
+        <div class="section-num">02</div>
+        <span class="section-title">Destino</span>
+      </div>
+      <div class="country-selector">
+        <button class="country-btn active-esp" id="btn-esp" onclick="setCountry('ESP')">🇪🇸 España</button>
+        <button class="country-btn" id="btn-prt" onclick="setCountry('PRT')">🇵🇹 Portugal</button>
+      </div>
+      <div id="fields-esp">
+        <div class="search-wrap">
+          <div class="field">
+            <label for="prov-input">Buscar por provincia</label>
+            <input type="text" id="prov-input" placeholder="Ej: Madrid, Barcelona, Sevilla…"
+              oninput="onProvInput()" onfocus="onProvFocus()" onblur="onProvBlur()" autocomplete="off"
+              role="combobox" aria-expanded="false" aria-autocomplete="list" aria-controls="sugg-box" aria-label="Buscar provincia de destino">
+          </div>
+          <div id="sugg-box" role="listbox" aria-label="Provincias sugeridas"></div>
+        </div>
+        <div class="field-or"><span>O BUSCA POR CÓDIGO POSTAL</span></div>
+        <div class="field" style="max-width:200px">
+          <label for="cp-input">Código postal España (5 dígitos)</label>
+          <input type="text" id="cp-input" maxlength="5" placeholder="Ej: 28001"
+            oninput="onCpInput()" autocomplete="off" aria-label="Código postal España" inputmode="numeric">
+          <span class="field-hint">Se detecta la provincia automáticamente</span>
+        </div>
+      </div>
+      <div id="fields-prt" style="display:none">
+        <div class="field" style="max-width:220px">
+          <label for="cp-prt-input">Código postal Portugal (2 o 4 dígitos)</label>
+          <input type="text" id="cp-prt-input" maxlength="4" placeholder="Ej: 17 o 3861"
+            oninput="onCpPrtInput()" autocomplete="off" aria-label="Código postal Portugal" inputmode="numeric">
+          <span class="field-hint">Introduce los 2 primeros dígitos del CP</span>
+        </div>
+        <div class="cp-disclaimer" id="cp-disclaimer">
+          ⚠ Si tu CP está entre 3860–3899 escribe los 4 primeros dígitos para detectar la zona correcta de Palletways
+        </div>
+        <div id="cp-prt-ambiguous" style="display:none;margin-top:8px;padding:9px 14px;background:#1a1200;border-left:3px solid var(--yellow);border:1px solid var(--yellow);font-family:var(--mono);font-size:0.75rem;color:var(--yellow);line-height:1.6;">
+          ⚠ <strong>Zona ambigua detectada (CP 38xx)</strong><br>
+          Con solo 2 dígitos no es posible determinar si corresponde a Zona 7 o Zona 8 de Palletways.<br>
+          <span style="color:var(--text)">Por favor, introduce los 4 primeros dígitos de tu CP para obtener el cálculo exacto.</span>
+        </div>
+      </div>
+      <div id="zona-detected"></div>
+    </div>
+
+    <button id="calc-btn" onclick="calcular()">▶ Calcular precio de envío</button>
+    <div id="error-msg"></div>
+    <div class="divider"></div>
+
+    <!-- RESULTADOS PALÉS -->
+    <div id="results">
+      <div id="winner-banner">
+        <div class="winner-icon">🏆</div>
+        <div class="winner-text">
+          <h3 id="winner-name">—</h3>
+          <p id="winner-desc">—</p>
+        </div>
+        <div class="saving-pill" id="saving-pill">—</div>
+      </div>
+      <div class="breakdown-grid">
+        <div class="result-card pw" id="pw-card">
+          <div class="card-header"><span style="font-size:1rem">🔵</span><span class="carrier-name">Palletways</span></div>
+          <div class="card-body">
+            <div class="price-main" id="pw-price">—<span class="price-eur">€</span></div>
+            <div class="price-breakdown" id="pw-breakdown"></div>
+            <div class="palets-visual" id="pw-visual"></div>
+          </div>
+        </div>
+        <div class="result-card ceva" id="ceva-card">
+          <div class="card-header"><span style="font-size:1rem">🟠</span><span class="carrier-name">CEVA</span></div>
+          <div class="card-body">
+            <div class="price-main" id="ceva-price">—<span class="price-eur">€</span></div>
+            <div class="price-breakdown" id="ceva-breakdown"></div>
+            <div class="palet-detail" id="ceva-detail"></div>
+          </div>
+        </div>
+      </div>
+      <div class="export-row">
+        <button class="btn-export btn-print" onclick="window.print()">🖨️ IMPRIMIR</button>
+        <button class="btn-export" onclick="exportarCSV()">📄 EXPORTAR CSV</button>
+        <button class="btn-export" onclick="exportarExcel()">📊 EXPORTAR EXCEL</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ MODO CAJAS ═══ -->
+  <div id="mode-cajas" style="display:none">
+    <!-- PASO 1 CAJAS -->
+    <div class="section">
+      <div class="section-label">
+        <div class="section-num">01</div>
+        <span class="section-title">Número de cajas</span>
+      </div>
+      <div class="cajas-info-strip">
+        <div class="cajas-pill">Cada caja: <span>0,15 uds</span></div>
+        <div class="cajas-pill">Peso por caja: <span>37,5 kg</span></div>
+        <div class="cajas-pill">Máximo: <span>14 cajas</span></div>
+        <div class="cajas-pill">Transportista: <span>CEVA</span></div>
+      </div>
+      <div class="field">
+        <label for="num-cajas">Número de cajas (1–14)</label>
+        <div class="caja-counter">
+          <button onclick="cambiarCajas(-1)" aria-label="Reducir número de cajas">−</button>
+          <input type="number" id="num-cajas" min="1" max="14" value="1" oninput="onCajasInput()" aria-label="Número de cajas">
+          <button onclick="cambiarCajas(1)" aria-label="Aumentar número de cajas">+</button>
+        </div>
+        <div class="max-warn" id="max-warn">⚠ Máximo 14 cajas (= 2,10 uds altura)</div>
+      </div>
+      <div class="caja-visual" id="caja-visual"></div>
+      <div id="cajas-peso-info" style="margin-top:12px;"></div>
+    </div>
+
+    <!-- PASO 2 CAJAS — provincia (solo España, solo CEVA) -->
+    <div class="section">
+      <div class="section-label">
+        <div class="section-num">02</div>
+        <span class="section-title">Provincia de destino</span>
+      </div>
+      <div class="search-wrap">
+        <div class="field">
+          <label for="prov-cajas-input">Buscar por provincia</label>
+          <input type="text" id="prov-cajas-input" placeholder="Ej: Madrid, Barcelona, Sevilla…"
+            oninput="onProvCajasInput()" onfocus="onProvCajasFocus()" onblur="onProvCajasBlur()" autocomplete="off"
+            role="combobox" aria-expanded="false" aria-autocomplete="list" aria-controls="sugg-cajas-box" aria-label="Buscar provincia de destino cajas">
+        </div>
+        <div id="sugg-cajas-box" role="listbox" aria-label="Provincias sugeridas"></div>
+      </div>
+      <div class="field-or"><span>O BUSCA POR CÓDIGO POSTAL</span></div>
+      <div class="field" style="max-width:200px">
+        <label for="cp-cajas-input">Código postal España (5 dígitos)</label>
+        <input type="text" id="cp-cajas-input" maxlength="5" placeholder="Ej: 28001"
+          oninput="onCpCajasInput()" autocomplete="off" aria-label="Código postal para cajas" inputmode="numeric">
+        <span class="field-hint">Se detecta la provincia automáticamente</span>
+      </div>
+      <div id="zona-cajas-detected"></div>
+    </div>
+
+    <button id="calc-cajas-btn" onclick="calcularCajas()" class="calc-btn-cajas">▶ Calcular precio de cajas</button>
+    <div id="error-cajas-msg" style="display:none;padding:11px 14px;border-left:3px solid #ff5252;background:#ff52520a;font-family:var(--mono);font-size:0.78rem;color:#ff8a80;margin-top:8px;"></div>
+
+    <div class="divider" style="margin:32px 0;border-top:1px solid var(--border);position:relative;">
+      <span style="position:absolute;top:-8px;left:50%;transform:translateX(-50%);background:var(--bg);padding:0 14px;font-family:var(--mono);font-size:0.62rem;color:var(--dim);letter-spacing:0.12em;">RESULTADO</span>
+    </div>
+
+    <!-- RESULTADO CAJAS -->
+    <div id="results-cajas" style="display:none;animation:fadeUp 0.35s ease;">
+      <div class="result-card ceva" id="ceva-cajas-card" style="max-width:500px;margin:0 auto 20px;">
+        <div class="card-header"><span style="font-size:1rem">🟠</span><span class="carrier-name">CEVA — Envío por Cajas</span></div>
+        <div class="card-body">
+          <div class="price-main" id="ceva-cajas-price">—<span class="price-eur">€</span></div>
+          <div class="price-breakdown" id="ceva-cajas-breakdown"></div>
+        </div>
+      </div>
+      <div class="export-row" style="justify-content:center;">
+        <button class="btn-export btn-print" onclick="window.print()">🖨️ IMPRIMIR</button>
+        <button class="btn-export" onclick="exportarCajasCSV()">📄 EXPORTAR CSV</button>
+        <button class="btn-export" onclick="exportarCajasExcel()">📊 EXPORTAR EXCEL</button>
+      </div>
+    </div>
+  </div>
+
+<!-- HISTORIAL PANEL -->
+<div id="historial-panel" role="dialog" aria-modal="true" aria-label="Historial del día">
+  <div class="historial-header">
+    <h2>📋 Historial del día</h2>
+    <button class="historial-close" onclick="toggleHistorial()">✕</button>
+  </div>
+  <div class="historial-stats">
+    <div class="stat-item">
+      <span class="stat-label">Cálculos hoy</span>
+      <span class="stat-value yellow" id="stat-total">0</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-label">Ahorro estimado</span>
+      <span class="stat-value green" id="stat-ahorro">0,00 €</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-label">Más barato</span>
+      <span class="stat-value" id="stat-winner" style="font-size:0.82rem">—</span>
+    </div>
+  </div>
+  <div class="historial-actions">
+    <button class="btn-hist-action" onclick="exportarHistorialCSV()">📄 Exportar CSV</button>
+    <button class="btn-hist-action" onclick="exportarHistorialExcel()">📊 Exportar Excel</button>
+    <button class="btn-hist-action danger" onclick="limpiarHistorial()">🗑 Limpiar</button>
+  </div>
+  <div class="historial-list" id="historial-list">
+    <div class="historial-empty">No hay cálculos registrados hoy.</div>
+  </div>
+</div>
+
+<script>
+// ── data.js ──
+// ═══════════════════════════════════════════════════════════════
+// data.js — Tarifas, tablas de precios y mapas geográficos
+// Editar SOLO este archivo para actualizar precios o zonas.
+// ═══════════════════════════════════════════════════════════════
+// ╔═══════════════════════════════════════════════════════════════╗
+// ║  CONFIGURACIÓN DE TARIFAS                                     ║
+// ║  Para actualizar precios, edita únicamente este bloque.       ║
+// ║  No modifiques las funciones de cálculo más abajo.            ║
+// ╚═══════════════════════════════════════════════════════════════╝
+
+// ── RECARGOS FIJOS ──
+const CONFIG = {
+  PW_PORTE_PCT:    0.047,   // 4,7% recargo porte Palletways
+  CEVA_RECARGO_PCT: 0.107,  // 10,7% recargo CEVA
+  CAJAS_ALTURA_POR_CAJA: 0.15,   // altura en uds por caja
+  CAJAS_KG_POR_UD_ALTURA: 250,   // kg por unidad de altura
+  CAJAS_MAX: 14,
+};
+
+// ── PALLETWAYS: tarifas por zona (A=mini quarter ≤80cm, B=quarter ≤110cm, C=postura) ──
+const PW_TARIFA = {
+  1:{A:34.33,B:28.00,C:38.00}, 2:{A:35.56,B:38.03,C:41.97}, 3:{A:36.98,B:39.45,C:43.94},
+  4:{A:40.68,B:43.14,C:47.15}, 5:{A:42.53,B:44.99,C:49.24}, 6:{A:43.75,B:48.07,C:53.56},
+  7:{A:44.99,B:49.31,C:74.26}, 8:{A:52.39,B:60.40,C:84.37}, 9:{A:75.86,B:93.73,C:111.97},
+  10:{A:78.33,B:96.81,C:115.05},11:{A:76.48,B:94.96,C:113.20},12:{A:119.61,B:146.72,C:165.95},
+  13:{A:132.29,B:172.19,C:261.75},14:{A:137.54,B:187.94,C:286.95},
+};
+
+// ── CEVA PORTUGAL: tarifas por CP (2 primeros dígitos) ──
+// cols: 10,20,24,30,40,50,60,70,80,90,100,200,300,400,500,1000,1500,2000 kg
+// Rangos ≤100kg: precio fijo. Rangos 200-2000: valor/100 = €/kg
+const CEVA_PRT = {
+  11:[21.2,21.82,24.13,27.2,29.5,32.74,34.78,36.78,38.95,42.17,30.6,27.75,26.75,24.04,20.51,19.81,18.03,17.55],
+  12:[21.2,21.82,24.13,27.2,29.5,32.74,34.78,36.78,38.95,42.17,30.6,27.75,26.75,24.04,20.51,19.81,18.03,17.55],
+  13:[21.2,21.82,24.13,27.2,29.5,32.74,34.78,36.78,38.95,42.17,30.6,27.75,26.75,24.04,20.51,19.81,18.03,17.55],
+  14:[21.2,21.82,24.13,27.2,29.5,32.74,34.78,36.78,38.95,42.17,30.6,27.75,26.75,24.04,20.51,19.81,18.03,17.55],
+  15:[21.2,21.82,24.13,27.2,29.5,32.74,34.78,36.78,38.95,42.17,30.6,27.75,26.75,24.04,20.51,19.81,18.03,17.55],
+  16:[21.2,21.82,24.13,27.2,29.5,32.74,34.78,36.78,38.95,42.17,30.6,27.75,26.75,24.04,20.51,19.81,18.03,17.55],
+  17:[21.2,21.82,24.13,27.2,29.5,32.74,34.78,36.78,38.95,42.17,30.6,27.75,26.75,24.04,20.51,19.81,18.03,17.55],
+  18:[21.2,21.82,24.13,27.2,29.5,32.74,34.78,36.78,38.95,42.17,30.6,27.75,26.75,24.04,20.51,19.81,18.03,17.55],
+  19:[21.2,21.82,24.13,27.2,29.5,32.74,34.78,36.78,38.95,42.17,30.6,27.75,26.75,24.04,20.51,19.81,18.03,17.55],
+  20:[21.2,22.43,24.13,27.2,29.5,32.74,34.78,36.78,38.95,42.17,30.6,27.75,26.75,24.04,20.51,19.81,18.03,17.55],
+  21:[21.2,21.82,24.13,27.2,29.5,32.74,34.78,36.78,38.95,42.17,30.6,27.75,26.75,24.04,20.51,19.81,18.03,17.55],
+  22:[22.36,22.98,24.13,27.2,29.5,32.74,34.78,36.78,38.95,42.17,30.6,27.75,26.75,24.04,20.51,19.81,18.03,17.72],
+  23:[21.2,21.82,24.13,27.2,29.5,32.74,34.78,36.78,38.95,42.17,30.6,27.75,26.75,24.04,20.51,19.81,18.03,17.55],
+  24:[21.2,21.82,24.13,27.2,29.5,32.74,34.78,36.78,38.95,42.17,30.6,27.75,26.75,24.04,20.51,19.81,18.03,17.55],
+  25:[21.2,21.82,24.13,27.2,29.5,32.74,34.78,36.78,38.95,42.17,30.6,27.75,26.75,24.04,20.51,19.81,18.03,17.55],
+  26:[21.2,21.82,24.13,27.3,29.5,32.74,34.78,36.78,38.95,42.17,30.6,27.75,26.75,24.04,20.51,19.81,18.03,17.55],
+  27:[21.2,21.82,24.13,27.3,29.5,32.74,34.78,36.78,38.95,42.17,30.6,27.75,26.75,24.04,20.51,19.81,18.03,17.55],
+  28:[21.2,21.82,24.13,27.3,29.5,32.74,34.78,36.78,38.95,42.17,30.6,27.75,26.75,24.04,20.51,19.81,18.03,17.55],
+  29:[21.2,21.82,24.13,27.3,29.5,32.74,34.78,36.78,38.95,42.17,30.6,27.75,26.75,24.04,20.51,19.81,18.03,17.55],
+  30:[21.2,21.82,24.13,27.2,29.5,32.74,34.78,36.78,38.95,42.17,30.6,27.75,26.75,24.04,20.51,19.81,18.03,17.55],
+  31:[21.2,21.82,24.13,27.2,29.5,32.74,34.78,36.78,38.95,42.17,30.6,27.75,26.75,24.04,20.51,19.81,18.03,17.55],
+  32:[21.81,22.43,24.13,27.2,29.5,33.75,37.86,36.78,38.95,42.17,30.6,27.75,26.75,24.04,20.51,19.81,18.03,17.55],
+  33:[21.81,22.43,24.13,27.2,29.5,33.75,37.86,36.78,38.95,42.17,30.6,27.75,26.75,24.04,20.51,19.81,18.03,17.55],
+  34:[21.81,22.43,24.48,27.2,29.5,33.75,37.86,36.78,38.95,42.17,30.6,31.74,26.75,24.04,20.51,19.81,18.03,17.55],
+  35:[21.81,22.43,24.48,27.2,29.5,33.75,37.86,36.78,38.95,42.17,30.6,31.74,26.75,24.04,20.51,19.81,18.03,17.55],
+  36:[21.81,22.43,24.48,28.14,29.5,33.75,37.86,36.78,38.95,42.17,30.6,31.74,30.83,24.04,20.51,21.39,18.03,17.55],
+  37:[21.81,22.43,24.48,28.14,29.5,33.75,37.86,36.78,38.95,42.17,30.6,31.74,30.83,24.04,20.51,21.39,18.03,17.55],
+  38:[21.81,22.43,24.48,28.14,29.5,33.75,37.86,36.78,38.95,42.17,30.6,31.74,30.83,24.04,20.51,21.39,18.03,17.55],
+  39:[21.81,22.43,24.48,28.14,29.5,33.75,37.86,36.78,38.95,42.17,30.6,31.74,30.83,24.04,20.51,21.39,18.03,17.55],
+  40:[21.2,21.82,24.13,27.3,29.5,32.74,34.78,36.78,38.95,42.17,30.6,27.75,26.75,24.04,20.51,19.81,18.03,17.55],
+  41:[21.2,21.82,24.13,27.3,29.5,32.74,34.78,36.78,38.95,42.17,30.6,27.75,26.75,24.04,20.51,19.81,18.03,17.55],
+  42:[21.2,21.82,24.13,27.3,29.5,32.74,34.78,36.78,38.95,42.17,30.6,27.75,26.75,24.04,20.51,19.81,18.03,17.55],
+  43:[21.2,21.82,24.13,27.3,29.5,32.74,34.78,36.78,38.95,42.17,30.6,27.75,26.75,24.04,20.51,19.81,18.03,17.55],
+  44:[21.2,21.82,24.13,27.3,29.5,32.74,34.78,36.78,38.95,42.17,30.6,27.75,26.75,24.04,20.51,19.81,18.03,17.55],
+  45:[21.2,21.82,24.13,27.3,29.5,32.74,34.78,36.78,38.95,42.17,30.6,27.75,26.75,24.04,20.51,19.81,18.03,17.55],
+  46:[21.2,21.82,24.13,27.3,29.5,32.74,34.78,36.78,38.95,42.17,30.6,27.75,26.75,24.04,20.51,19.81,18.03,17.55],
+  47:[21.2,21.82,24.13,27.3,29.5,32.74,34.78,36.78,38.95,42.17,30.6,27.75,26.75,24.04,20.51,19.81,18.03,17.55],
+  48:[21.2,21.82,24.13,27.3,29.5,32.74,34.78,36.78,38.95,43.7,34.73,27.75,26.75,24.04,20.51,19.81,18.03,17.55],
+  49:[21.81,22.43,24.48,28.14,29.5,33.75,34.78,36.78,38.95,42.17,30.6,27.75,26.75,24.04,20.51,19.81,18.03,17.55],
+  50:[22.36,22.98,25.56,29.5,30.4,33.75,34.78,41.29,43.7,47.52,34.73,31.74,30.83,27.45,20.51,21.39,18.03,17.55],
+  51:[22.36,22.43,25.56,29.5,30.4,33.75,34.78,41.29,43.7,47.52,34.73,31.74,30.83,27.45,20.51,21.39,18.03,17.55],
+  52:[22.36,22.98,25.56,29.5,30.4,33.75,34.78,41.29,43.7,47.52,34.73,31.74,30.83,27.45,20.51,21.39,18.03,17.55],
+  53:[22.36,22.98,25.56,29.5,30.4,33.75,34.78,41.29,43.7,47.52,34.73,31.74,30.83,27.45,20.51,21.39,18.03,17.55],
+  54:[22.36,22.98,25.56,29.5,30.4,33.75,34.78,41.29,43.7,47.52,34.73,31.74,30.83,27.45,20.51,21.39,18.03,17.55],
+  60:[22.96,22.98,25.56,28.93,31.23,34.69,38.67,42.19,44.65,48.59,35.55,32.55,31.64,28.13,23.41,21.79,20.09,19.72],
+  61:[22.96,22.98,25.56,28.93,31.23,34.69,38.67,42.19,44.65,48.59,35.55,32.55,31.64,28.13,23.41,21.79,20.09,19.72],
+  62:[22.96,22.98,25.56,28.93,31.23,34.69,38.67,42.19,44.65,48.59,35.55,32.55,31.64,28.13,23.41,21.79,20.09,19.72],
+  63:[22.96,22.98,25.56,28.93,31.23,34.69,38.67,42.19,44.65,48.59,35.55,32.55,31.64,28.13,23.41,21.79,20.09,19.72],
+  64:[22.96,22.98,25.56,28.93,31.23,34.69,38.67,42.19,44.65,48.59,35.55,32.55,31.64,28.13,23.41,21.79,20.09,19.72],
+  70:[21.81,22.43,24.68,30.4,32.07,33.75,37.86,41.29,43.7,47.52,34.73,31.74,30.83,27.45,22.93,21.39,19.7,19.3],
+  71:[22.92,23.54,26.25,29.69,32.07,35.64,39.47,43.1,45.6,49.68,36.37,33.34,32.46,28.8,23.89,22.2,20.45,20.05],
+  72:[22.92,23.54,26.25,29.69,32.07,35.64,39.47,43.1,45.6,49.68,36.37,33.34,32.46,28.8,23.89,22.2,20.45,20.05],
+  73:[22.92,23.54,26.25,29.69,32.07,35.64,39.47,43.1,45.6,49.68,36.37,33.34,32.46,28.8,23.89,22.2,20.45,20.05],
+  74:[22.92,23.54,26.25,29.69,32.07,35.64,39.47,43.1,45.6,49.68,36.37,33.34,32.46,28.8,23.89,22.2,20.45,20.05],
+  75:[22.92,23.54,26.25,29.69,32.07,35.64,39.47,43.1,45.6,49.68,36.37,33.34,32.46,28.8,23.89,22.2,20.45,20.05],
+  76:[22.92,23.54,26.25,29.69,32.07,35.64,39.47,43.1,45.6,49.68,36.37,33.34,32.46,28.8,23.89,22.2,20.45,20.05],
+  77:[22.92,23.54,26.25,29.69,32.07,35.64,39.47,43.1,45.6,49.68,36.37,33.34,32.46,28.8,23.89,22.2,20.45,20.05],
+  78:[22.92,23.54,26.25,29.69,32.07,35.64,39.47,43.1,45.6,49.68,36.37,33.34,32.46,28.13,23.89,22.2,20.45,20.05],
+  79:[22.92,23.54,26.25,29.69,32.07,35.64,39.47,43.1,44.65,49.68,35.55,32.55,31.64,28.13,23.41,21.79,20.09,19.72],
+  80:[22.46,22.98,25.56,28.93,31.23,34.69,38.67,42.19,44.65,48.59,35.55,32.55,31.64,28.13,23.41,21.79,20.09,19.72],
+  81:[22.46,22.98,25.56,28.93,31.23,34.69,38.67,42.19,44.65,48.59,35.55,32.55,31.64,28.13,23.41,21.79,20.09,19.72],
+  82:[22.46,22.98,25.56,28.93,31.23,34.69,38.67,42.19,44.65,48.59,35.55,32.55,31.64,28.13,23.41,21.79,20.09,19.72],
+  83:[22.36,22.98,25.56,28.93,31.23,34.69,38.67,42.19,44.65,48.59,35.55,32.55,31.64,28.13,23.41,21.79,20.09,19.72],
+  84:[22.36,22.98,25.56,28.93,31.23,34.69,38.67,42.19,44.65,48.59,35.55,32.55,31.64,28.13,23.41,21.79,20.09,19.72],
+  85:[22.36,22.98,25.56,28.93,31.23,34.69,38.67,42.19,44.65,48.59,35.55,32.55,31.64,28.13,23.41,21.79,20.09,19.72],
+  86:[22.36,22.98,25.56,28.93,31.23,34.69,38.67,42.19,44.65,48.59,35.55,32.55,31.64,28.13,23.41,21.79,20.09,19.72],
+  87:[22.36,22.98,25.56,28.93,31.23,34.69,38.67,42.19,44.65,48.59,35.55,32.55,31.64,28.13,23.41,21.79,20.09,19.72],
+  88:[22.96,22.98,25.56,28.93,31.23,34.69,38.67,42.19,44.65,48.59,35.55,32.55,31.64,28.13,23.41,21.79,20.09,19.72],
+  89:[22.96,22.98,25.56,28.93,31.23,34.69,38.67,42.19,44.65,48.59,35.55,32.55,31.64,28.13,23.41,21.79,20.09,19.72],
+};
+// Weight breakpoints matching table columns
+const PRT_KG_BREAKS = [10,20,24,30,40,50,60,70,80,90,100,200,300,400,500,1000,1500,2000];
+
+// Palletways Portugal zone logic
+function getPwZonaPrt(cpStr) {
+  const cp = parseInt(cpStr);
+  const cp4 = cpStr.length >= 4 ? parseInt(cpStr.substring(0,4)) : null;
+  // Zone 7: 10-19, 26-29, 40-45
+  if ((cp>=10&&cp<=19)||(cp>=26&&cp<=29)||(cp>=40&&cp<=45)) return 7;
+  // Zone 7: 3860-3899 (needs 4 digits)
+  if (cp===38) {
+    if (cp4!==null && cp4>=3860 && cp4<=3899) return 7;
+    return 8; // default to zone 8, disclaimer shown
+  }
+  return 8;
+}
+
+function calcCevaPrt(numPalets, alturaTotal, cpStr) {
+  const cp2 = parseInt(cpStr.substring(0,2));
+  const tarifa = CEVA_PRT[cp2];
+  if (!tarifa) return null;
+
+  // Build weight
+  let totalKg = 0, palets = [], remaining = alturaTotal;
+  for (let i=0;i<numPalets;i++) {
+    if (remaining>=1.0){palets.push({altura:1.0,kg:250,full:true});totalKg+=250;remaining=Math.round((remaining-1.0)*100)/100;}
+    else if(remaining>0){const kg=Math.round(remaining*250);palets.push({altura:remaining,kg,full:false});totalKg+=kg;remaining=0;}
+    else{palets.push({altura:1.0,kg:250,full:true});totalKg+=250;}
+  }
+
+  // Find bracket index
+  let idx = PRT_KG_BREAKS.findIndex(b => totalKg <= b);
+  if (idx === -1) idx = PRT_KG_BREAKS.length - 1;
+
+  const tableVal = tarifa[idx];
+  const kgBreak = PRT_KG_BREAKS[idx];
+
+  // For ranges >= 200kg: price = totalKg × (tableVal/100)
+  // For ranges <= 100kg: fixed price
+  let basePrice;
+  let rangeLabel;
+  if (kgBreak <= 100) {
+    basePrice = tableVal;
+    rangeLabel = `≤${kgBreak} kg (precio fijo)`;
+  } else {
+    basePrice = totalKg * (tableVal / 100);
+    rangeLabel = `${totalKg} kg × ${(tableVal/100).toFixed(4)}€/kg (tabla ${kgBreak})`;
+  }
+
+  const surcharge = basePrice * CONFIG.CEVA_RECARGO_PCT;
+  return { total: basePrice+surcharge, basePrice, surcharge, totalKg, rangeLabel, palets, cp2 };
+}
+
+// ═══════════════════════════════════════════════════════════════
+// CP → PROVINCIA (primeros 2 dígitos)
+// ═══════════════════════════════════════════════════════════════
+const CP_PROV = {
+  "01":"ÁLAVA","02":"ALBACETE","03":"ALICANTE","04":"ALMERÍA","05":"ÁVILA",
+  "06":"BADAJOZ","07":"BALEARES","08":"BARCELONA","09":"BURGOS","10":"CÁCERES",
+  "11":"CÁDIZ","12":"CASTELLÓN","13":"CIUDAD REAL","14":"CÓRDOBA","15":"A CORUÑA",
+  "16":"CUENCA","17":"GERONA","18":"GRANADA","19":"GUADALAJARA","20":"GUIPÚZCOA",
+  "21":"HUELVA","22":"HUESCA","23":"JAÉN","24":"LEÓN","25":"LÉRIDA",
+  "26":"LA RIOJA","27":"LUGO","28":"MADRID","29":"MÁLAGA","30":"MURCIA",
+  "31":"NAVARRA","32":"ORENSE","33":"ASTURIAS","34":"PALENCIA","35":"LAS PALMAS",
+  "36":"PONTEVEDRA","37":"SALAMANCA","38":"TENERIFE","39":"CANTABRIA","40":"SEGOVIA",
+  "41":"SEVILLA","42":"SORIA","43":"TARRAGONA","44":"TERUEL","45":"TOLEDO",
+  "46":"VALENCIA","47":"VALLADOLID","48":"VIZCAYA","49":"ZAMORA","50":"ZARAGOZA",
+  "51":"CEUTA","52":"MELILLA"
+};
+
+// ═══════════════════════════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════════════════════════
+const PROV_ZONA = {
+  "MADRID":1,"GUADALAJARA":1,
+  "SORIA":2,"TOLEDO":2,
+  "ALBACETE":3,"AVILA":3,"ÁVILA":3,"BURGOS":3,"LA RIOJA":3,"RIOJA":3,"SEGOVIA":3,"VALLADOLID":3,"ZARAGOZA":3,
+  "ALAVA":4,"ÁLAVA":4,"CIUDAD REAL":4,"CUENCA":4,"HUESCA":4,"LEON":4,"LEÓN":4,"NAVARRA":4,"PALENCIA":4,
+  "SALAMANCA":4,"TERUEL":4,"VALENCIA":4,"ZAMORA":4,
+  "ALICANTE":5,"CASTELLON":5,"CASTELLÓN":5,"GUIPUZCOA":5,"GUIPÚZCOA":5,"LERIDA":5,"LÉRIDA":5,"LLEIDA":5,
+  "MURCIA":5,"ASTURIAS":5,"CANTABRIA":5,"TARRAGONA":5,"VIZCAYA":5,
+  "BADAJOZ":6,"BARCELONA":6,"CACERES":6,"CÁCERES":6,"CORDOBA":6,"CÓRDOBA":6,"GRANADA":6,"JAEN":6,"JAÉN":6,"SEVILLA":6,
+  "ALMERIA":7,"ALMERÍA":7,"CADIZ":7,"CÁDIZ":7,"CORUÑA":7,"A CORUÑA":7,"GERONA":7,"GIRONA":7,"HUELVA":7,
+  "LUGO":7,"MALAGA":7,"MÁLAGA":7,"ORENSE":7,"OURENSE":7,"PONTEVEDRA":7,
+  "PORTUGAL":8,"MALLORCA":9,"BALEARES":9,"ISLAS BALEARES":9,"IBIZA":10,"MENORCA":10,
+  "GRAN CANARIA":11,"TENERIFE":11,"LAS PALMAS":11,"SANTA CRUZ DE TENERIFE":11,
+  "FUERTEVENTURA":12,"LANZAROTE":12,"LA PALMA":12,"LA GOMERA":12,"EL HIERRO":12,
+  "MADEIRA":13,"SAO MIGUEL":14,"AZORES":14
+};
+
+const ZONAS_DESC = {
+  1:"Madrid, Guadalajara",2:"Soria, Toledo",
+  3:"Albacete, Ávila, Burgos, La Rioja, Segovia, Valladolid, Zaragoza",
+  4:"Álava, Ciudad Real, Cuenca, Huesca, León, Navarra, Palencia, Salamanca, Teruel, Valencia, Zamora",
+  5:"Alicante, Castellón, Guipúzcoa, Lérida, Murcia, Asturias, Cantabria, Tarragona, Vizcaya",
+  6:"Badajoz, Barcelona, Cáceres, Córdoba, Granada, Jaén, Sevilla",
+  7:"Almería, Cádiz, A Coruña, Girona, Huelva, Lugo, Málaga, Ourense, Pontevedra",
+  8:"Portugal (resto)",9:"Mallorca / Baleares",10:"Ibiza / Menorca",
+  11:"Gran Canaria, Tenerife",12:"Fuerteventura, Lanzarote, Islas menores",
+  13:"Madeira",14:"Azores / São Miguel"
+};
+
+// ── CEVA ESPAÑA: tarifas por provincia ──
+const CEVA_TARIFA = {
+  "ÁLAVA":[4.56,5.62,6.76,7.88,8.93,9.99,11.02,12.07,13.30,14.66,0.130,0.110,0.089,0.087],
+  "ALAVA":[4.56,5.62,6.76,7.88,8.93,9.99,11.02,12.07,13.30,14.66,0.130,0.110,0.089,0.087],
+  "ALBACETE":[4.83,6.06,7.25,8.47,9.66,10.88,12.00,13.15,14.78,16.30,0.143,0.122,0.100,0.096],
+  "ALICANTE":[4.99,6.19,7.35,8.51,9.71,10.93,11.97,13.02,14.39,15.86,0.140,0.119,0.096,0.093],
+  "ALMERÍA":[5.46,6.83,8.19,9.55,10.90,12.24,13.51,14.81,16.62,18.30,0.161,0.139,0.112,0.108],
+  "ALMERIA":[5.46,6.83,8.19,9.55,10.90,12.24,13.51,14.81,16.62,18.30,0.161,0.139,0.112,0.108],
+  "ÁVILA":[4.14,4.91,5.72,6.48,7.22,7.94,8.62,9.31,10.36,11.56,0.100,0.081,0.063,0.060],
+  "AVILA":[4.14,4.91,5.72,6.48,7.22,7.94,8.62,9.31,10.36,11.56,0.100,0.081,0.063,0.060],
+  "BADAJOZ":[5.78,7.22,8.56,9.92,11.30,12.66,13.95,15.22,17.07,18.81,0.150,0.142,0.112,0.109],
+  "BALEARES":[27.30,28.92,30.56,32.21,33.85,35.49,36.89,38.33,41.26,null,0.333,0.279,0.232,0.200],
+  "MALLORCA":[27.30,28.92,30.56,32.21,33.85,35.49,36.89,38.33,41.26,null,0.333,0.279,0.232,0.200],
+  "IBIZA":[27.30,28.92,30.56,32.21,33.85,35.49,36.89,38.33,41.26,null,0.333,0.279,0.232,0.200],
+  "MENORCA":[27.30,28.92,30.56,32.21,33.85,35.49,36.89,38.33,41.26,null,0.333,0.279,0.232,0.200],
+  "BARCELONA":[5.28,6.56,7.76,8.99,10.34,11.69,12.88,14.06,15.47,17.01,0.149,0.128,0.103,0.100],
+  "BURGOS":[4.66,5.76,6.86,7.96,9.03,10.10,11.10,12.10,13.44,14.83,0.130,0.111,0.090,0.087],
+  "CÁCERES":[5.65,6.80,8.09,9.38,10.57,11.77,12.86,13.97,15.50,17.07,0.150,0.122,0.099,0.095],
+  "CACERES":[5.65,6.80,8.09,9.38,10.57,11.77,12.86,13.97,15.50,17.07,0.150,0.122,0.099,0.095],
+  "CÁDIZ":[5.22,6.71,8.10,9.45,10.93,12.40,13.72,15.03,16.83,18.48,0.163,0.142,0.117,0.114],
+  "CADIZ":[5.22,6.71,8.10,9.45,10.93,12.40,13.72,15.03,16.83,18.48,0.163,0.142,0.117,0.114],
+  "CASTELLÓN":[4.69,5.86,7.07,8.27,9.45,10.62,11.76,12.91,14.41,15.90,0.140,0.119,0.098,0.094],
+  "CASTELLON":[4.69,5.86,7.07,8.27,9.45,10.62,11.76,12.91,14.41,15.90,0.140,0.119,0.098,0.094],
+  "CIUDAD REAL":[5.12,6.34,7.56,8.76,9.96,11.19,12.30,13.43,15.10,16.67,0.147,0.123,0.099,0.096],
+  "CÓRDOBA":[5.53,6.84,8.04,9.26,10.59,11.87,13.01,14.12,15.82,17.47,0.152,0.130,0.102,0.099],
+  "CORDOBA":[5.53,6.84,8.04,9.26,10.59,11.87,13.01,14.12,15.82,17.47,0.152,0.130,0.102,0.099],
+  "A CORUÑA":[4.88,6.10,7.33,8.55,9.79,11.02,12.17,13.35,14.71,16.16,0.143,0.123,0.099,0.097],
+  "CORUÑA":[4.88,6.10,7.33,8.55,9.79,11.02,12.17,13.35,14.71,16.16,0.143,0.123,0.099,0.097],
+  "CUENCA":[4.47,5.42,6.36,7.28,8.19,9.09,9.97,10.83,12.20,13.58,0.117,0.098,0.077,0.073],
+  "GERONA":[4.89,6.23,7.58,8.91,10.25,11.56,12.82,14.08,15.84,17.40,0.153,0.133,0.111,0.107],
+  "GIRONA":[4.89,6.23,7.58,8.91,10.25,11.56,12.82,14.08,15.84,17.40,0.153,0.133,0.111,0.107],
+  "GRANADA":[4.91,6.11,7.24,8.35,9.53,10.73,11.76,12.77,14.13,15.56,0.136,0.116,0.093,0.091],
+  "GUADALAJARA":[4.23,5.00,5.81,6.62,7.34,8.11,8.79,9.50,10.55,11.76,0.101,0.083,0.063,0.061],
+  "GUIPÚZCOA":[12.09,12.86,13.67,18.04,18.83,19.61,23.79,24.59,25.37,26.07,0.188,0.163,0.125,0.109],
+  "GUIPUZCOA":[12.09,12.86,13.67,18.04,18.83,19.61,23.79,24.59,25.37,26.07,0.188,0.163,0.125,0.109],
+  "HUELVA":[5.06,6.45,7.85,9.26,10.66,12.06,13.38,14.72,16.53,18.16,0.160,0.140,0.116,0.113],
+  "HUESCA":[4.88,6.99,7.15,8.30,9.42,10.53,11.57,12.61,13.98,15.40,0.135,0.115,0.092,0.090],
+  "JAÉN":[4.80,5.84,6.92,7.99,9.02,10.04,11.02,12.02,13.20,14.62,0.128,0.107,0.084,0.081],
+  "JAEN":[4.80,5.84,6.92,7.99,9.02,10.04,11.02,12.02,13.20,14.62,0.128,0.107,0.084,0.081],
+  "LEÓN":[5.05,6.12,7.24,8.35,9.40,10.45,11.48,12.51,13.73,15.17,0.134,0.111,0.088,0.083],
+  "LEON":[5.05,6.12,7.24,8.35,9.40,10.45,11.48,12.51,13.73,15.17,0.134,0.111,0.088,0.083],
+  "LÉRIDA":[5.44,6.81,8.19,9.56,10.91,12.25,13.54,14.87,16.55,18.24,0.161,0.139,0.111,0.109],
+  "LERIDA":[5.44,6.81,8.19,9.56,10.91,12.25,13.54,14.87,16.55,18.24,0.161,0.139,0.111,0.109],
+  "LLEIDA":[5.44,6.81,8.19,9.56,10.91,12.25,13.54,14.87,16.55,18.24,0.161,0.139,0.111,0.109],
+  "LA RIOJA":[4.99,6.28,7.54,8.82,10.05,11.31,12.50,13.69,15.42,16.98,0.150,0.129,0.104,0.101],
+  "LOGROÑO":[4.99,6.28,7.54,8.82,10.05,11.31,12.50,13.69,15.42,16.98,0.150,0.129,0.104,0.101],
+  "LUGO":[5.25,6.65,8.05,9.48,10.85,12.24,13.61,14.97,16.68,18.33,0.161,0.140,0.115,0.111],
+  "MADRID":[4.60,5.43,6.18,6.95,7.85,8.74,9.47,10.19,11.14,12.42,0.107,0.088,0.065,0.062],
+  "MÁLAGA":[5.08,6.38,7.66,8.92,10.22,11.55,12.72,13.89,15.41,16.88,0.150,0.128,0.105,0.102],
+  "MALAGA":[5.08,6.38,7.66,8.92,10.22,11.55,12.72,13.89,15.41,16.88,0.150,0.128,0.105,0.102],
+  "MURCIA":[4.81,5.92,6.99,8.06,9.18,10.29,11.25,12.22,13.51,14.89,0.131,0.111,0.089,0.085],
+  "NAVARRA":[5.36,6.83,8.28,9.73,11.23,12.70,14.13,15.57,17.55,19.32,0.170,0.148,0.122,0.118],
+  "OVIEDO":[4.74,5.86,7.03,8.18,9.28,10.41,11.47,12.56,13.81,15.21,0.134,0.113,0.092,0.089],
+  "ASTURIAS":[4.74,5.86,7.03,8.18,9.28,10.41,11.47,12.56,13.81,15.21,0.134,0.113,0.092,0.089],
+  "PALENCIA":[5.01,6.10,7.15,8.16,9.20,10.23,11.17,12.12,13.42,14.83,0.129,0.108,0.085,0.081],
+  "LAS PALMAS":[27.28,31.57,36.75,41.38,47.11,52.29,58.58,64.25,69.76,72.18,0.645,0.550,0.465,0.409],
+  "GRAN CANARIA":[27.28,31.57,36.75,41.38,47.11,52.29,58.58,64.25,69.76,72.18,0.645,0.550,0.465,0.409],
+  "PONTEVEDRA":[4.79,6.00,7.29,8.58,9.82,11.05,12.25,13.45,14.85,16.28,0.145,0.125,0.102,0.100],
+  "SALAMANCA":[4.50,5.68,6.77,7.86,8.97,10.06,11.10,12.16,13.67,15.11,0.133,0.113,0.093,0.089],
+  "TENERIFE":[27.28,31.57,36.75,41.38,47.11,52.29,58.58,64.25,69.76,72.18,0.645,0.550,0.465,0.409],
+  "SANTA CRUZ DE TENERIFE":[27.28,31.57,36.75,41.38,47.11,52.29,58.58,64.25,69.76,72.18,0.645,0.550,0.465,0.409],
+  "CANTABRIA":[5.12,6.41,7.70,9.03,10.30,11.59,12.84,14.07,15.73,17.35,0.152,0.130,0.105,0.103],
+  "SANTANDER":[5.12,6.41,7.70,9.03,10.30,11.59,12.84,14.07,15.73,17.35,0.152,0.130,0.105,0.103],
+  "SEGOVIA":[4.14,4.94,5.73,6.48,7.22,7.94,8.62,9.31,10.36,11.56,0.100,0.081,0.063,0.060],
+  "SEVILLA":[5.21,6.49,7.79,9.06,10.36,11.67,12.89,14.09,15.52,17.06,0.151,0.130,0.105,0.103],
+  "SORIA":[4.68,5.82,6.94,8.02,9.12,10.18,11.21,12.22,13.57,14.96,0.131,0.112,0.091,0.088],
+  "TARRAGONA":[5.23,6.62,8.01,9.42,10.77,12.16,13.51,14.87,16.56,18.22,0.160,0.139,0.114,0.111],
+  "TERUEL":[4.94,6.12,7.26,8.42,9.52,10.64,11.68,12.72,14.10,15.55,0.136,0.116,0.093,0.090],
+  "TOLEDO":[4.59,5.45,6.22,7.02,7.82,8.58,9.28,9.97,11.03,12.31,0.105,0.085,0.064,0.061],
+  "VALENCIA":[4.93,6.00,7.05,8.13,9.21,10.30,11.29,12.29,13.49,14.91,0.130,0.110,0.088,0.085],
+  "VALLADOLID":[4.58,5.57,6.61,7.64,8.61,9.60,10.56,11.49,12.66,14.00,0.123,0.103,0.081,0.078],
+  "VIZCAYA":[4.99,6.27,7.48,8.70,9.97,11.26,12.46,13.66,15.21,16.76,0.147,0.127,0.103,0.101],
+  "BILBAO":[4.99,6.27,7.48,8.70,9.97,11.26,12.46,13.66,15.21,16.76,0.147,0.127,0.103,0.101],
+  "ZAMORA":[4.94,6.13,7.30,8.49,9.64,10.80,11.91,13.00,14.64,16.16,0.142,0.121,0.097,0.093],
+  "ZARAGOZA":[5.04,6.21,7.33,8.47,9.65,10.83,11.87,12.86,14.23,15.68,0.138,0.117,0.093,0.091],
+  "ORENSE":[5.08,6.46,7.89,9.32,10.74,12.17,13.57,14.91,16.67,18.28,0.162,0.140,0.116,0.114],
+  "OURENSE":[5.08,6.46,7.89,9.32,10.74,12.17,13.57,14.91,16.67,18.28,0.162,0.140,0.116,0.114],
+  "FUERTEVENTURA":[27.28,31.57,36.75,41.38,47.11,52.29,58.58,64.25,69.76,72.18,0.645,0.550,0.465,0.409],
+  "LANZAROTE":[27.28,31.57,36.75,41.38,47.11,52.29,58.58,64.25,69.76,72.18,0.645,0.550,0.465,0.409],
+  "LA PALMA":[27.28,31.57,36.75,41.38,47.11,52.29,58.58,64.25,69.76,72.18,0.645,0.550,0.465,0.409],
+};
+
+const ALL_PROVS = [...new Set(Object.keys(PROV_ZONA))].sort();
+
+// ── CEVA ESPAÑA: alias de CEVA_TARIFA (misma tabla, usada por modo cajas) ──
+// Se elimina el duplicado: CEVA_ESP apunta directamente a CEVA_TARIFA
+const CEVA_ESP = CEVA_TARIFA;
+
+// ═══════════════════════════════════════════════════════════════
+
+
+// ── state.js ──
+// ═══════════════════════════════════════════════════════════════
+// state.js — Estado global de la aplicación y selección de país
+// ═══════════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════════
+let state = { prov: null, zona: null, country: 'ESP', cpPrt: null };
+let blurTO;
+let lastPwRes = null, lastCevaRes = null, lastInput = null;
+
+function setCountry(c) {
+  state.country = c;
+  state.prov = null; state.zona = null; state.cpPrt = null;
+  document.getElementById('zona-detected').className = '';
+  document.getElementById('results').className = '';
+  document.getElementById('winner-banner').className = '';
+  document.getElementById('error-msg').className = '';
+
+  document.getElementById('fields-esp').style.display = c==='ESP' ? '' : 'none';
+  document.getElementById('fields-prt').style.display = c==='PRT' ? '' : 'none';
+  document.getElementById('btn-esp').className = 'country-btn' + (c==='ESP'?' active-esp':'');
+  document.getElementById('btn-prt').className = 'country-btn' + (c==='PRT'?' active-prt':'');
+
+  if (c==='ESP') {
+    document.getElementById('prov-input').value='';
+    document.getElementById('cp-input').value='';
+  } else {
+    document.getElementById('cp-prt-input').value='';
+    document.getElementById('cp-disclaimer').className='cp-disclaimer';
+  }
+}
+
+function onCpPrtInput() {
+  const val = document.getElementById('cp-prt-input').value.trim();
+  const disc = document.getElementById('cp-disclaimer');
+  const zd = document.getElementById('zona-detected');
+  const ambig = document.getElementById('cp-prt-ambiguous');
+
+  if (!val || val.length < 2) {
+    state.cpPrt = null; state.zona = null;
+    zd.className = ''; disc.className = 'cp-disclaimer'; ambig.style.display='none'; return;
+  }
+
+  const cp2 = parseInt(val.substring(0,2));
+  if (!CEVA_PRT[cp2]) {
+    zd.innerHTML = '⚠ Código postal no encontrado en la tabla Portugal'; zd.className='show';
+    state.cpPrt=null; state.zona=null; ambig.style.display='none'; return;
+  }
+
+  state.cpPrt = val;
+  const pwZona = getPwZonaPrt(val);
+  state.zona = pwZona;
+
+  // Show ambiguous warning for CP 38xx with only 2 digits
+  if (cp2===38 && val.length < 4) {
+    disc.className = 'cp-disclaimer show';
+    ambig.style.display = 'block';
+  } else {
+    disc.className = 'cp-disclaimer';
+    ambig.style.display = 'none';
+  }
+
+  const zonaLabel = pwZona===7 ? 'Zona 7 (Portugal norte/centro)' : 'Zona 8 (Portugal resto)';
+  zd.innerHTML = `🇵🇹 CP ${val}xx → CEVA: tabla CP ${cp2} · Palletways: ${zonaLabel}`;
+  zd.className = 'show';
+}
+
+// ═══════════════════════════════════════════════════════════════
+
+
+// ── historial.js ──
+// ═══════════════════════════════════════════════════════════════
+// historial.js — Persistencia en localStorage y UI del historial
+// ═══════════════════════════════════════════════════════════════
+// HISTORIAL (localStorage)
+// ═══════════════════════════════════════════════════════════════
+const HIST_KEY = 'transportes_historial';
+
+function getTodayKey() {
+  return new Date().toISOString().split('T')[0];
+}
+
+function getHistorial() {
+  try {
+    const raw = localStorage.getItem(HIST_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch { return {}; }
+}
+
+function saveHistorial(data) {
+  try { localStorage.setItem(HIST_KEY, JSON.stringify(data)); } catch {}
+}
+
+function addToHistorial(entry) {
+  const hist = getHistorial();
+  const day = getTodayKey();
+  if (!hist[day]) hist[day] = [];
+  hist[day].unshift(entry); // newest first
+  if (hist[day].length > 50) hist[day] = hist[day].slice(0, 50);
+  saveHistorial(hist);
+  updateHistorialUI();
+}
+
+function updateHistorialUI() {
+  const hist = getHistorial();
+  const day = getTodayKey();
+  const items = hist[day] || [];
+
+  // Badge
+  const badge = document.getElementById('hist-count-badge');
+  badge.textContent = items.length > 0 ? `(${items.length})` : '';
+
+  // Stats
+  document.getElementById('stat-total').textContent = items.length;
+  const totalAhorro = items.reduce((s, i) => s + (i.ahorro || 0), 0);
+  document.getElementById('stat-ahorro').textContent = fmt(totalAhorro);
+  const pwWins = items.filter(i => i.winner === 'Palletways').length;
+  const cevaWins = items.filter(i => i.winner === 'CEVA').length;
+  const winnerText = pwWins > cevaWins ? `PW (${pwWins})` : cevaWins > pwWins ? `CEVA (${cevaWins})` : '—';
+  document.getElementById('stat-winner').textContent = winnerText;
+  document.getElementById('stat-winner').style.color = pwWins > cevaWins ? 'var(--pw-light)' : cevaWins > pwWins ? 'var(--ceva-light)' : 'var(--muted)';
+
+  // List
+  const list = document.getElementById('historial-list');
+  if (!items.length) {
+    list.innerHTML = '<div class="historial-empty">No hay cálculos registrados hoy.</div>';
+    return;
+  }
+  list.innerHTML = items.map((it, idx) => `
+    <div class="hist-item" onclick="cargarDesdeHistorial(${idx})">
+      <div class="hist-item-top">
+        <span class="hist-item-dest">📍 ${it.provincia} <span style="color:var(--dim);font-size:0.72rem">Zona ${it.zona}</span></span>
+        <span class="hist-item-time">${it.hora}</span>
+      </div>
+      <div class="hist-item-detail">${it.palets} palés · altura ${it.altura}</div>
+      <div class="hist-item-prices">
+        <span class="hist-price pw">PW: ${fmt(it.pw)}</span>
+        <span class="hist-price ceva">CEVA: ${fmt(it.ceva)}</span>
+        <span class="hist-price winner-tag">${it.winner}</span>
+        ${it.ahorro > 0.01 ? `<span class="hist-saving">−${fmt(it.ahorro)}</span>` : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+function cargarDesdeHistorial(idx) {
+  const hist = getHistorial();
+  const day = getTodayKey();
+  const items = hist[day] || [];
+  const it = items[idx];
+  if (!it) return;
+  document.getElementById('num-palets').value = it.palets;
+  document.getElementById('altura-total').value = it.altura;
+  document.getElementById('prov-input').value = it.provincia.charAt(0) + it.provincia.slice(1).toLowerCase();
+  state.prov = it.provincia.toUpperCase();
+  state.zona = it.zona;
+  const zd = document.getElementById('zona-detected');
+  zd.innerHTML = `Zona ${state.zona} detectada — ${ZONAS_DESC[state.zona]}`;
+  zd.className = 'show';
+  toggleHistorial();
+  calcular();
+}
+
+function limpiarHistorial() {
+  if (!confirm('¿Seguro que quieres borrar todo el historial de hoy?')) return;
+  const hist = getHistorial();
+  delete hist[getTodayKey()];
+  saveHistorial(hist);
+  updateHistorialUI();
+}
+
+function toggleHistorial() {
+  const panel = document.getElementById('historial-panel');
+  panel.classList.toggle('open');
+  updateHistorialUI();
+}
+
+// ═══════════════════════════════════════════════════════════════
+
+
+// ── ui.js ──
+// ═══════════════════════════════════════════════════════════════
+// ui.js — Búsqueda de provincias, CP, validación y render de resultados
+// ═══════════════════════════════════════════════════════════════
+// CP INPUT
+// ═══════════════════════════════════════════════════════════════
+function onCpInput() {
+  const val = document.getElementById('cp-input').value.trim();
+  if (val.length < 2) return;
+  const prefix = val.substring(0, 2);
+  const prov = CP_PROV[prefix];
+  if (!prov) return;
+  // Set province
+  state.prov = prov;
+  state.zona = PROV_ZONA[prov] || null;
+  const label = prov.charAt(0) + prov.slice(1).toLowerCase();
+  document.getElementById('prov-input').value = label;
+  document.getElementById('sugg-box').className = '';
+  if (state.zona) {
+    const zd = document.getElementById('zona-detected');
+    zd.innerHTML = `📮 CP ${val} → ${label} → Zona ${state.zona} — ${ZONAS_DESC[state.zona]}`;
+    zd.className = 'show';
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// PROVINCIA SEARCH
+// ═══════════════════════════════════════════════════════════════
+function onProvInput() {
+  const val = document.getElementById('prov-input').value;
+  state.prov = null; state.zona = null;
+  document.getElementById('zona-detected').className = '';
+  document.getElementById('cp-input').value = '';
+  showSuggestions(val);
+}
+function onProvFocus() { const val = document.getElementById('prov-input').value; if (val.length >= 1) showSuggestions(val); }
+function onProvBlur() { blurTO = setTimeout(() => { document.getElementById('sugg-box').className = ''; }, 200); }
+function showSuggestions(q) {
+  const box = document.getElementById('sugg-box');
+  const inp = document.getElementById('prov-input');
+  if (!q || q.length < 1) { box.className = ''; inp.setAttribute('aria-expanded','false'); return; }
+  const upper = q.toUpperCase().trim();
+  const matches = ALL_PROVS.filter(p => p.includes(upper)).slice(0, 8);
+  if (!matches.length) { box.className = ''; inp.setAttribute('aria-expanded','false'); return; }
+  box.innerHTML = matches.map(p => {
+    const z = PROV_ZONA[p];
+    const label = p.charAt(0) + p.slice(1).toLowerCase();
+    return `<div class="sugg-item" role="option" onmousedown="selectProv('${p}')"><span>${label}</span><span class="sugg-zona">Zona ${z}</span></div>`;
+  }).join('');
+  box.className = 'open';
+  inp.setAttribute('aria-expanded','true');
+}
+function selectProv(p) {
+  clearTimeout(blurTO);
+  state.prov = p; state.zona = PROV_ZONA[p];
+  const label = p.charAt(0) + p.slice(1).toLowerCase();
+  document.getElementById('prov-input').value = label;
+  document.getElementById('prov-input').setAttribute('aria-expanded','false');
+  document.getElementById('cp-input').value = '';
+  document.getElementById('sugg-box').className = '';
+  const zd = document.getElementById('zona-detected');
+  zd.innerHTML = `Zona ${state.zona} detectada — ${ZONAS_DESC[state.zona]}`;
+  zd.className = 'show';
+}
+function onInputChange() {
+  document.getElementById('results').className = '';
+  document.getElementById('error-msg').className = '';
+  document.getElementById('winner-banner').className = '';
+}
+
+// ── VALIDACIÓN EN TIEMPO REAL ──
+function validatePalets() {
+  const inp = document.getElementById('num-palets');
+  const errEl = document.getElementById('err-palets');
+  const v = parseInt(inp.value);
+  if (!inp.value) { inp.classList.remove('input-error','input-ok'); errEl.className='field-inline-error'; return; }
+  if (isNaN(v) || v < 1) {
+    inp.classList.add('input-error'); inp.classList.remove('input-ok');
+    errEl.textContent = '⚠ Mínimo 1 palé'; errEl.className='field-inline-error show';
+  } else {
+    inp.classList.add('input-ok'); inp.classList.remove('input-error');
+    errEl.className='field-inline-error';
+  }
+  validateAltura(); // cross-validate
+}
+
+function validateAltura() {
+  const inpA = document.getElementById('altura-total');
+  const inpP = document.getElementById('num-palets');
+  const errEl = document.getElementById('err-altura');
+  const a = parseFloat(inpA.value);
+  const p = parseInt(inpP.value);
+  if (!inpA.value) { inpA.classList.remove('input-error','input-ok'); errEl.className='field-inline-error'; return; }
+  if (isNaN(a) || a <= 0) {
+    inpA.classList.add('input-error'); inpA.classList.remove('input-ok');
+    errEl.textContent = '⚠ La altura debe ser mayor que 0'; errEl.className='field-inline-error show';
+  } else if (!isNaN(p) && p >= 1 && a > p) {
+    inpA.classList.add('input-error'); inpA.classList.remove('input-ok');
+    errEl.textContent = `⚠ No puede ser mayor que ${p} (nº de palés)`; errEl.className='field-inline-error show';
+  } else {
+    inpA.classList.add('input-ok'); inpA.classList.remove('input-error');
+    errEl.className='field-inline-error';
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// CALCULATIONS
+// ═══════════════════════════════════════════════════════════════
+function calcPalletways(numPalets, alturaTotal, zona) {
+  const t = PW_TARIFA[zona]; if (!t) return null;
+  let palets = [], remaining = alturaTotal;
+  for (let i = 0; i < numPalets; i++) {
+    if (remaining >= 1.0) { palets.push({cm:100,full:true}); remaining = Math.round((remaining-1.0)*100)/100; }
+    else if (remaining > 0) { palets.push({cm:Math.round(remaining*100),full:false}); remaining=0; }
+    else { palets.push({cm:100,full:true}); }
+  }
+  const posturas = Math.floor(numPalets/2);
+  const suelto = numPalets%2===1 ? palets[palets.length-1] : null;
+  const subtotalPosturas = posturas * t.C;
+  let subtotalSuelto=0, sueltoTipo=null;
+  if (suelto) {
+    if (suelto.cm<=80) { sueltoTipo=t.A<=t.B?'Mini Quarter (≤80cm)':'Quarter (≤110cm)'; subtotalSuelto=Math.min(t.A,t.B); }
+    else { sueltoTipo='Quarter Palé (≤110cm)'; subtotalSuelto=t.B; }
+  }
+  const subtotal = subtotalPosturas+subtotalSuelto;
+  const porte = subtotal*CONFIG.PW_PORTE_PCT;
+  return { total:subtotal+porte, subtotal, porte, posturas, suelto:suelto?{tipo:sueltoTipo,cm:suelto.cm,precio:subtotalSuelto}:null, palets, precioPostura:t.C };
+}
+
+function getCevaTarifa(prov) {
+  const upper = prov.toUpperCase();
+  if (CEVA_TARIFA[upper]) return CEVA_TARIFA[upper];
+  for (const key of Object.keys(CEVA_TARIFA)) { if (key.includes(upper)||upper.includes(key)) return CEVA_TARIFA[key]; }
+  return null;
+}
+
+function calcCeva(numPalets, alturaTotal, prov) {
+  const tarifa = getCevaTarifa(prov); if (!tarifa) return null;
+  let palets=[], remaining=alturaTotal, totalKg=0;
+  for (let i=0;i<numPalets;i++) {
+    if (remaining>=1.0){palets.push({altura:1.0,kg:250,full:true});totalKg+=250;remaining=Math.round((remaining-1.0)*100)/100;}
+    else if(remaining>0){const kg=Math.round(remaining*250);palets.push({altura:remaining,kg,full:false});totalKg+=kg;remaining=0;}
+    else{palets.push({altura:1.0,kg:250,full:true});totalKg+=250;}
+  }
+  let basePrice, rangeLabel;
+  if(totalKg<=10){basePrice=tarifa[0];rangeLabel='0–10 kg';}
+  else if(totalKg<=20){basePrice=tarifa[1];rangeLabel='11–20 kg';}
+  else if(totalKg<=30){basePrice=tarifa[2];rangeLabel='21–30 kg';}
+  else if(totalKg<=40){basePrice=tarifa[3];rangeLabel='31–40 kg';}
+  else if(totalKg<=50){basePrice=tarifa[4];rangeLabel='41–50 kg';}
+  else if(totalKg<=60){basePrice=tarifa[5];rangeLabel='51–60 kg';}
+  else if(totalKg<=70){basePrice=tarifa[6];rangeLabel='61–70 kg';}
+  else if(totalKg<=80){basePrice=tarifa[7];rangeLabel='71–80 kg';}
+  else if(totalKg<=90){basePrice=tarifa[8];rangeLabel='81–90 kg';}
+  else if(totalKg<=100){basePrice=tarifa[9];rangeLabel='91–100 kg';}
+  else if(totalKg<=500){basePrice=totalKg*tarifa[10];rangeLabel=`101–500 kg (${tarifa[10]}€/kg × ${totalKg}kg)`;}
+  else if(totalKg<=1000){basePrice=totalKg*tarifa[11];rangeLabel=`501–1000 kg (${tarifa[11]}€/kg × ${totalKg}kg)`;}
+  else if(totalKg<=2000){basePrice=totalKg*tarifa[12];rangeLabel=`1001–2000 kg (${tarifa[12]}€/kg × ${totalKg}kg)`;}
+  else{basePrice=totalKg*tarifa[13];rangeLabel=`2001+ kg (${tarifa[13]}€/kg × ${totalKg}kg)`;}
+  if(basePrice===null||basePrice===undefined) return null;
+  const surcharge=basePrice*CONFIG.CEVA_RECARGO_PCT;
+  return {total:basePrice+surcharge,basePrice,surcharge,totalKg,rangeLabel,palets};
+}
+
+// ═══════════════════════════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════════════════════════
+function fmt(n) { return n.toFixed(2).replace('.', ',') + ' €'; }
+
+function renderPW(res, isWinner) {
+  document.getElementById('pw-price').innerHTML = res.total.toFixed(2).replace('.',',')+'<span class="price-eur">€</span>';
+  document.getElementById('pw-card').className = 'result-card pw'+(isWinner?' winner':'');
+  let html='';
+  html+=`<div class="breakdown-line"><span class="bl-label">Posturas (${res.posturas} × ${fmt(res.precioPostura)})</span><span class="bl-val">${fmt(res.subtotal-(res.suelto?.precio||0))}</span></div>`;
+  if(res.suelto) html+=`<div class="breakdown-line"><span class="bl-label">Palé suelto — ${res.suelto.tipo} (${res.suelto.cm}cm)</span><span class="bl-val">${fmt(res.suelto.precio)}</span></div>`;
+  html+=`<div class="breakdown-line"><span class="bl-label">Subtotal</span><span class="bl-val">${fmt(res.subtotal)}</span></div>`;
+  html+=`<div class="breakdown-line"><span class="bl-label">Porte adicional (+${(CONFIG.PW_PORTE_PCT*100).toFixed(1)}%)</span><span class="bl-val">+${fmt(res.porte)}</span></div>`;
+  html+=`<div class="breakdown-line total"><span class="bl-label">TOTAL</span><span class="bl-val">${fmt(res.total)}</span></div>`;
+  document.getElementById('pw-breakdown').innerHTML=html;
+  let vis='';
+  for(let i=0;i<res.palets.length;i+=2){
+    const p1=res.palets[i],p2=res.palets[i+1];
+    if(p2) vis+=`<div class="palet-box full-p"><div class="pb-icon">📦📦</div><div class="pb-label">POSTURA<br>${p1.cm}+${p2.cm}cm</div></div>`;
+    else vis+=`<div class="palet-box partial-p"><div class="pb-icon">📦</div><div class="pb-label">SUELTO<br>${p1.cm}cm<br>${p1.cm<=80?'Mini Q.':'Quarter'}</div></div>`;
+  }
+  document.getElementById('pw-visual').innerHTML=vis;
+}
+
+function renderCEVA(res, isWinner) {
+  document.getElementById('ceva-price').innerHTML = res.total.toFixed(2).replace('.',',')+'<span class="price-eur">€</span>';
+  document.getElementById('ceva-card').className = 'result-card ceva'+(isWinner?' winner':'');
+  let html='';
+  html+=`<div class="breakdown-line"><span class="bl-label">Peso total</span><span class="bl-val">${res.totalKg} kg</span></div>`;
+  html+=`<div class="breakdown-line"><span class="bl-label">Rango aplicado</span><span class="bl-val">${res.rangeLabel}</span></div>`;
+  html+=`<div class="breakdown-line"><span class="bl-label">Precio base</span><span class="bl-val">${fmt(res.basePrice)}</span></div>`;
+  html+=`<div class="breakdown-line"><span class="bl-label">Recargo fijo (+${(CONFIG.CEVA_RECARGO_PCT*100).toFixed(1)}%)</span><span class="bl-val">+${fmt(res.surcharge)}</span></div>`;
+  html+=`<div class="breakdown-line total"><span class="bl-label">TOTAL</span><span class="bl-val">${fmt(res.total)}</span></div>`;
+  document.getElementById('ceva-breakdown').innerHTML=html;
+  document.getElementById('ceva-detail').innerHTML=res.palets.map((p,i)=>`Palé ${i+1}: ${p.full?'100cm (completo)':`${Math.round(p.altura*100)}cm (parcial)`} → <span>${p.kg} kg</span>`).join('<br>');
+}
+
+// ═══════════════════════════════════════════════════════════════
+
+
+// ── calcular.js ──
+// ═══════════════════════════════════════════════════════════════
+// calcular.js — Lógica principal de cálculo palés y exportación
+// ═══════════════════════════════════════════════════════════════
+// MAIN CALCULATE
+// ═══════════════════════════════════════════════════════════════
+function calcular() {
+  const errEl = document.getElementById('error-msg');
+  errEl.className='';
+  const numPalets = parseInt(document.getElementById('num-palets').value);
+  const alturaTotal = parseFloat(document.getElementById('altura-total').value);
+  if(!numPalets||numPalets<1){errEl.innerHTML='⚠ Introduce el número de palés.';errEl.className='show';return;}
+  if(!alturaTotal||alturaTotal<=0){errEl.innerHTML='⚠ Introduce la altura total del envío.';errEl.className='show';return;}
+  if(alturaTotal>numPalets){errEl.innerHTML=`⚠ La altura total (${alturaTotal}) no puede ser mayor que el número de palés (${numPalets}).`;errEl.className='show';return;}
+
+  // ── PORTUGAL ──
+  if (state.country === 'PRT') {
+    if (!state.cpPrt) { errEl.innerHTML='⚠ Introduce el código postal de Portugal.'; errEl.className='show'; return; }
+    const cp2 = parseInt(state.cpPrt.substring(0,2));
+    if (!CEVA_PRT[cp2]) { errEl.innerHTML='⚠ Código postal no encontrado en la tabla Portugal.'; errEl.className='show'; return; }
+
+    const pwZona = getPwZonaPrt(state.cpPrt);
+    const pwRes = calcPalletways(numPalets, alturaTotal, pwZona);
+    const cevaRes = calcCevaPrt(numPalets, alturaTotal, state.cpPrt);
+
+    if(!pwRes&&!cevaRes){errEl.innerHTML='⚠ No se encontraron tarifas.';errEl.className='show';return;}
+
+    lastPwRes=pwRes; lastCevaRes=cevaRes;
+    lastInput={palets:numPalets,altura:alturaTotal,prov:`Portugal CP ${state.cpPrt}xx`,zona:pwZona,country:'PRT'};
+
+    const pwWins = pwRes&&cevaRes ? pwRes.total<=cevaRes.total : !!pwRes;
+    if(pwRes) renderPW(pwRes, pwWins);
+    if(cevaRes) renderCEVA(cevaRes, !pwWins);
+
+    const saving = pwRes&&cevaRes ? Math.abs(pwRes.total-cevaRes.total) : 0;
+    const winner = pwWins?'Palletways':'CEVA';
+    document.getElementById('winner-name').textContent=`${winner} es más barato`;
+    document.getElementById('winner-desc').textContent=saving>0.01?`Ahorro de ${fmt(saving)} respecto a ${pwWins?'CEVA':'Palletways'}`:'Ambos tienen el mismo precio';
+    document.getElementById('saving-pill').textContent=saving>0.01?`−${fmt(saving)}`:'=';
+    document.getElementById('winner-banner').className='show';
+    document.getElementById('results').className='show';
+    document.getElementById('results').scrollIntoView({behavior:'smooth',block:'start'});
+
+    const now=new Date();
+    addToHistorial({
+      hora:now.toTimeString().substring(0,5),
+      provincia:`Portugal CP${state.cpPrt}`, zona:pwZona,
+      palets:numPalets, altura:alturaTotal,
+      pw:pwRes?pwRes.total:0, ceva:cevaRes?cevaRes.total:0,
+      winner, ahorro:saving
+    });
+    return;
+  }
+
+  // ── ESPAÑA ──
+  if(!state.prov||!state.zona){errEl.innerHTML='⚠ Selecciona una provincia de destino.';errEl.className='show';return;}
+
+  const pwRes = calcPalletways(numPalets, alturaTotal, state.zona);
+  const cevaRes = calcCeva(numPalets, alturaTotal, state.prov);
+  if(!pwRes&&!cevaRes){errEl.innerHTML='⚠ No se encontraron tarifas para esta provincia.';errEl.className='show';return;}
+
+  lastPwRes=pwRes; lastCevaRes=cevaRes;
+  lastInput={palets:numPalets,altura:alturaTotal,prov:state.prov,zona:state.zona,country:'ESP'};
+
+  const pwWins = pwRes&&cevaRes ? pwRes.total<=cevaRes.total : !!pwRes;
+  if(pwRes) renderPW(pwRes, pwWins);
+  if(cevaRes) renderCEVA(cevaRes, !pwWins);
+
+  const saving = pwRes&&cevaRes ? Math.abs(pwRes.total-cevaRes.total) : 0;
+  const winner = pwWins?'Palletways':'CEVA';
+  document.getElementById('winner-name').textContent=`${winner} es más barato`;
+  document.getElementById('winner-desc').textContent=saving>0.01?`Ahorro de ${fmt(saving)} respecto a ${pwWins?'CEVA':'Palletways'}`:'Ambos tienen el mismo precio';
+  document.getElementById('saving-pill').textContent=saving>0.01?`−${fmt(saving)}`:'=';
+  document.getElementById('winner-banner').className='show';
+  document.getElementById('results').className='show';
+  document.getElementById('results').scrollIntoView({behavior:'smooth',block:'start'});
+
+  const now=new Date();
+  addToHistorial({
+    hora:now.toTimeString().substring(0,5), provincia:state.prov, zona:state.zona,
+    palets:numPalets, altura:alturaTotal,
+    pw:pwRes?pwRes.total:0, ceva:cevaRes?cevaRes.total:0,
+    winner, ahorro:saving
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════
+// EXPORT FUNCTIONS
+// ═══════════════════════════════════════════════════════════════
+function getExportChoice() {
+  // Returns 'csv', 'excel', or null
+  return null; // Called directly from buttons, no need for choice dialog
+}
+
+function exportarCSV() {
+  if(!lastPwRes||!lastCevaRes||!lastInput) return;
+  const rows = [
+    ['Transportista','Total (€)','Subtotal (€)','Recargo (€)','Provincia','Zona','Palés','Altura'],
+    ['Palletways', lastPwRes.total.toFixed(2), lastPwRes.subtotal.toFixed(2), lastPwRes.porte.toFixed(2), lastInput.prov, lastInput.zona, lastInput.palets, lastInput.altura],
+    ['CEVA', lastCevaRes.total.toFixed(2), lastCevaRes.basePrice.toFixed(2), lastCevaRes.surcharge.toFixed(2), lastInput.prov, lastInput.zona, lastInput.palets, lastInput.altura],
+  ];
+  downloadCSV(rows, `porte_${lastInput.prov}_${new Date().toISOString().split('T')[0]}.csv`);
+}
+
+function exportarExcel() {
+  if(!lastPwRes||!lastCevaRes||!lastInput) return;
+  const rows = [
+    ['Transportista','Total (€)','Subtotal (€)','Recargo (€)','Provincia','Zona','Palés','Altura'],
+    ['Palletways', lastPwRes.total.toFixed(2), lastPwRes.subtotal.toFixed(2), lastPwRes.porte.toFixed(2), lastInput.prov, lastInput.zona, lastInput.palets, lastInput.altura],
+    ['CEVA', lastCevaRes.total.toFixed(2), lastCevaRes.basePrice.toFixed(2), lastCevaRes.surcharge.toFixed(2), lastInput.prov, lastInput.zona, lastInput.palets, lastInput.altura],
+  ];
+  downloadXLS(rows, `porte_${lastInput.prov}_${new Date().toISOString().split('T')[0]}.xls`);
+}
+
+function exportarHistorialCSV() {
+  const hist = getHistorial();
+  const day = getTodayKey();
+  const items = hist[day]||[];
+  if(!items.length){alert('No hay datos en el historial de hoy.');return;}
+  const rows=[['Hora','Provincia','Zona','Palés','Altura','PW (€)','CEVA (€)','Ganador','Ahorro (€)']];
+  items.forEach(it=>rows.push([it.hora,it.provincia,it.zona,it.palets,it.altura,it.pw.toFixed(2),it.ceva.toFixed(2),it.winner,(it.ahorro||0).toFixed(2)]));
+  downloadCSV(rows, `historial_${day}.csv`);
+}
+
+function exportarHistorialExcel() {
+  const hist = getHistorial();
+  const day = getTodayKey();
+  const items = hist[day]||[];
+  if(!items.length){alert('No hay datos en el historial de hoy.');return;}
+  const rows=[['Hora','Provincia','Zona','Palés','Altura','PW (€)','CEVA (€)','Ganador','Ahorro (€)']];
+  items.forEach(it=>rows.push([it.hora,it.provincia,it.zona,it.palets,it.altura,it.pw.toFixed(2),it.ceva.toFixed(2),it.winner,(it.ahorro||0).toFixed(2)]));
+  downloadXLS(rows, `historial_${day}.xls`);
+}
+
+function downloadCSV(rows, filename) {
+  const content = rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob(['\uFEFF'+content],{type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href=url; a.download=filename; a.click();
+  URL.revokeObjectURL(url);
+}
+
+function downloadXLS(rows, filename) {
+  let xml = `<?xml version="1.0"?><Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"><Worksheet ss:Name="Datos"><Table>`;
+  rows.forEach(row=>{
+    xml+='<Row>';
+    row.forEach(cell=>{ xml+=`<Cell><Data ss:Type="String">${String(cell).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</Data></Cell>`; });
+    xml+='</Row>';
+  });
+  xml+='</Table></Worksheet></Workbook>';
+  const blob=new Blob([xml],{type:'application/vnd.ms-excel;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download=filename;a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ═══════════════════════════════════════════════════════════════
+
+
+// ── cajas.js ──
+// ═══════════════════════════════════════════════════════════════
+// cajas.js — Modo cajas: cálculo, UI y exportación
+// ═══════════════════════════════════════════════════════════════
+// MODE SWITCHING
+// ═══════════════════════════════════════════════════════════════
+let currentMode = 'palets';
+
+function setMode(mode) {
+  currentMode = mode;
+  document.getElementById('mode-palets').style.display = mode==='palets' ? '' : 'none';
+  document.getElementById('mode-cajas').style.display  = mode==='cajas'  ? '' : 'none';
+  document.getElementById('tab-palets').className = 'mode-tab' + (mode==='palets'?' active-palets':'');
+  document.getElementById('tab-cajas').className  = 'mode-tab' + (mode==='cajas' ?' active-cajas':'');
+  if (mode==='cajas') renderCajaVisual();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// CAJAS STATE & HELPERS
+// ═══════════════════════════════════════════════════════════════
+let stateCajas = { prov: null };
+let blurCajasTO;
+let lastCajasRes = null;
+
+// ── BREAKPOINTS peso CEVA España (índices 0–9 precio fijo, 10–13 €/kg) ──
+const KG_BREAKS = [10,20,30,40,50,60,70,80,90,100];
+
+function calcCevaByKg(prov, totalKg) {
+  const upper = prov.toUpperCase();
+  let tarifa = CEVA_ESP[upper];
+  if (!tarifa) {
+    for (const k of Object.keys(CEVA_ESP)) {
+      if (k.includes(upper) || upper.includes(k)) { tarifa = CEVA_ESP[k]; break; }
+    }
+  }
+  if (!tarifa) return null;
+
+  let basePrice, rangeLabel;
+  const fixedIdx = KG_BREAKS.findIndex(b => totalKg <= b);
+  if (fixedIdx !== -1) {
+    basePrice = tarifa[fixedIdx];
+    rangeLabel = `≤${KG_BREAKS[fixedIdx]} kg → precio fijo`;
+  } else if (totalKg <= 500)  { basePrice = totalKg * tarifa[10]; rangeLabel = `${totalKg} kg × ${tarifa[10]}€/kg (101–500)`; }
+  else if (totalKg <= 1000)   { basePrice = totalKg * tarifa[11]; rangeLabel = `${totalKg} kg × ${tarifa[11]}€/kg (501–1000)`; }
+  else if (totalKg <= 2000)   { basePrice = totalKg * tarifa[12]; rangeLabel = `${totalKg} kg × ${tarifa[12]}€/kg (1001–2000)`; }
+  else                         { basePrice = totalKg * tarifa[13]; rangeLabel = `${totalKg} kg × ${tarifa[13]}€/kg (2001+)`; }
+
+  if (basePrice == null) return null;
+  const surcharge = basePrice * CONFIG.CEVA_RECARGO_PCT;
+  return { total: basePrice + surcharge, basePrice, surcharge, totalKg, rangeLabel };
+}
+
+function calcularCajas() {
+  const errEl = document.getElementById('error-cajas-msg');
+  errEl.style.display = 'none';
+
+  const numCajas = parseInt(document.getElementById('num-cajas').value);
+  if (!numCajas || numCajas < 1) { errEl.textContent='⚠ Introduce el número de cajas.'; errEl.style.display='block'; return; }
+  if (numCajas > CONFIG.CAJAS_MAX) { errEl.textContent=`⚠ Máximo ${CONFIG.CAJAS_MAX} cajas.`; errEl.style.display='block'; return; }
+  if (!stateCajas.prov) { errEl.textContent='⚠ Selecciona una provincia de destino.'; errEl.style.display='block'; return; }
+
+  // Lógica: nº cajas × 0.15 × 250 = kg
+  const altura = numCajas * CONFIG.CAJAS_ALTURA_POR_CAJA;
+  const totalKg = Math.round(altura * CONFIG.CAJAS_KG_POR_UD_ALTURA * 100) / 100;
+  const res = calcCevaByKg(stateCajas.prov, totalKg);
+
+  if (!res) { errEl.textContent='⚠ No se encontró tarifa para esta provincia.'; errEl.style.display='block'; return; }
+
+  lastCajasRes = { ...res, numCajas, altura, prov: stateCajas.prov };
+
+  // Render
+  document.getElementById('ceva-cajas-price').innerHTML =
+    res.total.toFixed(2).replace('.',',') + '<span class="price-eur">€</span>';
+
+  let html = '';
+  html += `<div class="breakdown-line"><span class="bl-label">Cajas</span><span class="bl-val">${numCajas} × 0,15 = ${altura.toFixed(2)} uds</span></div>`;
+  html += `<div class="breakdown-line"><span class="bl-label">Peso total</span><span class="bl-val">${altura.toFixed(2)} × 250 = ${totalKg} kg</span></div>`;
+  html += `<div class="breakdown-line"><span class="bl-label">Rango aplicado</span><span class="bl-val">${res.rangeLabel}</span></div>`;
+  html += `<div class="breakdown-line"><span class="bl-label">Precio base</span><span class="bl-val">${fmt(res.basePrice)}</span></div>`;
+  html += `<div class="breakdown-line"><span class="bl-label">Recargo (+${(CONFIG.CEVA_RECARGO_PCT*100).toFixed(1)}%)</span><span class="bl-val">+${fmt(res.surcharge)}</span></div>`;
+  html += `<div class="breakdown-line total"><span class="bl-label">TOTAL</span><span class="bl-val">${fmt(res.total)}</span></div>`;
+  document.getElementById('ceva-cajas-breakdown').innerHTML = html;
+  document.getElementById('results-cajas').style.display = 'block';
+  document.getElementById('results-cajas').scrollIntoView({behavior:'smooth', block:'start'});
+
+  // Historial
+  const now = new Date();
+  addToHistorial({
+    hora: now.toTimeString().substring(0,5),
+    provincia: stateCajas.prov, zona: '—',
+    palets: `${numCajas} cajas`, altura,
+    pw: 0, ceva: res.total,
+    winner: 'CEVA', ahorro: 0
+  });
+}
+
+// Caja counter
+function cambiarCajas(delta) {
+  const inp = document.getElementById('num-cajas');
+  let v = (parseInt(inp.value) || 0) + delta;
+  v = Math.max(1, Math.min(CONFIG.CAJAS_MAX, v));
+  inp.value = v;
+  onCajasInput();
+}
+
+function onCajasInput() {
+  const v = parseInt(document.getElementById('num-cajas').value) || 0;
+  document.getElementById('max-warn').className = 'max-warn' + (v >= CONFIG.CAJAS_MAX ? ' show' : '');
+  document.getElementById('results-cajas').style.display = 'none';
+  renderCajaVisual();
+  // Update peso info
+  const kg = Math.round(v * CONFIG.CAJAS_ALTURA_POR_CAJA * CONFIG.CAJAS_KG_POR_UD_ALTURA * 100) / 100;
+  document.getElementById('cajas-peso-info').innerHTML =
+    `<span style="font-family:var(--mono);font-size:0.75rem;color:var(--muted)">Altura total: <span style="color:var(--ceva-light)">${(v*CONFIG.CAJAS_ALTURA_POR_CAJA).toFixed(2)} uds</span> · Peso estimado: <span style="color:var(--ceva-light)">${kg} kg</span></span>`;
+}
+
+function renderCajaVisual() {
+  const v = parseInt(document.getElementById('num-cajas').value) || 0;
+  let html = '';
+  for (let i = 1; i <= CONFIG.CAJAS_MAX; i++) {
+    html += `<div class="caja-icon${i > v ? ' dim' : ''}">📦</div>`;
+  }
+  document.getElementById('caja-visual').innerHTML = html;
+}
+
+// Provincia search for cajas
+function onProvCajasInput() {
+  stateCajas.prov = null;
+  document.getElementById('zona-cajas-detected').className='';
+  document.getElementById('cp-cajas-input').value='';
+  showCajasSugg(document.getElementById('prov-cajas-input').value);
+}
+function onProvCajasFocus() { showCajasSugg(document.getElementById('prov-cajas-input').value); }
+function onProvCajasBlur() { blurCajasTO = setTimeout(()=>{ document.getElementById('sugg-cajas-box').className=''; }, 200); }
+
+function showCajasSugg(q) {
+  const box = document.getElementById('sugg-cajas-box');
+  if (!q || q.length < 1) { box.className=''; return; }
+  const upper = q.toUpperCase().trim();
+  const matches = ALL_PROVS.filter(p => p.includes(upper)).slice(0, 8);
+  if (!matches.length) { box.className=''; return; }
+  box.innerHTML = matches.map(p => {
+    const label = p.charAt(0) + p.slice(1).toLowerCase();
+    return `<div class="sugg-item" onmousedown="selectProvCajas('${p}')"><span>${label}</span><span class="sugg-zona" style="border-color:var(--ceva);color:var(--ceva-light)">CEVA</span></div>`;
+  }).join('');
+  box.className = 'open';
+}
+
+function selectProvCajas(p) {
+  clearTimeout(blurCajasTO);
+  stateCajas.prov = p;
+  const label = p.charAt(0) + p.slice(1).toLowerCase();
+  document.getElementById('prov-cajas-input').value = label;
+  document.getElementById('cp-cajas-input').value = '';
+  document.getElementById('sugg-cajas-box').className = '';
+  const zd = document.getElementById('zona-cajas-detected');
+  zd.innerHTML = `Provincia seleccionada: ${label}`;
+  zd.className = 'show';
+}
+
+function onCpCajasInput() {
+  const val = document.getElementById('cp-cajas-input').value.trim();
+  if (val.length < 2) return;
+  const prefix = val.substring(0,2);
+  const prov = CP_PROV[prefix];
+  if (!prov) return;
+  stateCajas.prov = prov;
+  const label = prov.charAt(0) + prov.slice(1).toLowerCase();
+  document.getElementById('prov-cajas-input').value = label;
+  document.getElementById('sugg-cajas-box').className = '';
+  const zd = document.getElementById('zona-cajas-detected');
+  zd.innerHTML = `📮 CP ${val} → ${label}`;
+  zd.className = 'show';
+}
+
+// Export cajas
+function exportarCajasCSV() {
+  if (!lastCajasRes) return;
+  const r = lastCajasRes;
+  const rows = [
+    ['Transportista','Total (€)','Base (€)','Recargo (€)','Provincia','Cajas','Peso (kg)'],
+    ['CEVA', r.total.toFixed(2), r.basePrice.toFixed(2), r.surcharge.toFixed(2), r.prov, r.numCajas, r.totalKg]
+  ];
+  downloadCSV(rows, `cajas_${r.prov}_${new Date().toISOString().split('T')[0]}.csv`);
+}
+function exportarCajasExcel() {
+  if (!lastCajasRes) return;
+  const r = lastCajasRes;
+  const rows = [
+    ['Transportista','Total (€)','Base (€)','Recargo (€)','Provincia','Cajas','Peso (kg)'],
+    ['CEVA', r.total.toFixed(2), r.basePrice.toFixed(2), r.surcharge.toFixed(2), r.prov, r.numCajas, r.totalKg]
+  ];
+  downloadXLS(rows, `cajas_${r.prov}_${new Date().toISOString().split('T')[0]}.xls`);
+}
+
+// Init
+updateHistorialUI();
+renderCajaVisual();
+
+
+// ── Service Worker (requiere servidor HTTPS) ──
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js")
+      .catch(() => {});
+  });
+}
+</script>
+</main>
+</body>
+</html>
