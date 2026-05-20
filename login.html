@@ -105,6 +105,44 @@ html,body{height:100%;background:var(--bg);font-family:'Space Grotesk',sans-seri
   animation:spin 0.75s linear infinite;
 }
 
+/* ── DIVIDER ── */
+.divider{
+  display:flex;align-items:center;gap:10px;
+  margin:18px 0 0;
+  font-size:0.6rem;letter-spacing:0.2em;color:rgba(255,255,255,0.18);text-transform:uppercase;
+}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:rgba(255,255,255,0.08);}
+
+/* ── EMAIL FORM ── */
+.email-form{margin-top:14px;display:flex;flex-direction:column;gap:10px;}
+.field{
+  display:flex;flex-direction:column;gap:5px;
+}
+.field input{
+  width:100%;padding:12px 14px;
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.1);border-radius:10px;
+  color:#fff;font-family:'Space Grotesk',sans-serif;font-size:0.86rem;
+  outline:none;transition:border-color 0.2s,box-shadow 0.2s;
+}
+.field input::placeholder{color:rgba(255,255,255,0.25);}
+.field input:focus{border-color:rgba(0,255,136,0.35);box-shadow:0 0 0 3px rgba(0,255,136,0.06);}
+.btn-email{
+  width:100%;padding:13px 20px;margin-top:2px;
+  background:linear-gradient(135deg,rgba(0,255,136,0.12),rgba(123,92,247,0.12));
+  border:1px solid rgba(0,255,136,0.25);border-radius:12px;
+  color:#fff;font-family:'Space Grotesk',sans-serif;
+  font-size:0.88rem;font-weight:600;letter-spacing:0.02em;
+  cursor:pointer;transition:background 0.2s,border-color 0.2s,box-shadow 0.2s,transform 0.15s;
+}
+.btn-email:hover:not(:disabled){
+  border-color:rgba(0,255,136,0.5);
+  box-shadow:0 0 20px rgba(0,255,136,0.1);
+  transform:translateY(-1px);
+}
+.btn-email:active:not(:disabled){transform:translateY(0);}
+.btn-email:disabled{opacity:0.45;cursor:not-allowed;transform:none;}
+
 /* ── ERROR ── */
 .error-box{
   margin-top:14px;padding:10px 14px;
@@ -161,6 +199,18 @@ html,body{height:100%;background:var(--bg);font-family:'Space Grotesk',sans-seri
       <span class="btn-label" id="btn-label">Continuar con Google</span>
     </button>
 
+    <div class="divider">o</div>
+
+    <div class="email-form">
+      <div class="field">
+        <input type="email" id="inp-email" placeholder="Correo electrónico" autocomplete="email" inputmode="email">
+      </div>
+      <div class="field">
+        <input type="password" id="inp-pass" placeholder="Contraseña" autocomplete="current-password">
+      </div>
+      <button class="btn-email" id="btn-email">Iniciar sesión</button>
+    </div>
+
     <div class="error-box" id="error-box"></div>
   </div>
 
@@ -170,7 +220,7 @@ html,body{height:100%;background:var(--bg);font-family:'Space Grotesk',sans-seri
 
 <script type="module">
 import { initializeApp }        from 'https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js';
-import { getAuth, signInWithPopup, onAuthStateChanged, GoogleAuthProvider, signOut }
+import { getAuth, signInWithPopup, signInWithEmailAndPassword, onAuthStateChanged, GoogleAuthProvider, signOut }
                                  from 'https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js';
 import { getFirestore, doc, getDoc }
                                  from 'https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js';
@@ -204,15 +254,19 @@ function showError(msg) {
 }
 
 function setLoading(on) {
-  const btn   = document.getElementById('btn-google');
+  const btnG  = document.getElementById('btn-google');
+  const btnE  = document.getElementById('btn-email');
   const label = document.getElementById('btn-label');
-  btn.disabled = on;
+  btnG.disabled = on;
+  btnE.disabled = on;
   if (on) {
-    btn.insertAdjacentHTML('afterbegin', '<div class="spinner"></div>');
+    btnG.insertAdjacentHTML('afterbegin', '<div class="spinner"></div>');
     label.textContent = 'Verificando acceso…';
+    btnE.textContent  = 'Verificando…';
   } else {
-    btn.querySelector('.spinner')?.remove();
+    btnG.querySelector('.spinner')?.remove();
     label.textContent = 'Continuar con Google';
+    btnE.textContent  = 'Iniciar sesión';
   }
 }
 
@@ -241,6 +295,43 @@ document.getElementById('btn-google').addEventListener('click', async () => {
       showError('Error al iniciar sesión. Inténtalo de nuevo.');
     }
   }
+});
+
+// ── Login con email/contraseña ──
+document.getElementById('btn-email').addEventListener('click', async () => {
+  const email = document.getElementById('inp-email').value.trim();
+  const pass  = document.getElementById('inp-pass').value;
+  document.getElementById('error-box').classList.remove('show');
+
+  if (!email || !pass) {
+    showError('Introduce correo y contraseña.');
+    return;
+  }
+
+  setLoading(true);
+  try {
+    const result = await signInWithEmailAndPassword(auth, email, pass);
+    const snap   = await getDoc(doc(db, 'authorized_users', result.user.email));
+    if (snap.exists()) {
+      goTo('splash.html');
+    } else {
+      await signOut(auth);
+      setLoading(false);
+      showError('⚠ Tu cuenta no tiene acceso. Contacta con el administrador.');
+    }
+  } catch (err) {
+    setLoading(false);
+    if (err.code === 'auth/invalid-credential' || err.code === 'auth/wrong-password' || err.code === 'auth/user-not-found') {
+      showError('Correo o contraseña incorrectos.');
+    } else {
+      showError('Error al iniciar sesión. Inténtalo de nuevo.');
+    }
+  }
+});
+
+// Enviar con Enter desde los inputs
+document.getElementById('inp-pass').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('btn-email').click();
 });
 </script>
 
