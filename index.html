@@ -13,8 +13,77 @@
 <link rel="apple-touch-icon" href="icon-192.png">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
+<style>
+#auth-overlay{
+  position:fixed;inset:0;z-index:99999;
+  background:#0e0e0e;
+  display:flex;align-items:center;justify-content:center;
+  transition:opacity 0.4s ease;
+}
+#auth-overlay.fade-out{opacity:0;pointer-events:none;}
+.auth-spinner{
+  width:32px;height:32px;
+  border:3px solid rgba(41,121,255,0.15);
+  border-top-color:#2979FF;
+  border-radius:50%;
+  animation:authSpin 0.8s linear infinite;
+}
+@keyframes authSpin{to{transform:rotate(360deg)}}
+.btn-signout{
+  background:transparent;border:1px solid rgba(255,255,255,0.12);
+  border-radius:6px;color:rgba(255,255,255,0.45);
+  font-family:var(--mono,monospace);font-size:0.7rem;letter-spacing:0.1em;
+  padding:5px 11px;cursor:pointer;transition:border-color 0.2s,color 0.2s;
+}
+.btn-signout:hover{border-color:rgba(255,82,82,0.4);color:#ff8a80;}
+</style>
 </head>
 <body>
+
+<!-- Auth guard: oculta la app hasta verificar sesión -->
+<div id="auth-overlay"><div class="auth-spinner"></div></div>
+
+<script type="module">
+import { initializeApp }   from 'https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js';
+import { getAuth, onAuthStateChanged, signOut }
+                            from 'https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js';
+import { getFirestore, doc, getDoc }
+                            from 'https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js';
+
+const firebaseConfig = {
+  apiKey:            "AIzaSyDuOUlvxhl7VHhua6HuxfMv_yf4kUqfCoo",
+  authDomain:        "transporte-99482.firebaseapp.com",
+  projectId:         "transporte-99482",
+  storageBucket:     "transporte-99482.firebasestorage.app",
+  messagingSenderId: "293811751597",
+  appId:             "1:293811751597:web:5a7a9c7becf499897dd424"
+};
+
+const app  = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db   = getFirestore(app);
+
+onAuthStateChanged(auth, async user => {
+  const overlay = document.getElementById('auth-overlay');
+  if (!user) {
+    window.location.replace('login.html');
+    return;
+  }
+  const snap = await getDoc(doc(db, 'authorized_users', user.email));
+  if (!snap.exists()) {
+    await signOut(auth);
+    window.location.replace('login.html');
+    return;
+  }
+  overlay.classList.add('fade-out');
+  setTimeout(() => overlay.remove(), 400);
+});
+
+window.signOutUser = async function() {
+  await signOut(auth);
+  window.location.href = 'login.html';
+};
+</script>
 
 <header>
   <div class="logo-area">
@@ -28,6 +97,7 @@
     <div class="badge badge-pw">PALLETWAYS</div>
     <div class="badge badge-ceva">CEVA</div>
     <button class="btn-historial-toggle" onclick="toggleHistorial()">📋 HISTORIAL <span id="hist-count-badge"></span></button>
+    <button class="btn-signout" onclick="signOutUser()">Salir</button>
   </div>
 </header>
 
