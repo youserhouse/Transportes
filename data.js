@@ -17,7 +17,7 @@ const CONFIG = {
   CAJAS_MAX: 14,
 };
 
-// ── PALLETWAYS: tarifas por zona (A=mini quarter ≤80cm, B=quarter ≤110cm, C=postura) ──
+// ── PALLETWAYS: tarifas por zona (A=mini quarter ≤80cm, B=quarter/S.E.Light ≤220cm, C=postura) ──
 const PW_TARIFA = {
   1:{A:34.33,B:28.00,C:38.00}, 2:{A:35.56,B:38.03,C:41.97}, 3:{A:36.98,B:39.45,C:43.94},
   4:{A:40.68,B:43.14,C:47.15}, 5:{A:42.53,B:44.99,C:49.24}, 6:{A:43.75,B:48.07,C:53.56},

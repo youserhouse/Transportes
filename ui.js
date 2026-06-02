@@ -93,9 +93,9 @@ function validateAltura() {
   if (isNaN(a) || a <= 0) {
     inpA.classList.add('input-error'); inpA.classList.remove('input-ok');
     errEl.textContent = '⚠ La altura debe ser mayor que 0'; errEl.className='field-inline-error show';
-  } else if (!isNaN(p) && p >= 1 && a > p) {
+  } else if (!isNaN(p) && p >= 1 && a > p * 2.2) {
     inpA.classList.add('input-error'); inpA.classList.remove('input-ok');
-    errEl.textContent = `⚠ No puede ser mayor que ${p} (nº de palés)`; errEl.className='field-inline-error show';
+    errEl.textContent = `⚠ Máximo ${(p * 2.2).toFixed(1)} para ${p} palé${p>1?'s':''} (220 cm/palé)`; errEl.className='field-inline-error show';
   } else {
     inpA.classList.add('input-ok'); inpA.classList.remove('input-error');
     errEl.className='field-inline-error';
@@ -109,9 +109,19 @@ function calcPalletways(numPalets, alturaTotal, zona) {
   const t = PW_TARIFA[zona]; if (!t) return null;
   let palets = [], remaining = alturaTotal;
   for (let i = 0; i < numPalets; i++) {
-    if (remaining >= 1.0) { palets.push({cm:100,full:true}); remaining = Math.round((remaining-1.0)*100)/100; }
-    else if (remaining > 0) { palets.push({cm:Math.round(remaining*100),full:false}); remaining=0; }
-    else { palets.push({cm:100,full:true}); }
+    if (i === numPalets - 1) {
+      const cm = remaining > 0 ? Math.round(remaining * 100) : 100;
+      palets.push({cm, full: remaining >= 1.0});
+      remaining = 0;
+    } else if (remaining >= 1.0) {
+      palets.push({cm:100, full:true});
+      remaining = Math.round((remaining - 1.0) * 100) / 100;
+    } else if (remaining > 0) {
+      palets.push({cm:Math.round(remaining*100), full:false});
+      remaining = 0;
+    } else {
+      palets.push({cm:100, full:true});
+    }
   }
   const posturas = Math.floor(numPalets/2);
   const suelto = numPalets%2===1 ? palets[palets.length-1] : null;
@@ -119,7 +129,8 @@ function calcPalletways(numPalets, alturaTotal, zona) {
   let subtotalSuelto=0, sueltoTipo=null;
   if (suelto) {
     if (suelto.cm<=80) { sueltoTipo=t.A<=t.B?'Mini Quarter (≤80cm)':'Quarter (≤110cm)'; subtotalSuelto=Math.min(t.A,t.B); }
-    else { sueltoTipo='Quarter Palé (≤110cm)'; subtotalSuelto=t.B; }
+    else if (suelto.cm<=110) { sueltoTipo='Quarter Palé (≤110cm)'; subtotalSuelto=t.B; }
+    else { sueltoTipo='Super Euro Light (≤220cm)'; subtotalSuelto=t.B; }
   }
   const subtotal = subtotalPosturas+subtotalSuelto;
   const porte = subtotal*CONFIG.PW_PORTE_PCT;
@@ -180,7 +191,7 @@ function renderPW(res, isWinner) {
   for(let i=0;i<res.palets.length;i+=2){
     const p1=res.palets[i],p2=res.palets[i+1];
     if(p2) vis+=`<div class="palet-box full-p"><div class="pb-icon">📦📦</div><div class="pb-label">POSTURA<br>${p1.cm}+${p2.cm}cm</div></div>`;
-    else vis+=`<div class="palet-box partial-p"><div class="pb-icon">📦</div><div class="pb-label">SUELTO<br>${p1.cm}cm<br>${p1.cm<=80?'Mini Q.':'Quarter'}</div></div>`;
+    else vis+=`<div class="palet-box partial-p"><div class="pb-icon">📦</div><div class="pb-label">SUELTO<br>${p1.cm}cm<br>${p1.cm<=80?'Mini Q.':p1.cm<=110?'Quarter':'S.E.Light'}</div></div>`;
   }
   document.getElementById('pw-visual').innerHTML=vis;
 }
