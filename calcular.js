@@ -10,7 +10,7 @@ function calcular() {
   const alturaTotal = parseFloat(document.getElementById('altura-total').value);
   if(!numPalets||numPalets<1){errEl.innerHTML='⚠ Introduce el número de palés.';errEl.className='show';return;}
   if(!alturaTotal||alturaTotal<=0){errEl.innerHTML='⚠ Introduce la altura total del envío.';errEl.className='show';return;}
-  if(alturaTotal>numPalets){errEl.innerHTML=`⚠ La altura total (${alturaTotal}) no puede ser mayor que el número de palés (${numPalets}).`;errEl.className='show';return;}
+  if(alturaTotal > numPalets * 2.2){errEl.innerHTML=`⚠ La altura total (${alturaTotal}) supera el máximo de ${(numPalets*2.2).toFixed(1)} para ${numPalets} palé${numPalets>1?'s':''} (220 cm/palé).`;errEl.className='show';return;}
 
   // ── PORTUGAL ──
   if (state.country === 'PRT') {
