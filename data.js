@@ -123,11 +123,16 @@ function calcCevaPrt(numPalets, alturaTotal, cpStr) {
   if (!tarifa) return null;
 
   // Build weight
-  let totalKg = 0, palets = [], remaining = alturaTotal;
+  const totalKg = Math.round(alturaTotal * 250);
+  let palets = [], remaining = alturaTotal;
   for (let i=0;i<numPalets;i++) {
-    if (remaining>=1.0){palets.push({altura:1.0,kg:250,full:true});totalKg+=250;remaining=Math.round((remaining-1.0)*100)/100;}
-    else if(remaining>0){const kg=Math.round(remaining*250);palets.push({altura:remaining,kg,full:false});totalKg+=kg;remaining=0;}
-    else{palets.push({altura:1.0,kg:250,full:true});totalKg+=250;}
+    if (i === numPalets - 1) {
+      const kg = remaining > 0 ? Math.round(remaining*250) : 250;
+      palets.push({altura:remaining>0?remaining:1.0, kg, full:remaining>=1.0});
+      remaining = 0;
+    } else if(remaining>=1.0){palets.push({altura:1.0,kg:250,full:true});remaining=Math.round((remaining-1.0)*100)/100;}
+    else if(remaining>0){const kg=Math.round(remaining*250);palets.push({altura:remaining,kg,full:false});remaining=0;}
+    else{palets.push({altura:1.0,kg:250,full:true});}
   }
 
   // Find bracket index
