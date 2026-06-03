@@ -107,34 +107,28 @@ function validateAltura() {
 // ═══════════════════════════════════════════════════════════════
 function calcPalletways(numPalets, alturaTotal, zona) {
   const t = PW_TARIFA[zona]; if (!t) return null;
-  let palets = [], remaining = alturaTotal;
-  for (let i = 0; i < numPalets; i++) {
-    if (i === numPalets - 1) {
-      const cm = remaining > 0 ? Math.round(remaining * 100) : 100;
-      palets.push({cm, full: remaining >= 1.0});
-      remaining = 0;
-    } else if (remaining >= 1.0) {
-      palets.push({cm:100, full:true});
-      remaining = Math.round((remaining - 1.0) * 100) / 100;
-    } else if (remaining > 0) {
-      palets.push({cm:Math.round(remaining*100), full:false});
-      remaining = 0;
-    } else {
-      palets.push({cm:100, full:true});
-    }
+  const SEL_MAX = 2.2;
+
+  const numSEL_base = Math.floor(alturaTotal / SEL_MAX);
+  const remainder   = Math.round((alturaTotal - numSEL_base * SEL_MAX) * 1000) / 1000;
+
+  let totalSEL = numSEL_base;
+  let extra = null;
+
+  if (remainder > 1.10) {
+    totalSEL += 1;
+  } else if (remainder > 0.80) {
+    extra = { tipo: 'Quarter (≤110cm)', cm: Math.round(remainder * 100), precio: t.B };
+  } else if (remainder > 0) {
+    extra = { tipo: 'Mini Quarter (≤80cm)', cm: Math.round(remainder * 100), precio: t.A };
   }
-  const posturas = Math.floor(numPalets/2);
-  const suelto = numPalets%2===1 ? palets[palets.length-1] : null;
-  const subtotalPosturas = posturas * t.C;
-  let subtotalSuelto=0, sueltoTipo=null;
-  if (suelto) {
-    if (suelto.cm<=80)  { sueltoTipo='Mini Quarter (≤80cm)';       subtotalSuelto=t.A; }
-    else if (suelto.cm<=110) { sueltoTipo='Quarter Palé (≤110cm)'; subtotalSuelto=t.B; }
-    else                { sueltoTipo='Super Euro Light (≤220cm)';  subtotalSuelto=t.C; }
-  }
-  const subtotal = subtotalPosturas+subtotalSuelto;
-  const porte = subtotal*CONFIG.PW_PORTE_PCT;
-  return { total:subtotal+porte, subtotal, porte, posturas, suelto:suelto?{tipo:sueltoTipo,cm:suelto.cm,precio:subtotalSuelto}:null, palets, precioPostura:t.C };
+
+  const subtotalSEL   = totalSEL * t.C;
+  const subtotalExtra = extra ? extra.precio : 0;
+  const subtotal      = subtotalSEL + subtotalExtra;
+  const porte         = subtotal * CONFIG.PW_PORTE_PCT;
+
+  return { total: subtotal + porte, subtotal, porte, totalSEL, extra, precioSEL: t.C };
 }
 
 function getCevaTarifa(prov) {
@@ -186,17 +180,18 @@ function renderPW(res, isWinner) {
   document.getElementById('pw-price').innerHTML = res.total.toFixed(2).replace('.',',')+'<span class="price-eur">€</span>';
   document.getElementById('pw-card').className = 'result-card pw'+(isWinner?' winner':'');
   let html='';
-  html+=`<div class="breakdown-line"><span class="bl-label">Posturas (${res.posturas} × ${fmt(res.precioPostura)})</span><span class="bl-val">${fmt(res.subtotal-(res.suelto?.precio||0))}</span></div>`;
-  if(res.suelto) html+=`<div class="breakdown-line"><span class="bl-label">Palé suelto — ${res.suelto.tipo} (${res.suelto.cm}cm)</span><span class="bl-val">${fmt(res.suelto.precio)}</span></div>`;
+  html+=`<div class="breakdown-line"><span class="bl-label">Super Euro Light (${res.totalSEL} × ${fmt(res.precioSEL)})</span><span class="bl-val">${fmt(res.totalSEL * res.precioSEL)}</span></div>`;
+  if(res.extra) html+=`<div class="breakdown-line"><span class="bl-label">${res.extra.tipo} — ${res.extra.cm} cm</span><span class="bl-val">${fmt(res.extra.precio)}</span></div>`;
   html+=`<div class="breakdown-line"><span class="bl-label">Subtotal</span><span class="bl-val">${fmt(res.subtotal)}</span></div>`;
   html+=`<div class="breakdown-line"><span class="bl-label">Porte adicional (+${(CONFIG.PW_PORTE_PCT*100).toFixed(1)}%)</span><span class="bl-val">+${fmt(res.porte)}</span></div>`;
   html+=`<div class="breakdown-line total"><span class="bl-label">TOTAL</span><span class="bl-val">${fmt(res.total)}</span></div>`;
   document.getElementById('pw-breakdown').innerHTML=html;
   let vis='';
-  for(let i=0;i<res.palets.length;i+=2){
-    const p1=res.palets[i],p2=res.palets[i+1];
-    if(p2) vis+=`<div class="palet-box full-p"><div class="pb-icon">📦📦</div><div class="pb-label">POSTURA<br>${p1.cm}+${p2.cm}cm</div></div>`;
-    else vis+=`<div class="palet-box partial-p"><div class="pb-icon">📦</div><div class="pb-label">SUELTO<br>${p1.cm}cm<br>${p1.cm<=80?'Mini Q.':p1.cm<=110?'Quarter':'S.E.Light'}</div></div>`;
+  for(let i=0;i<res.totalSEL;i++) {
+    vis+=`<div class="palet-box full-p"><div class="pb-icon">📦</div><div class="pb-label">S.E.LIGHT<br>220cm</div></div>`;
+  }
+  if(res.extra) {
+    vis+=`<div class="palet-box partial-p"><div class="pb-icon">📦</div><div class="pb-label">${res.extra.cm<=80?'MINI Q.':'QUARTER'}<br>${res.extra.cm}cm</div></div>`;
   }
   document.getElementById('pw-visual').innerHTML=vis;
 }
