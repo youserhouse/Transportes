@@ -128,9 +128,9 @@ function calcPalletways(numPalets, alturaTotal, zona) {
   const subtotalPosturas = posturas * t.C;
   let subtotalSuelto=0, sueltoTipo=null;
   if (suelto) {
-    if (suelto.cm<=80) { sueltoTipo=t.A<=t.B?'Mini Quarter (≤80cm)':'Quarter (≤110cm)'; subtotalSuelto=Math.min(t.A,t.B); }
+    if (suelto.cm<=80)  { sueltoTipo='Mini Quarter (≤80cm)';       subtotalSuelto=t.A; }
     else if (suelto.cm<=110) { sueltoTipo='Quarter Palé (≤110cm)'; subtotalSuelto=t.B; }
-    else { sueltoTipo='Super Euro Light (≤220cm)'; subtotalSuelto=t.B; }
+    else                { sueltoTipo='Super Euro Light (≤220cm)';  subtotalSuelto=t.C; }
   }
   const subtotal = subtotalPosturas+subtotalSuelto;
   const porte = subtotal*CONFIG.PW_PORTE_PCT;
