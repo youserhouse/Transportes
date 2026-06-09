@@ -175,6 +175,22 @@ const CP_PROV = {
   "51":"CEUTA","52":"MELILLA"
 };
 
+// Prefijos CP con conflicto de zona (isla distinta dentro del mismo prefijo)
+// Clave: prefijo 2 dígitos → provincia por defecto (si el usuario no da CP completo)
+const CP_AMBIGUOS = { "35": "LAS PALMAS", "38": "TENERIFE", "07": "BALEARES" };
+
+// Rangos de 5 dígitos para resolver isla exacta dentro de prefijos ambiguos
+const CP_ISLA_RANGES = [
+  // Prefijo 35 — Las Palmas: Gran Canaria=Z11, Lanzarote/Fuerteventura=Z12
+  { min: 35500, max: 35599, prov: "LANZAROTE" },
+  { min: 35600, max: 35669, prov: "FUERTEVENTURA" },
+  // Prefijo 38 — Tenerife=Z11, islas menores (La Palma/La Gomera/El Hierro)=Z12
+  { min: 38700, max: 38999, prov: "LA PALMA" },
+  // Prefijo 07 — Mallorca=Z9, Menorca/Ibiza=Z10
+  { min:  7700, max:  7769, prov: "MENORCA" },
+  { min:  7800, max:  7869, prov: "IBIZA" },
+];
+
 // ═══════════════════════════════════════════════════════════════
 // DATA
 // ═══════════════════════════════════════════════════════════════

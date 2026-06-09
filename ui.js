@@ -7,18 +7,34 @@ function onCpInput() {
   const val = document.getElementById('cp-input').value.trim();
   if (val.length < 2) return;
   const prefix = val.substring(0, 2);
-  const prov = CP_PROV[prefix];
+  let prov = CP_PROV[prefix];
   if (!prov) return;
-  // Set province
+
+  let ambiguo = false;
+  if (CP_AMBIGUOS[prefix]) {
+    if (val.length >= 4) {
+      const cpNum = parseInt(val);
+      const match = CP_ISLA_RANGES.find(r => cpNum >= r.min && cpNum <= r.max);
+      if (match) prov = match.prov;
+    } else {
+      ambiguo = true;
+    }
+  }
+
   state.prov = prov;
   state.zona = PROV_ZONA[prov] || null;
   const label = prov.charAt(0) + prov.slice(1).toLowerCase();
   document.getElementById('prov-input').value = label;
   document.getElementById('sugg-box').className = '';
+  const zd = document.getElementById('zona-detected');
   if (state.zona) {
-    const zd = document.getElementById('zona-detected');
-    zd.innerHTML = `📮 CP ${val} → ${label} → Zona ${state.zona} — ${ZONAS_DESC[state.zona]}`;
-    zd.className = 'show';
+    if (ambiguo) {
+      zd.innerHTML = `⚠ CP ${val}xx — prefijo ambiguo. Zona estimada: ${state.zona} (${label}). Introduce el CP completo (5 dígitos) para mayor precisión.`;
+      zd.className = 'show warn';
+    } else {
+      zd.innerHTML = `📮 CP ${val} → ${label} → Zona ${state.zona} — ${ZONAS_DESC[state.zona]}`;
+      zd.className = 'show';
+    }
   }
 }
 

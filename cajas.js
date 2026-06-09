@@ -160,16 +160,33 @@ function selectProvCajas(p) {
 function onCpCajasInput() {
   const val = document.getElementById('cp-cajas-input').value.trim();
   if (val.length < 2) return;
-  const prefix = val.substring(0,2);
-  const prov = CP_PROV[prefix];
+  const prefix = val.substring(0, 2);
+  let prov = CP_PROV[prefix];
   if (!prov) return;
+
+  let ambiguo = false;
+  if (CP_AMBIGUOS[prefix]) {
+    if (val.length >= 4) {
+      const cpNum = parseInt(val);
+      const match = CP_ISLA_RANGES.find(r => cpNum >= r.min && cpNum <= r.max);
+      if (match) prov = match.prov;
+    } else {
+      ambiguo = true;
+    }
+  }
+
   stateCajas.prov = prov;
   const label = prov.charAt(0) + prov.slice(1).toLowerCase();
   document.getElementById('prov-cajas-input').value = label;
   document.getElementById('sugg-cajas-box').className = '';
   const zd = document.getElementById('zona-cajas-detected');
-  zd.innerHTML = `📮 CP ${val} → ${label}`;
-  zd.className = 'show';
+  if (ambiguo) {
+    zd.innerHTML = `⚠ CP ${val}xx — prefijo ambiguo. Provincia estimada: ${label}. Introduce el CP completo (5 dígitos) para mayor precisión.`;
+    zd.className = 'show warn';
+  } else {
+    zd.innerHTML = `📮 CP ${val} → ${label}`;
+    zd.className = 'show';
+  }
 }
 
 // Export cajas
