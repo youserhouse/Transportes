@@ -125,6 +125,15 @@ function calcPalletways(numPalets, alturaTotal, zona) {
   const t = PW_TARIFA[zona]; if (!t) return null;
   const SEL_MAX = 2.2;
 
+  // If there are enough pallets to fill ceil(H/2.2) SEL pairs (2 pallets per pair),
+  // all slots bill as SEL — avoids misclassifying exact boundary remainders.
+  const numSEL_ceil = Math.ceil(alturaTotal / SEL_MAX);
+  if (numPalets >= 2 * numSEL_ceil) {
+    const subtotal = numSEL_ceil * t.C;
+    const porte    = subtotal * CONFIG.PW_PORTE_PCT;
+    return { total: subtotal + porte, subtotal, porte, totalSEL: numSEL_ceil, extra: null, precioSEL: t.C };
+  }
+
   const numSEL_base = Math.floor(alturaTotal / SEL_MAX);
   const remainder   = Math.round((alturaTotal - numSEL_base * SEL_MAX) * 1000) / 1000;
 
