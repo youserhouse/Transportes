@@ -282,6 +282,18 @@
   }
   .cp-disclaimer.show { display: block; }
 
+  /* DESGLOSE MANUAL */
+  .desglose-section { margin-bottom: 20px; }
+  .desglose-toggle {
+    width: 100%; padding: 10px 14px; background: var(--surface2);
+    border: 1px solid var(--border2); color: var(--muted);
+    font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.06em;
+    cursor: pointer; text-align: left; display: flex; justify-content: space-between;
+    align-items: center; transition: all 0.15s;
+  }
+  .desglose-toggle:hover { border-color: var(--pw); color: var(--pw-light); }
+  #desglose-body { padding: 14px 0 4px; }
+
   /* PRINT STYLES */
   @media print {
     body::before, header .header-right, #historial-panel,

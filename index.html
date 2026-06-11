@@ -131,6 +131,49 @@ window.signOutUser = async function() {
       </div>
     </div>
 
+    <!-- DESGLOSE PALLETWAYS (opcional) -->
+    <div class="desglose-section" id="desglose-section">
+      <button class="desglose-toggle" onclick="toggleDesglose()" type="button">
+        <span>≡ Especificar desglose Palletways (opcional)</span>
+        <span id="desglose-chevron">▸</span>
+      </button>
+      <div id="desglose-body" style="display:none">
+        <p class="field-hint" style="margin-bottom:10px">
+          Si conoces el desglose real (factura o confirmación), introdúcelo aquí.
+          Si lo dejas a 0, se calcula automáticamente.
+        </p>
+        <div class="input-row-3">
+          <div class="field">
+            <label>Super Euro Light (≤220cm)</label>
+            <div class="caja-counter">
+              <button type="button" onclick="cambiarDesglose('sel',-1)" aria-label="Reducir SEL">−</button>
+              <input type="number" id="n-sel" min="0" value="0" oninput="onDesgloseInput()">
+              <button type="button" onclick="cambiarDesglose('sel',1)" aria-label="Aumentar SEL">+</button>
+            </div>
+          </div>
+          <div class="field">
+            <label>Quarter (≤110cm)</label>
+            <div class="caja-counter">
+              <button type="button" onclick="cambiarDesglose('q',-1)" aria-label="Reducir Quarter">−</button>
+              <input type="number" id="n-quarter" min="0" value="0" oninput="onDesgloseInput()">
+              <button type="button" onclick="cambiarDesglose('q',1)" aria-label="Aumentar Quarter">+</button>
+            </div>
+          </div>
+          <div class="field">
+            <label>Mini Quarter (≤80cm)</label>
+            <div class="caja-counter">
+              <button type="button" onclick="cambiarDesglose('mq',-1)" aria-label="Reducir Mini Quarter">−</button>
+              <input type="number" id="n-mini-q" min="0" value="0" oninput="onDesgloseInput()">
+              <button type="button" onclick="cambiarDesglose('mq',1)" aria-label="Aumentar Mini Quarter">+</button>
+            </div>
+          </div>
+        </div>
+        <div id="desglose-active-msg" style="display:none;margin-top:10px;padding:7px 12px;background:var(--pw-bg);border-left:3px solid var(--pw);font-family:var(--mono);font-size:0.72rem;color:var(--pw-light)">
+          ✓ Desglose manual activo — el cálculo de Palletways usará estos valores
+        </div>
+      </div>
+    </div>
+
     <!-- PASO 2 -->
     <div class="section">
       <div class="section-label">

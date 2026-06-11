@@ -12,6 +12,11 @@ function calcular() {
   if(!alturaTotal||alturaTotal<=0){errEl.innerHTML='⚠ Introduce la altura total del envío.';errEl.className='show';return;}
   if(alturaTotal > numPalets * 2.2){errEl.innerHTML=`⚠ La altura total (${alturaTotal}) supera el máximo de ${(numPalets*2.2).toFixed(1)} para ${numPalets} palé${numPalets>1?'s':''} (220 cm/palé).`;errEl.className='show';return;}
 
+  const nSEL = parseInt(document.getElementById('n-sel').value)||0;
+  const nQ   = parseInt(document.getElementById('n-quarter').value)||0;
+  const nMQ  = parseInt(document.getElementById('n-mini-q').value)||0;
+  const useManual = nSEL > 0 || nQ > 0 || nMQ > 0;
+
   // ── PORTUGAL ──
   if (state.country === 'PRT') {
     if (!state.cpPrt) { errEl.innerHTML='⚠ Introduce el código postal de Portugal.'; errEl.className='show'; return; }
@@ -19,7 +24,9 @@ function calcular() {
     if (!CEVA_PRT[cp2]) { errEl.innerHTML='⚠ Código postal no encontrado en la tabla Portugal.'; errEl.className='show'; return; }
 
     const pwZona = getPwZonaPrt(state.cpPrt);
-    const pwRes = calcPalletways(numPalets, alturaTotal, pwZona);
+    const pwRes = useManual
+      ? calcPallettaysManual(nSEL, nQ, nMQ, pwZona)
+      : calcPalletways(numPalets, alturaTotal, pwZona);
     const cevaRes = calcCevaPrt(numPalets, alturaTotal, state.cpPrt);
 
     if(!pwRes&&!cevaRes){errEl.innerHTML='⚠ No se encontraron tarifas.';errEl.className='show';return;}
@@ -54,7 +61,9 @@ function calcular() {
   // ── ESPAÑA ──
   if(!state.prov||!state.zona){errEl.innerHTML='⚠ Selecciona una provincia de destino.';errEl.className='show';return;}
 
-  const pwRes = calcPalletways(numPalets, alturaTotal, state.zona);
+  const pwRes = useManual
+    ? calcPallettaysManual(nSEL, nQ, nMQ, state.zona)
+    : calcPalletways(numPalets, alturaTotal, state.zona);
   const cevaRes = calcCeva(numPalets, alturaTotal, state.prov);
   if(!pwRes&&!cevaRes){errEl.innerHTML='⚠ No se encontraron tarifas para esta provincia.';errEl.className='show';return;}
 

@@ -206,7 +206,7 @@ function renderPW(res, isWinner) {
   document.getElementById('pw-card').className = 'result-card pw'+(isWinner?' winner':'');
   let html='';
   html+=`<div class="breakdown-line"><span class="bl-label">Super Euro Light (${res.totalSEL} × ${fmt(res.precioSEL)})</span><span class="bl-val">${fmt(res.totalSEL * res.precioSEL)}</span></div>`;
-  if(res.extra) html+=`<div class="breakdown-line"><span class="bl-label">${res.extra.tipo} — ${res.extra.cm} cm</span><span class="bl-val">${fmt(res.extra.precio)}</span></div>`;
+  if(res.extra) html+=`<div class="breakdown-line"><span class="bl-label">${res.extra.tipo}${res.extra.cm != null ? ` — ${res.extra.cm} cm` : ''}</span><span class="bl-val">${fmt(res.extra.precio)}</span></div>`;
   html+=`<div class="breakdown-line"><span class="bl-label">Subtotal</span><span class="bl-val">${fmt(res.subtotal)}</span></div>`;
   html+=`<div class="breakdown-line"><span class="bl-label">Porte adicional (+${(CONFIG.PW_PORTE_PCT*100).toFixed(1)}%)</span><span class="bl-val">+${fmt(res.porte)}</span></div>`;
   html+=`<div class="breakdown-line total"><span class="bl-label">TOTAL</span><span class="bl-val">${fmt(res.total)}</span></div>`;
@@ -216,7 +216,9 @@ function renderPW(res, isWinner) {
     vis+=`<div class="palet-box full-p"><div class="pb-icon">📦</div><div class="pb-label">S.E.LIGHT<br>220cm</div></div>`;
   }
   if(res.extra) {
-    vis+=`<div class="palet-box partial-p"><div class="pb-icon">📦</div><div class="pb-label">${res.extra.cm<=80?'MINI Q.':'QUARTER'}<br>${res.extra.cm}cm</div></div>`;
+    const extraLabel = res.extra.cm != null ? (res.extra.cm<=80?'MINI Q.':'QUARTER') : 'EXTRA';
+    const extraCm = res.extra.cm != null ? `<br>${res.extra.cm}cm` : '';
+    vis+=`<div class="palet-box partial-p"><div class="pb-icon">📦</div><div class="pb-label">${extraLabel}${extraCm}</div></div>`;
   }
   document.getElementById('pw-visual').innerHTML=vis;
 }
@@ -232,6 +234,47 @@ function renderCEVA(res, isWinner) {
   html+=`<div class="breakdown-line total"><span class="bl-label">TOTAL</span><span class="bl-val">${fmt(res.total)}</span></div>`;
   document.getElementById('ceva-breakdown').innerHTML=html;
   document.getElementById('ceva-detail').innerHTML=res.palets.map((p,i)=>`Palé ${i+1}: ${p.full?'100cm (completo)':`${Math.round(p.altura*100)}cm (parcial)`} → <span>${p.kg} kg</span>`).join('<br>');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// DESGLOSE MANUAL PALLETWAYS
+// ═══════════════════════════════════════════════════════════════
+function toggleDesglose() {
+  const body = document.getElementById('desglose-body');
+  const open = body.style.display !== 'none';
+  body.style.display = open ? 'none' : 'block';
+  document.getElementById('desglose-chevron').textContent = open ? '▸' : '▾';
+}
+
+function cambiarDesglose(type, delta) {
+  const id = type==='sel' ? 'n-sel' : type==='q' ? 'n-quarter' : 'n-mini-q';
+  const inp = document.getElementById(id);
+  inp.value = Math.max(0, (parseInt(inp.value)||0) + delta);
+  onDesgloseInput();
+}
+
+function onDesgloseInput() {
+  const active = (parseInt(document.getElementById('n-sel').value)||0) > 0
+              || (parseInt(document.getElementById('n-quarter').value)||0) > 0
+              || (parseInt(document.getElementById('n-mini-q').value)||0) > 0;
+  document.getElementById('desglose-active-msg').style.display = active ? 'block' : 'none';
+  document.getElementById('results').className = '';
+  document.getElementById('winner-banner').className = '';
+}
+
+function calcPallettaysManual(nSEL, nQ, nMQ, zona) {
+  const t = PW_TARIFA[zona]; if (!t) return null;
+  let extra = null;
+  if (nQ > 0 || nMQ > 0) {
+    const precio = nQ * t.B + nMQ * t.A;
+    const parts = [];
+    if (nQ > 0) parts.push(`${nQ}× Quarter (≤110cm)`);
+    if (nMQ > 0) parts.push(`${nMQ}× Mini Quarter (≤80cm)`);
+    extra = { tipo: parts.join(' + '), cm: nQ > 0 ? 110 : 80, precio };
+  }
+  const subtotal = nSEL * t.C + (extra ? extra.precio : 0);
+  const porte = subtotal * CONFIG.PW_PORTE_PCT;
+  return { total: subtotal + porte, subtotal, porte, totalSEL: nSEL, extra, precioSEL: t.C };
 }
 
 // ═══════════════════════════════════════════════════════════════
