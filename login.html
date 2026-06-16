@@ -2,6 +2,16 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
+<!-- ✅ SEGURIDAD: Content Security Policy — añadido 2026-06-16 -->
+<meta http-equiv="Content-Security-Policy" content="
+  default-src 'self';
+  script-src 'self' 'unsafe-inline' https://www.gstatic.com;
+  style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+  font-src https://fonts.gstatic.com;
+  connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com;
+  img-src 'self' data:;
+  frame-src https://transporte-99482.firebaseapp.com;
+">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mecafilter — Acceso</title>
 <meta name="theme-color" content="#070710">
@@ -275,7 +285,7 @@ function goTo(url) {
   setTimeout(() => { window.location.href = url; }, 550);
 }
 
-// ── Login ──
+// ── Login Google ──
 document.getElementById('btn-google').addEventListener('click', async () => {
   document.getElementById('error-box').classList.remove('show');
   setLoading(true);
