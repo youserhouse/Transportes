@@ -2,6 +2,16 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
+<!-- ✅ SEGURIDAD: Content Security Policy — añadido 2026-06-16 -->
+<meta http-equiv="Content-Security-Policy" content="
+  default-src 'self';
+  script-src 'self' 'unsafe-inline' https://www.gstatic.com;
+  style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+  font-src https://fonts.gstatic.com;
+  connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com;
+  img-src 'self' data: blob:;
+  frame-src https://transporte-99482.firebaseapp.com;
+">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Calculadora de Transportes</title>
 <meta name="theme-color" content="#2979FF">
@@ -263,7 +273,6 @@ window.signOutUser = async function() {
 
   <!-- ═══ MODO CAJAS ═══ -->
   <div id="mode-cajas" style="display:none">
-    <!-- PASO 1 CAJAS -->
     <div class="section">
       <div class="section-label">
         <div class="section-num">01</div>
@@ -288,7 +297,6 @@ window.signOutUser = async function() {
       <div id="cajas-peso-info" style="margin-top:12px;"></div>
     </div>
 
-    <!-- PASO 2 CAJAS — provincia (solo España, solo CEVA) -->
     <div class="section">
       <div class="section-label">
         <div class="section-num">02</div>
@@ -320,7 +328,6 @@ window.signOutUser = async function() {
       <span style="position:absolute;top:-8px;left:50%;transform:translateX(-50%);background:var(--bg);padding:0 14px;font-family:var(--mono);font-size:0.62rem;color:var(--dim);letter-spacing:0.12em;">RESULTADO</span>
     </div>
 
-    <!-- RESULTADO CAJAS -->
     <div id="results-cajas" style="display:none;animation:fadeUp 0.35s ease;">
       <div class="result-card ceva" id="ceva-cajas-card" style="max-width:500px;margin:0 auto 20px;">
         <div class="card-header"><span style="font-size:1rem">🟠</span><span class="carrier-name">CEVA — Envío por Cajas</span></div>
@@ -373,7 +380,6 @@ window.signOutUser = async function() {
 <script src="calcular.js"></script>
 <script src="cajas.js"></script>
 <script>
-  // ── Registro del Service Worker (PWA offline) ──
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('./sw.js')
