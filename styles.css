@@ -163,31 +163,33 @@
   #error-msg { display: none; padding: 11px 14px; border-left: 3px solid #ff5252; background: #ff52520a; font-family: var(--mono); font-size: 0.78rem; color: #ff8a80; }
   #error-msg.show { display: block; }
 
+  /* CONFIGURACIONES (imprimir / exportar) */
+  .config-section { margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border); }
+  .config-title { font-family: var(--mono); font-size: 0.62rem; color: var(--dim); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 12px; }
+
   /* ── GUARDAR EN DASHBOARD (selección manual de transportista) ── */
-  .guardar-section { display: none; margin-top: 24px; padding: 20px; background: var(--surface2); border: 1px solid var(--border2); border-top: 3px solid var(--green); }
+  .guardar-section { display: none; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); }
   .guardar-section.show { display: block; animation: fadeUp 0.3s ease; }
   .guardar-label { font-family: var(--mono); font-size: 0.74rem; color: var(--muted); margin-bottom: 12px; }
-  .elegir-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
-  @media (max-width: 480px) { .elegir-row { grid-template-columns: 1fr; } }
+  .elegir-row { display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
   .elegir-btn {
-    display: flex; flex-direction: column; gap: 4px; align-items: center; padding: 14px;
-    border: 2px solid var(--border2); background: var(--surface); cursor: pointer; transition: all 0.15s;
-    font-family: 'Lato', sans-serif;
+    padding: 9px 18px; font-size: 0.72rem; font-family: var(--mono); border: 1px solid var(--border2);
+    background: var(--surface2); color: var(--muted); cursor: pointer; letter-spacing: 0.06em;
+    transition: all 0.2s; display: flex; align-items: center; gap: 7px;
   }
-  .elegir-btn .elegir-name { font-family: 'Syne', sans-serif; font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); }
-  .elegir-btn .elegir-precio { font-family: var(--mono); font-size: 1.05rem; font-weight: 700; color: var(--text); }
-  .elegir-btn.pw:hover, .elegir-btn.pw.active { border-color: var(--pw); background: var(--pw-bg); }
-  .elegir-btn.pw.active .elegir-name, .elegir-btn.pw.active .elegir-precio { color: var(--pw-light); }
-  .elegir-btn.ceva:hover, .elegir-btn.ceva.active { border-color: var(--ceva); background: var(--ceva-bg); }
-  .elegir-btn.ceva.active .elegir-name, .elegir-btn.ceva.active .elegir-precio { color: var(--ceva-light); }
+  .elegir-btn .elegir-precio { font-weight: 700; }
+  .elegir-btn.pw:hover { border-color: var(--pw); color: var(--pw-light); }
+  .elegir-btn.pw.active { border-color: var(--pw); background: var(--pw-bg); color: var(--pw-light); }
+  .elegir-btn.ceva:hover { border-color: var(--ceva); color: var(--ceva-light); }
+  .elegir-btn.ceva.active { border-color: var(--ceva); background: var(--ceva-bg); color: var(--ceva-light); }
   .btn-guardar-calculo {
-    width: 100%; padding: 14px; background: var(--green); border: none; color: #000;
-    font-family: 'Syne', sans-serif; font-size: 0.85rem; font-weight: 800; text-transform: uppercase;
-    letter-spacing: 0.08em; cursor: pointer; transition: all 0.2s;
+    padding: 9px 18px; font-size: 0.72rem; font-family: var(--mono); border: 1px solid var(--green);
+    background: var(--surface2); color: var(--green); cursor: pointer; letter-spacing: 0.06em;
+    transition: all 0.2s; display: inline-flex; align-items: center; gap: 7px;
   }
-  .btn-guardar-calculo:hover:not(:disabled) { filter: brightness(1.1); }
-  .btn-guardar-calculo:disabled { background: var(--surface3); color: var(--dim); cursor: not-allowed; }
-  .btn-guardar-calculo.saved { background: var(--surface3); color: var(--green); }
+  .btn-guardar-calculo:hover:not(:disabled) { background: var(--green-bg); }
+  .btn-guardar-calculo:disabled { border-color: var(--border2); color: var(--dim); cursor: not-allowed; }
+  .btn-guardar-calculo.saved { border-color: var(--border2); color: var(--green); background: var(--surface2); }
   .guardar-msg { margin-top: 10px; font-family: var(--mono); font-size: 0.72rem; min-height: 1em; }
   .guardar-msg.ok { color: var(--green); }
   .guardar-msg.error { color: #ff8a80; }
@@ -267,7 +269,7 @@
   /* PRINT STYLES */
   @media print {
     body::before, header .header-right,
-    #calc-btn, .calc-btn-cajas, .section, #error-msg, .export-row,
+    #calc-btn, .calc-btn-cajas, .section, #error-msg, .export-row, .config-section,
     .guardar-section, .mode-tabs, #error-cajas-msg { display: none !important; }
     #results, #results-cajas { display: block !important; }
     body { background: #fff !important; color: #000 !important; font-size: 11pt; }
