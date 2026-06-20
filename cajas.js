@@ -186,25 +186,5 @@ function onCpCajasInput() {
   }
 }
 
-// Export cajas
-function exportarCajasCSV() {
-  if (!lastCajasRes) return;
-  const r = lastCajasRes;
-  const rows = [
-    ['Transportista','Total (€)','Base (€)','Recargo (€)','Provincia','Cajas','Peso (kg)'],
-    ['CEVA', r.total.toFixed(2), r.basePrice.toFixed(2), r.surcharge.toFixed(2), r.prov, r.numCajas, r.totalKg]
-  ];
-  downloadCSV(rows, `cajas_${r.prov}_${new Date().toISOString().split('T')[0]}.csv`);
-}
-function exportarCajasExcel() {
-  if (!lastCajasRes) return;
-  const r = lastCajasRes;
-  const rows = [
-    ['Transportista','Total (€)','Base (€)','Recargo (€)','Provincia','Cajas','Peso (kg)'],
-    ['CEVA', r.total.toFixed(2), r.basePrice.toFixed(2), r.surcharge.toFixed(2), r.prov, r.numCajas, r.totalKg]
-  ];
-  downloadXLS(rows, `cajas_${r.prov}_${new Date().toISOString().split('T')[0]}.xls`);
-}
-
 // Init
 renderCajaVisual();
