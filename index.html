@@ -275,10 +275,14 @@ window.fsGuardarCalculo = async function(datos) {
           </div>
         </div>
       </div>
-      <div class="export-row">
-        <button class="btn-export btn-print" onclick="window.print()">🖨️ IMPRIMIR</button>
-        <button class="btn-export" onclick="exportarCSV()">📄 EXPORTAR CSV</button>
-        <button class="btn-export" onclick="exportarExcel()">📊 EXPORTAR EXCEL</button>
+      <!-- CONFIGURACIONES -->
+      <div class="config-section">
+        <div class="config-title">⚙ Configuraciones</div>
+        <div class="export-row">
+          <button class="btn-export btn-print" onclick="window.print()">🖨️ IMPRIMIR</button>
+          <button class="btn-export" onclick="exportarCSV()">📄 EXPORTAR CSV</button>
+          <button class="btn-export" onclick="exportarExcel()">📊 EXPORTAR EXCEL</button>
+        </div>
       </div>
 
       <!-- GUARDAR EN DASHBOARD (selección manual de transportista) -->
@@ -286,12 +290,10 @@ window.fsGuardarCalculo = async function(datos) {
         <div class="guardar-label">¿Qué transportista se va a usar realmente para este envío?</div>
         <div class="elegir-row">
           <button type="button" class="elegir-btn pw" id="elegir-pw" onclick="elegirTransportista('PALLETWAYS')">
-            <span class="elegir-name">Palletways</span>
-            <span class="elegir-precio" id="elegir-pw-precio">—</span>
+            🔵 PALLETWAYS <span class="elegir-precio" id="elegir-pw-precio">—</span>
           </button>
           <button type="button" class="elegir-btn ceva" id="elegir-ceva" onclick="elegirTransportista('CEVA')">
-            <span class="elegir-name">CEVA</span>
-            <span class="elegir-precio" id="elegir-ceva-precio">—</span>
+            🟠 CEVA <span class="elegir-precio" id="elegir-ceva-precio">—</span>
           </button>
         </div>
         <button type="button" class="btn-guardar-calculo" id="btn-guardar-calculo" onclick="guardarCalculoActual()" disabled>💾 GUARDAR ESTE ENVÍO</button>
@@ -365,12 +367,6 @@ window.fsGuardarCalculo = async function(datos) {
           <div class="price-breakdown" id="ceva-cajas-breakdown"></div>
         </div>
       </div>
-      <div class="export-row" style="justify-content:center;">
-        <button class="btn-export btn-print" onclick="window.print()">🖨️ IMPRIMIR</button>
-        <button class="btn-export" onclick="exportarCajasCSV()">📄 EXPORTAR CSV</button>
-        <button class="btn-export" onclick="exportarCajasExcel()">📊 EXPORTAR EXCEL</button>
-      </div>
-
       <!-- GUARDAR EN DASHBOARD (cajas siempre usa CEVA) -->
       <div class="guardar-section" id="guardar-cajas-section">
         <div class="guardar-label">Transportista: <strong style="color:var(--ceva-light)">CEVA</strong></div>
