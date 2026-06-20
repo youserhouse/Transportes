@@ -376,10 +376,11 @@ window.fsGuardarCalculo = async function(datos) {
       </div>
       <div class="field-hint" style="margin-bottom:16px">Imprime o exporta el último cálculo de palés realizado.</div>
       <div class="export-row">
-        <button class="btn-export btn-print" onclick="window.print()">🖨️ IMPRIMIR</button>
+        <button class="btn-export btn-print" onclick="imprimirResultado()">🖨️ IMPRIMIR</button>
         <button class="btn-export" onclick="exportarCSV()">📄 EXPORTAR CSV</button>
         <button class="btn-export" onclick="exportarExcel()">📊 EXPORTAR EXCEL</button>
       </div>
+      <div class="config-msg" id="config-msg"></div>
     </div>
   </div>
 

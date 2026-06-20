@@ -190,6 +190,9 @@
   .guardar-msg.ok { color: var(--green); }
   .guardar-msg.error { color: #ff8a80; }
 
+  .config-msg { display: none; margin-top: 12px; padding: 9px 14px; border-left: 3px solid var(--yellow); background: var(--yellow-bg); font-family: var(--mono); font-size: 0.74rem; color: var(--yellow); }
+  .config-msg.show { display: block; }
+
   /* MODE TABS */
   .mode-tabs { display: flex; gap: 0; margin-bottom: 28px; border-bottom: 2px solid var(--border2); }
   .mode-tab {
