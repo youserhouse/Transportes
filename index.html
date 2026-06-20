@@ -128,6 +128,7 @@ window.fsGuardarCalculo = async function(datos) {
     <button class="mode-tab active-palets" id="tab-palets" onclick="setMode('palets')">🏗 Palés</button>
     <button class="mode-tab" id="tab-cajas" onclick="setMode('cajas')">📦 Cajas</button>
     <button class="mode-tab" id="tab-dashboard" onclick="window.location.href='Dashboard.html'">📊 Dashboard</button>
+    <button class="mode-tab" id="tab-config" onclick="setMode('config')">⚙ Configuraciones</button>
   </div>
 
   <!-- ═══ MODO PALÉS ═══ -->
@@ -275,16 +276,6 @@ window.fsGuardarCalculo = async function(datos) {
           </div>
         </div>
       </div>
-      <!-- CONFIGURACIONES -->
-      <div class="config-section">
-        <div class="config-title">⚙ Configuraciones</div>
-        <div class="export-row">
-          <button class="btn-export btn-print" onclick="window.print()">🖨️ IMPRIMIR</button>
-          <button class="btn-export" onclick="exportarCSV()">📄 EXPORTAR CSV</button>
-          <button class="btn-export" onclick="exportarExcel()">📊 EXPORTAR EXCEL</button>
-        </div>
-      </div>
-
       <!-- GUARDAR EN DASHBOARD (selección manual de transportista) -->
       <div class="guardar-section" id="guardar-section">
         <div class="guardar-label">¿Qué transportista se va a usar realmente para este envío?</div>
@@ -372,6 +363,22 @@ window.fsGuardarCalculo = async function(datos) {
         <div class="guardar-label">Transportista: <strong style="color:var(--ceva-light)">CEVA</strong></div>
         <button type="button" class="btn-guardar-calculo" id="btn-guardar-cajas" onclick="guardarCalculoCajasActual()">💾 GUARDAR ESTE ENVÍO</button>
         <div class="guardar-msg" id="guardar-cajas-msg"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ MODO CONFIGURACIONES ═══ -->
+  <div id="mode-config" style="display:none">
+    <div class="section">
+      <div class="section-label">
+        <div class="section-num">⚙</div>
+        <span class="section-title">Configuraciones</span>
+      </div>
+      <div class="field-hint" style="margin-bottom:16px">Imprime o exporta el último cálculo de palés realizado.</div>
+      <div class="export-row">
+        <button class="btn-export btn-print" onclick="window.print()">🖨️ IMPRIMIR</button>
+        <button class="btn-export" onclick="exportarCSV()">📄 EXPORTAR CSV</button>
+        <button class="btn-export" onclick="exportarExcel()">📊 EXPORTAR EXCEL</button>
       </div>
     </div>
   </div>
