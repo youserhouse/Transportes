@@ -57,7 +57,7 @@
 import { initializeApp }   from 'https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signOut }
                             from 'https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js';
-import { getFirestore, doc, getDoc }
+import { getFirestore, doc, getDoc, collection, addDoc, serverTimestamp }
                             from 'https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js';
 
 const firebaseConfig = {
@@ -93,6 +93,18 @@ window.signOutUser = async function() {
   await signOut(auth);
   window.location.href = 'login.html';
 };
+
+// Guarda un cálculo elegido manualmente en la colección compartida 'calculos'.
+// Lo lee el Dashboard (Dashboard.html) vía onSnapshot en tiempo real.
+window.fsGuardarCalculo = async function(datos) {
+  if (!auth.currentUser) throw new Error('No autenticado');
+  await addDoc(collection(db, 'calculos'), {
+    ...datos,
+    fecha: new Date(),
+    savedBy: auth.currentUser.email,
+    savedAt: serverTimestamp(),
+  });
+};
 </script>
 
 <header>
@@ -106,7 +118,6 @@ window.signOutUser = async function() {
   <div class="header-right">
     <div class="badge badge-pw">PALLETWAYS</div>
     <div class="badge badge-ceva">CEVA</div>
-    <button class="btn-historial-toggle" onclick="toggleHistorial()">📋 HISTORIAL <span id="hist-count-badge"></span></button>
     <button class="btn-signout" onclick="signOutUser()">Salir</button>
   </div>
 </header>
@@ -269,6 +280,23 @@ window.signOutUser = async function() {
         <button class="btn-export" onclick="exportarCSV()">📄 EXPORTAR CSV</button>
         <button class="btn-export" onclick="exportarExcel()">📊 EXPORTAR EXCEL</button>
       </div>
+
+      <!-- GUARDAR EN DASHBOARD (selección manual de transportista) -->
+      <div class="guardar-section" id="guardar-section">
+        <div class="guardar-label">¿Qué transportista se va a usar realmente para este envío?</div>
+        <div class="elegir-row">
+          <button type="button" class="elegir-btn pw" id="elegir-pw" onclick="elegirTransportista('PALLETWAYS')">
+            <span class="elegir-name">Palletways</span>
+            <span class="elegir-precio" id="elegir-pw-precio">—</span>
+          </button>
+          <button type="button" class="elegir-btn ceva" id="elegir-ceva" onclick="elegirTransportista('CEVA')">
+            <span class="elegir-name">CEVA</span>
+            <span class="elegir-precio" id="elegir-ceva-precio">—</span>
+          </button>
+        </div>
+        <button type="button" class="btn-guardar-calculo" id="btn-guardar-calculo" onclick="guardarCalculoActual()" disabled>💾 GUARDAR ESTE ENVÍO</button>
+        <div class="guardar-msg" id="guardar-msg"></div>
+      </div>
     </div>
   </div>
 
@@ -342,41 +370,19 @@ window.signOutUser = async function() {
         <button class="btn-export" onclick="exportarCajasCSV()">📄 EXPORTAR CSV</button>
         <button class="btn-export" onclick="exportarCajasExcel()">📊 EXPORTAR EXCEL</button>
       </div>
+
+      <!-- GUARDAR EN DASHBOARD (cajas siempre usa CEVA) -->
+      <div class="guardar-section" id="guardar-cajas-section">
+        <div class="guardar-label">Transportista: <strong style="color:var(--ceva-light)">CEVA</strong></div>
+        <button type="button" class="btn-guardar-calculo" id="btn-guardar-cajas" onclick="guardarCalculoCajasActual()">💾 GUARDAR ESTE ENVÍO</button>
+        <div class="guardar-msg" id="guardar-cajas-msg"></div>
+      </div>
     </div>
   </div>
 
-<!-- HISTORIAL PANEL -->
-<div id="historial-panel" role="dialog" aria-modal="true" aria-label="Historial del día">
-  <div class="historial-header">
-    <h2>📋 Historial del día</h2>
-    <button class="historial-close" onclick="toggleHistorial()">✕</button>
-  </div>
-  <div class="historial-stats">
-    <div class="stat-item">
-      <span class="stat-label">Cálculos hoy</span>
-      <span class="stat-value yellow" id="stat-total">0</span>
-    </div>
-    <div class="stat-item">
-      <span class="stat-label">Ahorro estimado</span>
-      <span class="stat-value green" id="stat-ahorro">0,00 €</span>
-    </div>
-    <div class="stat-item">
-      <span class="stat-label">Más barato</span>
-      <span class="stat-value" id="stat-winner" style="font-size:0.82rem">—</span>
-    </div>
-  </div>
-  <div class="historial-actions">
-    <button class="btn-hist-action" onclick="exportarHistorialCSV()">📄 Exportar CSV</button>
-    <button class="btn-hist-action" onclick="exportarHistorialExcel()">📊 Exportar Excel</button>
-    <button class="btn-hist-action danger" onclick="limpiarHistorial()">🗑 Limpiar</button>
-  </div>
-  <div class="historial-list" id="historial-list">
-    <div class="historial-empty">No hay cálculos registrados hoy.</div>
-  </div>
-</div>
 <script src="data.js"></script>
 <script src="state.js"></script>
-<script src="historial.js"></script>
+<script src="guardar.js"></script>
 <script src="ui.js"></script>
 <script src="calcular.js"></script>
 <script src="cajas.js"></script>

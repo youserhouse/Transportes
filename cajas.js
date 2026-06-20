@@ -82,14 +82,11 @@ function calcularCajas() {
   document.getElementById('results-cajas').style.display = 'block';
   document.getElementById('results-cajas').scrollIntoView({behavior:'smooth', block:'start'});
 
-  // Historial
-  const now = new Date();
-  addToHistorial({
-    hora: now.toTimeString().substring(0,5),
-    provincia: stateCajas.prov, zona: '—',
-    palets: `${numCajas} cajas`, altura,
-    pw: 0, ceva: res.total,
-    winner: 'CEVA', ahorro: 0
+  prepararGuardadoCajas({
+    tipo: 'CAJAS', destino: 'ESPAÑA',
+    provincia: stateCajas.prov.charAt(0) + stateCajas.prov.slice(1).toLowerCase(), cp: '', zona: '—',
+    pales: numCajas, altura, peso: totalKg,
+    precioPall: 0, precioCeva: res.total,
   });
 }
 
@@ -210,5 +207,4 @@ function exportarCajasExcel() {
 }
 
 // Init
-updateHistorialUI();
 renderCajaVisual();

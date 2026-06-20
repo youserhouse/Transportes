@@ -47,13 +47,11 @@ function calcular() {
     document.getElementById('results').className='show';
     document.getElementById('results').scrollIntoView({behavior:'smooth',block:'start'});
 
-    const now=new Date();
-    addToHistorial({
-      hora:now.toTimeString().substring(0,5),
-      provincia:`Portugal CP${state.cpPrt}`, zona:pwZona,
-      palets:numPalets, altura:alturaTotal,
-      pw:pwRes?pwRes.total:0, ceva:cevaRes?cevaRes.total:0,
-      winner, ahorro:saving
+    prepararGuardado({
+      tipo: 'PALÉS', destino: 'PORTUGAL',
+      provincia: 'Portugal', cp: state.cpPrt.substring(0,2), zona: pwZona,
+      pales: numPalets, altura: alturaTotal, peso: null,
+      precioPall: pwRes?pwRes.total:0, precioCeva: cevaRes?cevaRes.total:0,
     });
     return;
   }
@@ -83,12 +81,11 @@ function calcular() {
   document.getElementById('results').className='show';
   document.getElementById('results').scrollIntoView({behavior:'smooth',block:'start'});
 
-  const now=new Date();
-  addToHistorial({
-    hora:now.toTimeString().substring(0,5), provincia:state.prov, zona:state.zona,
-    palets:numPalets, altura:alturaTotal,
-    pw:pwRes?pwRes.total:0, ceva:cevaRes?cevaRes.total:0,
-    winner, ahorro:saving
+  prepararGuardado({
+    tipo: 'PALÉS', destino: 'ESPAÑA',
+    provincia: state.prov.charAt(0) + state.prov.slice(1).toLowerCase(), cp: '', zona: state.zona,
+    pales: numPalets, altura: alturaTotal, peso: null,
+    precioPall: pwRes?pwRes.total:0, precioCeva: cevaRes?cevaRes.total:0,
   });
 }
 
@@ -118,26 +115,6 @@ function exportarExcel() {
     ['CEVA', lastCevaRes.total.toFixed(2), lastCevaRes.basePrice.toFixed(2), lastCevaRes.surcharge.toFixed(2), lastInput.prov, lastInput.zona, lastInput.palets, lastInput.altura],
   ];
   downloadXLS(rows, `porte_${lastInput.prov}_${new Date().toISOString().split('T')[0]}.xls`);
-}
-
-function exportarHistorialCSV() {
-  const hist = getHistorial();
-  const day = getTodayKey();
-  const items = hist[day]||[];
-  if(!items.length){alert('No hay datos en el historial de hoy.');return;}
-  const rows=[['Hora','Provincia','Zona','Palés','Altura','PW (€)','CEVA (€)','Ganador','Ahorro (€)']];
-  items.forEach(it=>rows.push([it.hora,it.provincia,it.zona,it.palets,it.altura,it.pw.toFixed(2),it.ceva.toFixed(2),it.winner,(it.ahorro||0).toFixed(2)]));
-  downloadCSV(rows, `historial_${day}.csv`);
-}
-
-function exportarHistorialExcel() {
-  const hist = getHistorial();
-  const day = getTodayKey();
-  const items = hist[day]||[];
-  if(!items.length){alert('No hay datos en el historial de hoy.');return;}
-  const rows=[['Hora','Provincia','Zona','Palés','Altura','PW (€)','CEVA (€)','Ganador','Ahorro (€)']];
-  items.forEach(it=>rows.push([it.hora,it.provincia,it.zona,it.palets,it.altura,it.pw.toFixed(2),it.ceva.toFixed(2),it.winner,(it.ahorro||0).toFixed(2)]));
-  downloadXLS(rows, `historial_${day}.xls`);
 }
 
 function downloadCSV(rows, filename) {
