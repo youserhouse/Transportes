@@ -163,10 +163,6 @@
   #error-msg { display: none; padding: 11px 14px; border-left: 3px solid #ff5252; background: #ff52520a; font-family: var(--mono); font-size: 0.78rem; color: #ff8a80; }
   #error-msg.show { display: block; }
 
-  /* CONFIGURACIONES (imprimir / exportar) */
-  .config-section { margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border); }
-  .config-title { font-family: var(--mono); font-size: 0.62rem; color: var(--dim); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 12px; }
-
   /* ── GUARDAR EN DASHBOARD (selección manual de transportista) ── */
   .guardar-section { display: none; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); }
   .guardar-section.show { display: block; animation: fadeUp 0.3s ease; }
@@ -205,6 +201,7 @@
   .mode-tab:hover { color: var(--text); }
   .mode-tab.active-palets { color: var(--pw-light); border-bottom-color: var(--pw); }
   .mode-tab.active-cajas { color: var(--ceva-light); border-bottom-color: var(--ceva); }
+  .mode-tab.active-config { color: var(--yellow); border-bottom-color: var(--yellow); }
 
   /* CAJAS specific */
   .cajas-info-strip {
@@ -269,9 +266,9 @@
   /* PRINT STYLES */
   @media print {
     body::before, header .header-right,
-    #calc-btn, .calc-btn-cajas, .section, #error-msg, .export-row, .config-section,
+    #calc-btn, .calc-btn-cajas, .section, #error-msg, .export-row,
     .guardar-section, .mode-tabs, #error-cajas-msg { display: none !important; }
-    #results, #results-cajas { display: block !important; }
+    #mode-palets, #mode-cajas, #results, #results-cajas { display: block !important; }
     body { background: #fff !important; color: #000 !important; font-size: 11pt; }
     header { background: #fff !important; border-bottom: 2px solid #333 !important; padding: 12px 20px !important; }
     .logo-text h1 { color: #000 !important; }
