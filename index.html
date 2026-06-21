@@ -14,15 +14,22 @@
 ">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Calculadora de Transportes</title>
-<meta name="theme-color" content="#2979FF">
+<meta name="theme-color" content="#0D1018">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Transportes">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
+<script>
+  (function () {
+    var t = 'dark';
+    try { t = localStorage.getItem('transportes_theme') || 'dark'; } catch (e) {}
+    document.documentElement.className = t === 'light' ? 'theme-light' : 'theme-dark';
+  })();
+</script>
 <style>
 #auth-overlay{
   position:fixed;inset:0;z-index:99999;
@@ -39,13 +46,6 @@
   animation:authSpin 0.8s linear infinite;
 }
 @keyframes authSpin{to{transform:rotate(360deg)}}
-.btn-signout{
-  background:transparent;border:1px solid rgba(255,255,255,0.12);
-  border-radius:6px;color:rgba(255,255,255,0.45);
-  font-family:var(--mono,monospace);font-size:0.7rem;letter-spacing:0.1em;
-  padding:5px 11px;cursor:pointer;transition:border-color 0.2s,color 0.2s;
-}
-.btn-signout:hover{border-color:rgba(255,82,82,0.4);color:#ff8a80;}
 </style>
 </head>
 <body>
@@ -107,30 +107,34 @@ window.fsGuardarCalculo = async function(datos) {
 };
 </script>
 
-<header>
-  <div class="logo-area">
+<div class="app-shell">
+<aside class="sidebar">
+  <div class="sidebar-logo">
     <div class="logo-mark">🚛</div>
     <div class="logo-text">
-      <h1>Calculadora de Portes</h1>
-      <p>PALLETWAYS + CEVA · COMPARADOR DE TARIFAS</p>
+      <h1>Calculadora<br>de Portes</h1>
+      <p>PALLETWAYS + CEVA</p>
     </div>
   </div>
-  <div class="header-right">
-    <div class="badge badge-pw">PALLETWAYS</div>
-    <div class="badge badge-ceva">CEVA</div>
-    <button class="btn-signout" onclick="signOutUser()">Salir</button>
-  </div>
-</header>
 
-<main>
-  <!-- MODE TABS -->
-  <div class="mode-tabs">
+  <nav class="sidebar-nav">
+    <div class="nav-cat">Modos</div>
     <button class="mode-tab active-palets" id="tab-palets" onclick="setMode('palets')">🏗 Palés</button>
     <button class="mode-tab" id="tab-cajas" onclick="setMode('cajas')">📦 Cajas</button>
+
+    <div class="nav-divider"></div>
+    <div class="nav-cat">Datos</div>
     <button class="mode-tab" id="tab-dashboard" onclick="window.location.href='Dashboard.html'">📊 Dashboard</button>
     <button class="mode-tab" id="tab-config" onclick="setMode('config')">⚙ Configuraciones</button>
-  </div>
+  </nav>
 
+  <div class="sidebar-footer">
+    <button type="button" class="theme-toggle-btn" data-theme-toggle onclick="toggleAppTheme()">☀ Claro</button>
+    <button class="btn-signout" onclick="signOutUser()">← Salir</button>
+  </div>
+</aside>
+
+<main class="content">
   <!-- ═══ MODO PALÉS ═══ -->
   <div id="mode-palets">
     <!-- PASO 1 -->
@@ -384,6 +388,7 @@ window.fsGuardarCalculo = async function(datos) {
     </div>
   </div>
 
+<script src="theme.js"></script>
 <script src="data.js"></script>
 <script src="state.js"></script>
 <script src="guardar.js"></script>
@@ -400,5 +405,6 @@ window.fsGuardarCalculo = async function(datos) {
   }
 </script>
 </main>
+</div>
 </body>
 </html>
