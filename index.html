@@ -10,7 +10,7 @@
   font-src https://fonts.gstatic.com;
   connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com;
   img-src 'self' data: blob:;
-  frame-src https://transporte-99482.firebaseapp.com;
+  frame-src 'self' https://transporte-99482.firebaseapp.com;
 ">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Calculadora de Transportes</title>
@@ -124,7 +124,7 @@ window.fsGuardarCalculo = async function(datos) {
 
     <div class="nav-divider"></div>
     <div class="nav-cat">Datos</div>
-    <button class="mode-tab" id="tab-dashboard" onclick="window.location.href='Dashboard.html'">📊 Dashboard</button>
+    <button class="mode-tab" id="tab-dashboard" onclick="setMode('dashboard')">📊 Dashboard</button>
     <button class="mode-tab" id="tab-config" onclick="setMode('config')">⚙ Configuraciones</button>
   </nav>
 
@@ -137,10 +137,14 @@ window.fsGuardarCalculo = async function(datos) {
 <main class="content">
   <!-- ═══ MODO PALÉS ═══ -->
   <div id="mode-palets">
+    <div class="page-header">
+      <div class="page-pill"><span class="pill-dot"></span>CALCULADORA DE PALÉS</div>
+      <h2 class="page-title">Comparar precio de envío</h2>
+    </div>
     <!-- PASO 1 -->
     <div class="section">
       <div class="section-label">
-        <div class="section-num">01</div>
+        <div class="section-num active">01</div>
         <span class="section-title">Datos del envío</span>
       </div>
       <div class="input-row">
@@ -254,9 +258,17 @@ window.fsGuardarCalculo = async function(datos) {
 
     <!-- RESULTADOS PALÉS -->
     <div id="results">
+      <div class="result-header">
+        <div class="page-header" style="margin-bottom:0">
+          <div class="page-pill"><span class="pill-dot"></span>RESULTADO</div>
+          <h2 class="page-title" id="result-title">—</h2>
+        </div>
+        <button type="button" class="result-back-btn" onclick="volverAlFormulario()">← Nuevo</button>
+      </div>
       <div id="winner-banner">
         <div class="winner-icon">🏆</div>
         <div class="winner-text">
+          <div class="winner-label">Recomendación</div>
           <h3 id="winner-name">—</h3>
           <p id="winner-desc">—</p>
         </div>
@@ -299,16 +311,20 @@ window.fsGuardarCalculo = async function(datos) {
 
   <!-- ═══ MODO CAJAS ═══ -->
   <div id="mode-cajas" style="display:none">
+    <div class="page-header">
+      <div class="page-pill"><span class="pill-dot"></span>CALCULADORA DE CAJAS</div>
+      <h2 class="page-title">Comparar precio de envío</h2>
+    </div>
     <div class="section">
       <div class="section-label">
-        <div class="section-num">01</div>
+        <div class="section-num active">01</div>
         <span class="section-title">Número de cajas</span>
       </div>
       <div class="cajas-info-strip">
         <div class="cajas-pill">Cada caja: <span>0,15 uds</span></div>
         <div class="cajas-pill">Peso por caja: <span>37,5 kg</span></div>
         <div class="cajas-pill">Máximo: <span>14 cajas</span></div>
-        <div class="cajas-pill">Transportista: <span>CEVA</span></div>
+        <div class="cajas-pill cajas-pill-accent">Transportista: <span>CEVA</span></div>
       </div>
       <div class="field">
         <label for="num-cajas">Número de cajas (1–14)</label>
@@ -355,6 +371,13 @@ window.fsGuardarCalculo = async function(datos) {
     </div>
 
     <div id="results-cajas" style="display:none;animation:fadeUp 0.35s ease;">
+      <div class="result-header">
+        <div class="page-header" style="margin-bottom:0">
+          <div class="page-pill"><span class="pill-dot"></span>RESULTADO</div>
+          <h2 class="page-title" id="result-cajas-title">—</h2>
+        </div>
+        <button type="button" class="result-back-btn" onclick="volverAlFormularioCajas()">← Nuevo</button>
+      </div>
       <div class="result-card ceva" id="ceva-cajas-card" style="max-width:500px;margin:0 auto 20px;">
         <div class="card-header"><span style="font-size:1rem">🟠</span><span class="carrier-name">CEVA — Envío por Cajas</span></div>
         <div class="card-body">
@@ -373,10 +396,14 @@ window.fsGuardarCalculo = async function(datos) {
 
   <!-- ═══ MODO CONFIGURACIONES ═══ -->
   <div id="mode-config" style="display:none">
+    <div class="page-header">
+      <div class="page-pill"><span class="pill-dot"></span>AJUSTES</div>
+      <h2 class="page-title">Configuraciones</h2>
+    </div>
     <div class="section">
       <div class="section-label">
-        <div class="section-num">⚙</div>
-        <span class="section-title">Configuraciones</span>
+        <div class="section-num active">⚙</div>
+        <span class="section-title">Exportar e imprimir</span>
       </div>
       <div class="field-hint" style="margin-bottom:16px">Imprime o exporta el último cálculo de palés realizado.</div>
       <div class="export-row">
@@ -385,6 +412,17 @@ window.fsGuardarCalculo = async function(datos) {
         <button class="btn-export" onclick="exportarExcel()">📊 EXPORTAR EXCEL</button>
       </div>
       <div class="config-msg" id="config-msg"></div>
+    </div>
+  </div>
+
+  <!-- ═══ MODO DASHBOARD (integrado vía iframe) ═══ -->
+  <div id="mode-dashboard" style="display:none">
+    <div class="page-header">
+      <div class="page-pill"><span class="pill-dot"></span>ANALÍTICA</div>
+      <h2 class="page-title">Dashboard</h2>
+    </div>
+    <div class="dashboard-frame-wrap">
+      <iframe id="dashboard-iframe" title="Dashboard" loading="lazy"></iframe>
     </div>
   </div>
 

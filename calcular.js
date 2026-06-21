@@ -33,6 +33,7 @@ function calcular() {
 
     lastPwRes=pwRes; lastCevaRes=cevaRes;
     lastInput={palets:numPalets,altura:alturaTotal,prov:`Portugal CP ${state.cpPrt}xx`,zona:pwZona,country:'PRT'};
+    document.getElementById('result-title').textContent = `${numPalets} palé${numPalets>1?'s':''} · Portugal CP ${state.cpPrt}xx`;
 
     const pwWins = pwRes&&cevaRes ? pwRes.total<=cevaRes.total : !!pwRes;
     if(pwRes) renderPW(pwRes, pwWins);
@@ -67,6 +68,8 @@ function calcular() {
 
   lastPwRes=pwRes; lastCevaRes=cevaRes;
   lastInput={palets:numPalets,altura:alturaTotal,prov:state.prov,zona:state.zona,country:'ESP'};
+  const provLabel = state.prov.charAt(0) + state.prov.slice(1).toLowerCase();
+  document.getElementById('result-title').textContent = `${numPalets} palé${numPalets>1?'s':''} · ${provLabel} · España`;
 
   const pwWins = pwRes&&cevaRes ? pwRes.total<=cevaRes.total : !!pwRes;
   if(pwRes) renderPW(pwRes, pwWins);

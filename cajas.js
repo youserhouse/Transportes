@@ -7,13 +7,29 @@ let currentMode = 'palets';
 
 function setMode(mode) {
   currentMode = mode;
-  document.getElementById('mode-palets').style.display = mode==='palets' ? '' : 'none';
-  document.getElementById('mode-cajas').style.display  = mode==='cajas'  ? '' : 'none';
-  document.getElementById('mode-config').style.display = mode==='config' ? '' : 'none';
-  document.getElementById('tab-palets').className = 'mode-tab' + (mode==='palets'?' active-palets':'');
-  document.getElementById('tab-cajas').className  = 'mode-tab' + (mode==='cajas' ?' active-cajas':'');
-  document.getElementById('tab-config').className = 'mode-tab' + (mode==='config'?' active-config':'');
+  document.getElementById('mode-palets').style.display    = mode==='palets'    ? '' : 'none';
+  document.getElementById('mode-cajas').style.display     = mode==='cajas'     ? '' : 'none';
+  document.getElementById('mode-config').style.display    = mode==='config'    ? '' : 'none';
+  document.getElementById('mode-dashboard').style.display = mode==='dashboard' ? '' : 'none';
+  document.getElementById('tab-palets').className    = 'mode-tab' + (mode==='palets'?' active-palets':'');
+  document.getElementById('tab-cajas').className     = 'mode-tab' + (mode==='cajas' ?' active-cajas':'');
+  document.getElementById('tab-config').className    = 'mode-tab' + (mode==='config'?' active-config':'');
+  document.getElementById('tab-dashboard').className = 'mode-tab' + (mode==='dashboard'?' active-dashboard':'');
   if (mode==='cajas') renderCajaVisual();
+  if (mode==='dashboard') {
+    const frame = document.getElementById('dashboard-iframe');
+    if (!frame.src) frame.src = 'Dashboard.html';
+  }
+}
+
+function volverAlFormulario() {
+  document.getElementById('results').className = '';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function volverAlFormularioCajas() {
+  document.getElementById('results-cajas').style.display = 'none';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -68,6 +84,9 @@ function calcularCajas() {
   if (!res) { errEl.textContent='⚠ No se encontró tarifa para esta provincia.'; errEl.style.display='block'; return; }
 
   lastCajasRes = { ...res, numCajas, altura, prov: stateCajas.prov };
+
+  const provCajasLabel = stateCajas.prov.charAt(0) + stateCajas.prov.slice(1).toLowerCase();
+  document.getElementById('result-cajas-title').textContent = `${numCajas} caja${numCajas>1?'s':''} · ${provCajasLabel}`;
 
   // Render
   document.getElementById('ceva-cajas-price').innerHTML =

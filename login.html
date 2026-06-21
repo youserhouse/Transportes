@@ -83,7 +83,9 @@ html,body{height:100%;overflow:hidden;}
 .login-divider::before,.login-divider::after{content:'';flex:1;height:1px;background:var(--border);}
 
 /* ── EMAIL FORM ── */
-.email-form{margin-top:14px;display:flex;flex-direction:column;gap:10px;}
+.email-form{margin-top:14px;display:flex;flex-direction:column;gap:14px;}
+.email-form .field{display:flex;flex-direction:column;gap:6px;}
+.email-form .field-label{font-family:var(--mono);font-size:0.6rem;letter-spacing:0.1em;color:var(--text3);text-transform:uppercase;}
 .email-form .field input{
   width:100%;padding:11px 14px;background:var(--in-bg);
   border:1px solid var(--in-border);border-radius:4px;
@@ -165,12 +167,14 @@ html,body{height:100%;overflow:hidden;}
 
     <div class="email-form">
       <div class="field">
-        <input type="email" id="inp-email" placeholder="Correo electrónico" autocomplete="email" inputmode="email">
+        <span class="field-label">Correo electrónico</span>
+        <input type="email" id="inp-email" placeholder="usuario@empresa.com" autocomplete="email" inputmode="email">
       </div>
       <div class="field">
-        <input type="password" id="inp-pass" placeholder="Contraseña" autocomplete="current-password">
+        <span class="field-label">Contraseña</span>
+        <input type="password" id="inp-pass" placeholder="••••••••" autocomplete="current-password">
       </div>
-      <button class="btn-email" id="btn-email">Iniciar sesión</button>
+      <button class="btn-email" id="btn-email">Iniciar sesión →</button>
     </div>
 
     <div class="login-error-box" id="error-box"></div>
@@ -232,7 +236,7 @@ function setLoading(on) {
   } else {
     btnG.querySelector('.spinner')?.remove();
     label.textContent = 'Continuar con Google';
-    btnE.textContent  = 'Iniciar sesión';
+    btnE.textContent  = 'Iniciar sesión →';
   }
 }
 
