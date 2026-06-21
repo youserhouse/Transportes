@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #CCC9C1; font-family: 'Space Grotesk', sans-serif; }
+  </style>
+</helmet>
+
+<div style="min-width:100%; width:max-content; min-height:100vh; padding:64px 56px; background:#CCC9C1; box-sizing:border-box;">
+
+  <!-- HEADER -->
+  <div style="margin-bottom:56px;">
+    <div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.18em; color:#8A8778; text-transform:uppercase; margin-bottom:11px;">Exploración visual · 2 propuestas</div>
+    <div style="font-size:30px; font-weight:700; color:#1A1915; letter-spacing:-0.6px; margin-bottom:9px;">Rediseño · Calculadora de Transportes</div>
+    <div style="font-size:13px; color:#6E6B62; max-width:580px; line-height:1.65;">Dos direcciones para elegir. Cada una muestra Login, calculadora de Palés y vista de Resultados. El modo Cajas, Configuraciones y Dashboard se construirán en la dirección que elijas.</div>
+  </div>
+
+  <!-- ═══════════ DIRECTION A · LUMEN ═══════════ -->
+  <div style="margin-bottom:80px;">
+    <div style="display:flex; align-items:center; gap:14px; margin-bottom:24px;">
+      <div style="background:#1A1915; color:#F2EFE5; font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.14em; padding:6px 13px; text-transform:uppercase; font-weight:500;">A · LUMEN</div>
+      <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#968F85;">Tema claro · paleta cálida · acento rojo vermellón</div>
+      <div style="flex:1; height:1px; background:#B5B1A9;"></div>
+    </div>
+
+    <div style="display:flex; gap:24px; align-items:flex-start;">
+
+      <!-- A1 · LOGIN -->
+      <div style="flex:none;">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.1em; text-transform:uppercase; color:#8A8778; margin-bottom:9px;">01 · Login</div>
+        <div style="width:380px; background:#F2EFE5; border-radius:3px; overflow:hidden; box-shadow:0 2px 16px rgba(0,0,0,0.07);">
+          <div style="height:560px; display:flex; align-items:center; justify-content:center;">
+            <div style="width:284px;">
+              <div style="text-align:center; margin-bottom:42px;">
+                <div style="width:46px; height:46px; background:#1A1915; border-radius:3px; display:flex; align-items:center; justify-content:center; margin:0 auto 13px; font-size:21px;">🚛</div>
+                <div style="font-weight:700; font-size:14px; letter-spacing:0.05em; color:#1A1915; text-transform:uppercase;">Calculadora de Portes</div>
+                <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#A8A49C; letter-spacing:0.13em; margin-top:5px;">PALLETWAYS + CEVA</div>
+              </div>
+              <div style="margin-bottom:14px;">
+                <div style="font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.1em; color:#A8A49C; text-transform:uppercase; margin-bottom:6px;">Correo electrónico</div>
+                <div style="background:#FFFFFF; border:1px solid #DDD9CE; border-radius:2px; padding:11px 13px; font-size:13px; color:#C5C0B5;">usuario@empresa.com</div>
+              </div>
+              <div style="margin-bottom:28px;">
+                <div style="font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.1em; color:#A8A49C; text-transform:uppercase; margin-bottom:6px;">Contraseña</div>
+                <div style="background:#FFFFFF; border:1px solid #DDD9CE; border-radius:2px; padding:11px 13px; font-size:13px; color:#1A1915;">••••••••</div>
+              </div>
+              <div style="background:#D04C32; color:#FFFFFF; border-radius:2px; padding:14px; text-align:center; font-weight:600; font-size:12px; letter-spacing:0.08em; text-transform:uppercase; margin-bottom:18px;">Iniciar sesión →</div>
+              <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#A8A49C; text-align:center;">Acceso restringido · solo usuarios autorizados</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- A2 · CALCULADORA -->
+      <div style="flex:none;">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.1em; text-transform:uppercase; color:#8A8778; margin-bottom:9px;">02 · Calculadora · Palés</div>
+        <div style="width:560px; background:#F2EFE5; border-radius:3px; overflow:hidden; box-shadow:0 2px 16px rgba(0,0,0,0.07);">
+          <div style="display:flex; height:632px;">
+            <!-- sidebar -->
+            <div style="width:172px; flex:none; background:#FFFFFF; border-right:1px solid #E4E0D6; display:flex; flex-direction:column;">
+              <div style="padding:22px 18px 20px; border-bottom:1px solid #E4E0D6;">
+                <div style="display:flex; align-items:center; gap:10px;">
+                  <div style="width:32px; height:32px; background:#1A1915; border-radius:2px; display:flex; align-items:center; justify-content:center; font-size:15px; flex:none;">🚛</div>
+                  <div style="font-weight:700; font-size:10px; letter-spacing:0.04em; color:#1A1915; line-height:1.25; text-transform:uppercase;">Calculadora<br>de Portes</div>
+                </div>
+              </div>
+              <div style="padding:16px 0; flex:1;">
+                <div style="font-family:'JetBrains Mono',monospace; font-size:8px; letter-spacing:0.15em; color:#B0ABA2; text-transform:uppercase; padding:0 18px 10px;">Modos</div>
+                <div style="background:#D04C32; margin:0 10px 3px; border-radius:2px; padding:9px 12px; display:flex; align-items:center; gap:8px;">
+                  <span style="font-size:11px;">🏗</span><span style="font-weight:600; font-size:11px; color:#FFFFFF;">Palés</span>
+                </div>
+                <div style="margin:0 10px 3px; padding:9px 12px; display:flex; align-items:center; gap:8px;">
+                  <span style="font-size:11px;">📦</span><span style="font-size:11px; color:#6E6960;">Cajas</span>
+                </div>
+                <div style="margin:0 10px 3px; padding:9px 12px; display:flex; align-items:center; gap:8px;">
+                  <span style="font-size:11px;">📊</span><span style="font-size:11px; color:#6E6960;">Dashboard</span>
+                </div>
+                <div style="margin:0 10px; padding:9px 12px; display:flex; align-items:center; gap:8px;">
+                  <span style="font-size:11px;">⚙</span><span style="font-size:11px; color:#6E6960;">Config.</span>
+                </div>
+              </div>
+              <div style="padding:16px 18px; border-top:1px solid #E4E0D6;">
+                <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#B0ABA2; letter-spacing:0.06em;">← Salir</div>
+              </div>
+            </div>
+            <!-- content -->
+            <div style="flex:1; padding:26px 22px; background:#F2EFE5;">
+              <div style="margin-bottom:22px;">
+                <div style="display:inline-flex; align-items:center; gap:6px; background:#FAE8E5; border-radius:100px; padding:4px 11px; margin-bottom:11px;">
+                  <div style="width:5px; height:5px; border-radius:50%; background:#D04C32;"></div>
+                  <span style="font-family:'JetBrains Mono',monospace; font-size:8px; letter-spacing:0.12em; color:#D04C32; text-transform:uppercase; font-weight:600;">Palletways + CEVA · Comparador</span>
+                </div>
+                <div style="font-size:21px; font-weight:700; color:#1A1915; letter-spacing:-0.4px;">Calculadora de Palés</div>
+              </div>
+              <div style="margin-bottom:18px;">
+                <div style="display:flex; align-items:center; gap:10px; margin-bottom:11px;">
+                  <div style="width:20px; height:20px; border-radius:50%; background:#D04C32; display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; font-size:8px; font-weight:600; color:#FFFFFF; flex:none;">01</div>
+                  <span style="font-weight:600; font-size:12px; color:#1A1915;">Datos del envío</span>
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                  <div>
+                    <div style="font-family:'JetBrains Mono',monospace; font-size:8px; letter-spacing:0.1em; color:#A8A49C; text-transform:uppercase; margin-bottom:5px;">Núm. de palés</div>
+                    <div style="background:#FFFFFF; border:1px solid #DDD9CE; border-radius:2px; padding:9px 12px; font-size:13px; color:#1A1915;">4</div>
+                  </div>
+                  <div>
+                    <div style="font-family:'JetBrains Mono',monospace; font-size:8px; letter-spacing:0.1em; color:#A8A49C; text-transform:uppercase; margin-bottom:5px;">Altura total</div>
+                    <div style="background:#FFFFFF; border:1px solid #DDD9CE; border-radius:2px; padding:9px 12px; font-size:13px; color:#1A1915;">3.5</div>
+                  </div>
+                </div>
+              </div>
+              <div style="margin-bottom:20px;">
+                <div style="display:flex; align-items:center; gap:10px; margin-bottom:11px;">
+                  <div style="width:20px; height:20px; border-radius:50%; background:#E4E0D6; display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; font-size:8px; font-weight:600; color:#A8A49C; flex:none;">02</div>
+                  <span style="font-weight:600; font-size:12px; color:#1A1915;">Destino</span>
+                </div>
+                <div style="display:flex; gap:8px; margin-bottom:11px;">
+                  <div style="flex:1; background:#D04C32; border-radius:2px; padding:8px; text-align:center; font-weight:600; font-size:11px; color:#FFFFFF;">🇪🇸 España</div>
+                  <div style="flex:1; background:#FFFFFF; border:1px solid #DDD9CE; border-radius:2px; padding:8px; text-align:center; font-size:11px; color:#A8A49C;">🇵🇹 Portugal</div>
+                </div>
+                <div>
+                  <div style="font-family:'JetBrains Mono',monospace; font-size:8px; letter-spacing:0.1em; color:#A8A49C; text-transform:uppercase; margin-bottom:5px;">Buscar provincia</div>
+                  <div style="background:#FFFFFF; border:1px solid #DDD9CE; border-radius:2px; padding:9px 12px; font-size:12px; color:#C5C0B5;">Madrid, Barcelona, Sevilla…</div>
+                </div>
+                <div style="margin:10px 0; display:flex; align-items:center; gap:10px;">
+                  <div style="flex:1; height:1px; background:#DDD9CE;"></div>
+                  <div style="font-family:'JetBrains Mono',monospace; font-size:8px; color:#B0ABA2; letter-spacing:0.1em; text-transform:uppercase;">o por CP</div>
+                  <div style="flex:1; height:1px; background:#DDD9CE;"></div>
+                </div>
+                <div style="background:#FFFFFF; border:1px solid #DDD9CE; border-radius:2px; padding:9px 12px; font-size:12px; color:#C5C0B5; max-width:55%;">Código postal · 28001</div>
+              </div>
+              <div style="background:#1A1915; color:#FFFFFF; border-radius:2px; padding:13px; text-align:center; font-weight:600; font-size:11px; letter-spacing:0.08em; text-transform:uppercase;">▶ Calcular precio de envío</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- A3 · RESULTADOS -->
+      <div style="flex:none;">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.1em; text-transform:uppercase; color:#8A8778; margin-bottom:9px;">03 · Resultados</div>
+        <div style="width:560px; background:#F2EFE5; border-radius:3px; overflow:hidden; box-shadow:0 2px 16px rgba(0,0,0,0.07);">
+          <div style="display:flex; height:632px;">
+            <div style="width:172px; flex:none; background:#FFFFFF; border-right:1px solid #E4E0D6; display:flex; flex-direction:column;">
+              <div style="padding:22px 18px 20px; border-bottom:1px solid #E4E0D6;">
+                <div style="display:flex; align-items:center; gap:10px;">
+                  <div style="width:32px; height:32px; background:#1A1915; border-radius:2px; display:flex; align-items:center; justify-content:center; font-size:15px; flex:none;">🚛</div>
+                  <div style="font-weight:700; font-size:10px; letter-spacing:0.04em; color:#1A1915; line-height:1.25; text-transform:uppercase;">Calculadora<br>de Portes</div>
+                </div>
+              </div>
+              <div style="padding:16px 0; flex:1;">
+                <div style="font-family:'JetBrains Mono',monospace; font-size:8px; letter-spacing:0.15em; color:#B0ABA2; text-transform:uppercase; padding:0 18px 10px;">Modos</div>
+                <div style="background:#D04C32; margin:0 10px 3px; border-radius:2px; padding:9px 12px; display:flex; align-items:center; gap:8px;">
+                  <span style="font-size:11px;">🏗</span><span style="font-weight:600; font-size:11px; color:#FFFFFF;">Palés</span>
+                </div>
+                <div style="margin:0 10px 3px; padding:9px 12px; display:flex; align-items:center; gap:8px;">
+                  <span style="font-size:11px;">📦</span><span style="font-size:11px; color:#6E6960;">Cajas</span>
+                </div>
+                <div style="margin:0 10px 3px; padding:9px 12px; display:flex; align-items:center; gap:8px;">
+                  <span style="font-size:11px;">📊</span><span style="font-size:11px; color:#6E6960;">Dashboard</span>
+                </div>
+                <div style="margin:0 10px; padding:9px 12px; display:flex; align-items:center; gap:8px;">
+                  <span style="font-size:11px;">⚙</span><span style="font-size:11px; color:#6E6960;">Config.</span>
+                </div>
+              </div>
+              <div style="padding:16px 18px; border-top:1px solid #E4E0D6;">
+                <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#B0ABA2; letter-spacing:0.06em;">← Salir</div>
+              </div>
+            </div>
+            <div style="flex:1; padding:22px 20px; background:#F2EFE5;">
+              <div style="margin-bottom:15px;">
+                <div style="display:inline-flex; align-items:center; gap:6px; background:#FAE8E5; border-radius:100px; padding:4px 11px; margin-bottom:11px;">
+                  <div style="width:5px; height:5px; border-radius:50%; background:#D04C32;"></div>
+                  <span style="font-family:'JetBrains Mono',monospace; font-size:8px; letter-spacing:0.12em; color:#D04C32; text-transform:uppercase; font-weight:600;">Resultado del cálculo</span>
+                </div>
+                <div style="font-size:19px; font-weight:700; color:#1A1915; letter-spacing:-0.4px;">4 Palés · Madrid · España</div>
+              </div>
+              <div style="background:#1A1915; border-radius:3px; padding:14px 16px; margin-bottom:14px; display:flex; align-items:center; justify-content:space-between;">
+                <div>
+                  <div style="font-family:'JetBrains Mono',monospace; font-size:8px; letter-spacing:0.1em; color:#666260; text-transform:uppercase; margin-bottom:3px;">Recomendación</div>
+                  <div style="font-size:13px; font-weight:600; color:#FFFFFF;">🏆 Palletways es más económico</div>
+                </div>
+                <div style="background:#2E7D48; border-radius:2px; padding:5px 10px; font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:600; color:#FFFFFF; white-space:nowrap;">Ahorro 31€</div>
+              </div>
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px;">
+                <div style="background:#FFFFFF; border:2px solid #1E4D8C; border-radius:3px; padding:14px; position:relative;">
+                  <div style="position:absolute; top:-1px; right:10px; background:#1E4D8C; color:#FFFFFF; font-family:'JetBrains Mono',monospace; font-size:7px; letter-spacing:0.08em; padding:3px 8px; border-radius:0 0 3px 3px; font-weight:600;">GANADOR</div>
+                  <div style="font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.12em; color:#1E4D8C; text-transform:uppercase; font-weight:600; margin-bottom:10px;">Palletways</div>
+                  <div style="font-size:33px; font-weight:700; color:#1A1915; letter-spacing:-1.5px; line-height:1;">142<span style="font-size:15px; font-weight:500; letter-spacing:0;">€</span></div>
+                  <div style="margin:11px 0; height:1px; background:#E4E0D6;"></div>
+                  <div style="font-family:'JetBrains Mono',monospace; font-size:8px; color:#A8A49C; line-height:1.95;">
+                    <div>2× SEL · 105,60€</div>
+                    <div>1× Quarter · 36,40€</div>
+                  </div>
+                  <div style="margin-top:11px; background:#1E4D8C; color:#FFFFFF; border-radius:2px; padding:8px; text-align:center; font-size:9px; font-weight:600; letter-spacing:0.07em; text-transform:uppercase;">Elegir Palletways</div>
+                </div>
+                <div style="background:#FFFFFF; border:1px solid #E4E0D6; border-radius:3px; padding:14px; opacity:0.72;">
+                  <div style="font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.12em; color:#C4772A; text-transform:uppercase; font-weight:600; margin-bottom:10px;">CEVA</div>
+                  <div style="font-size:33px; font-weight:700; color:#1A1915; letter-spacing:-1.5px; line-height:1;">173<span style="font-size:15px; font-weight:500; letter-spacing:0;">€</span></div>
+                  <div style="margin:11px 0; height:1px; background:#E4E0D6;"></div>
+                  <div style="font-family:'JetBrains Mono',monospace; font-size:8px; color:#A8A49C; line-height:1.95;">
+                    <div>Precio base · 148,00€</div>
+                    <div>Gestión · 25,00€</div>
+                  </div>
+                  <div style="margin-top:11px; background:#E4E0D6; color:#A8A49C; border-radius:2px; padding:8px; text-align:center; font-size:9px; font-weight:600; letter-spacing:0.07em; text-transform:uppercase;">Elegir CEVA</div>
+                </div>
+              </div>
+              <div style="background:#D04C32; color:#FFFFFF; border-radius:2px; padding:12px; text-align:center; font-weight:600; font-size:11px; letter-spacing:0.08em; text-transform:uppercase;">💾 Guardar este envío</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════ DIRECTION B · UMBRA ═══════════ -->
+  <div>
+    <div style="display:flex; align-items:center; gap:14px; margin-bottom:24px;">
+      <div style="background:#88E020; color:#0D1018; font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.14em; padding:6px 13px; text-transform:uppercase; font-weight:600;">B · UMBRA</div>
+      <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#968F85;">Tema oscuro · paleta fría · acento lima eléctrico</div>
+      <div style="flex:1; height:1px; background:#B5B1A9;"></div>
+    </div>
+
+    <div style="display:flex; gap:24px; align-items:flex-start;">
+
+      <!-- B1 · LOGIN -->
+      <div style="flex:none;">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.1em; text-transform:uppercase; color:#8A8778; margin-bottom:9px;">01 · Login</div>
+        <div style="width:380px; background:#0D1018; border-radius:3px; overflow:hidden; box-shadow:0 4px 24px rgba(0,0,0,0.28);">
+          <div style="height:560px; display:flex; align-items:center; justify-content:center;">
+            <div style="width:284px;">
+              <div style="text-align:center; margin-bottom:42px;">
+                <div style="width:46px; height:46px; background:#88E020; border-radius:3px; display:flex; align-items:center; justify-content:center; margin:0 auto 13px; font-size:21px;">🚛</div>
+                <div style="font-weight:700; font-size:14px; letter-spacing:0.05em; color:#E4E1D6; text-transform:uppercase;">Calculadora de Portes</div>
+                <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#3E4455; letter-spacing:0.13em; margin-top:5px;">PALLETWAYS + CEVA</div>
+              </div>
+              <div style="margin-bottom:14px;">
+                <div style="font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.1em; color:#3E4455; text-transform:uppercase; margin-bottom:6px;">Correo electrónico</div>
+                <div style="background:#141A24; border:1px solid #252C3C; border-radius:2px; padding:11px 13px; font-size:13px; color:#2E3545;">usuario@empresa.com</div>
+              </div>
+              <div style="margin-bottom:28px;">
+                <div style="font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.1em; color:#3E4455; text-transform:uppercase; margin-bottom:6px;">Contraseña</div>
+                <div style="background:#141A24; border:1px solid #252C3C; border-radius:2px; padding:11px 13px; font-size:13px; color:#E4E1D6;">••••••••</div>
+              </div>
+              <div style="background:#88E020; color:#0D1018; border-radius:2px; padding:14px; text-align:center; font-weight:700; font-size:12px; letter-spacing:0.08em; text-transform:uppercase; margin-bottom:18px;">Iniciar sesión →</div>
+              <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#3E4455; text-align:center;">Acceso restringido · solo usuarios autorizados</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- B2 · CALCULADORA -->
+      <div style="flex:none;">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.1em; text-transform:uppercase; color:#8A8778; margin-bottom:9px;">02 · Calculadora · Palés</div>
+        <div style="width:560px; background:#0D1018; border-radius:3px; overflow:hidden; box-shadow:0 4px 24px rgba(0,0,0,0.28);">
+          <div style="display:flex; height:632px;">
+            <div style="width:172px; flex:none; background:#141A24; border-right:1px solid #1E2636; display:flex; flex-direction:column;">
+              <div style="padding:22px 18px 20px; border-bottom:1px solid #1E2636;">
+                <div style="display:flex; align-items:center; gap:10px;">
+                  <div style="width:32px; height:32px; background:#88E020; border-radius:2px; display:flex; align-items:center; justify-content:center; font-size:15px; flex:none;">🚛</div>
+                  <div style="font-weight:700; font-size:10px; letter-spacing:0.04em; color:#E4E1D6; line-height:1.25; text-transform:uppercase;">Calculadora<br>de Portes</div>
+                </div>
+              </div>
+              <div style="padding:16px 0; flex:1;">
+                <div style="font-family:'JetBrains Mono',monospace; font-size:8px; letter-spacing:0.15em; color:#2E3A50; text-transform:uppercase; padding:0 18px 10px;">Modos</div>
+                <div style="background:#88E020; margin:0 10px 3px; border-radius:2px; padding:9px 12px; display:flex; align-items:center; gap:8px;">
+                  <span style="font-size:11px;">🏗</span><span style="font-weight:700; font-size:11px; color:#0D1018;">Palés</span>
+                </div>
+                <div style="margin:0 10px 3px; padding:9px 12px; display:flex; align-items:center; gap:8px;">
+                  <span style="font-size:11px;">📦</span><span style="font-size:11px; color:#3E4A5E;">Cajas</span>
+                </div>
+                <div style="margin:0 10px 3px; padding:9px 12px; display:flex; align-items:center; gap:8px;">
+                  <span style="font-size:11px;">📊</span><span style="font-size:11px; color:#3E4A5E;">Dashboard</span>
+                </div>
+                <div style="margin:0 10px; padding:9px 12px; display:flex; align-items:center; gap:8px;">
+                  <span style="font-size:11px;">⚙</span><span style="font-size:11px; color:#3E4A5E;">Config.</span>
+                </div>
+              </div>
+              <div style="padding:16px 18px; border-top:1px solid #1E2636;">
+                <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#2E3A50; letter-spacing:0.06em;">← Salir</div>
+              </div>
+            </div>
+            <div style="flex:1; padding:26px 22px; background:#0D1018;">
+              <div style="margin-bottom:22px;">
+                <div style="display:inline-flex; align-items:center; gap:6px; background:#16240E; border:1px solid #2D4820; border-radius:100px; padding:4px 11px; margin-bottom:11px;">
+                  <div style="width:5px; height:5px; border-radius:50%; background:#88E020;"></div>
+                  <span style="font-family:'JetBrains Mono',monospace; font-size:8px; letter-spacing:0.12em; color:#88E020; text-transform:uppercase; font-weight:600;">Palletways + CEVA · Comparador</span>
+                </div>
+                <div style="font-size:21px; font-weight:700; color:#E4E1D6; letter-spacing:-0.4px;">Calculadora de Palés</div>
+              </div>
+              <div style="margin-bottom:18px;">
+                <div style="display:flex; align-items:center; gap:10px; margin-bottom:11px;">
+                  <div style="width:20px; height:20px; border-radius:50%; background:#88E020; display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; font-size:8px; font-weight:700; color:#0D1018; flex:none;">01</div>
+                  <span style="font-weight:600; font-size:12px; color:#E4E1D6;">Datos del envío</span>
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                  <div>
+                    <div style="font-family:'JetBrains Mono',monospace; font-size:8px; letter-spacing:0.1em; color:#3E4A5E; text-transform:uppercase; margin-bottom:5px;">Núm. de palés</div>
+                    <div style="background:#141A24; border:1px solid #1E2636; border-radius:2px; padding:9px 12px; font-size:13px; color:#E4E1D6;">4</div>
+                  </div>
+                  <div>
+                    <div style="font-family:'JetBrains Mono',monospace; font-size:8px; letter-spacing:0.1em; color:#3E4A5E; text-transform:uppercase; margin-bottom:5px;">Altura total</div>
+                    <div style="background:#141A24; border:1px solid #1E2636; border-radius:2px; padding:9px 12px; font-size:13px; color:#E4E1D6;">3.5</div>
+                  </div>
+                </div>
+              </div>
+              <div style="margin-bottom:20px;">
+                <div style="display:flex; align-items:center; gap:10px; margin-bottom:11px;">
+                  <div style="width:20px; height:20px; border-radius:50%; background:#1E2636; display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; font-size:8px; font-weight:600; color:#3E4A5E; flex:none;">02</div>
+                  <span style="font-weight:600; font-size:12px; color:#E4E1D6;">Destino</span>
+                </div>
+                <div style="display:flex; gap:8px; margin-bottom:11px;">
+                  <div style="flex:1; background:#88E020; border-radius:2px; padding:8px; text-align:center; font-weight:700; font-size:11px; color:#0D1018;">🇪🇸 España</div>
+                  <div style="flex:1; background:#141A24; border:1px solid #1E2636; border-radius:2px; padding:8px; text-align:center; font-size:11px; color:#3E4A5E;">🇵🇹 Portugal</div>
+                </div>
+                <div>
+                  <div style="font-family:'JetBrains Mono',monospace; font-size:8px; letter-spacing:0.1em; color:#3E4A5E; text-transform:uppercase; margin-bottom:5px;">Buscar provincia</div>
+                  <div style="background:#141A24; border:1px solid #1E2636; border-radius:2px; padding:9px 12px; font-size:12px; color:#2E3545;">Madrid, Barcelona, Sevilla…</div>
+                </div>
+                <div style="margin:10px 0; display:flex; align-items:center; gap:10px;">
+                  <div style="flex:1; height:1px; background:#1E2636;"></div>
+                  <div style="font-family:'JetBrains Mono',monospace; font-size:8px; color:#2E3A50; letter-spacing:0.1em; text-transform:uppercase;">o por CP</div>
+                  <div style="flex:1; height:1px; background:#1E2636;"></div>
+                </div>
+                <div style="background:#141A24; border:1px solid #1E2636; border-radius:2px; padding:9px 12px; font-size:12px; color:#2E3545; max-width:55%;">Código postal · 28001</div>
+              </div>
+              <div style="background:#E4E1D6; color:#0D1018; border-radius:2px; padding:13px; text-align:center; font-weight:700; font-size:11px; letter-spacing:0.08em; text-transform:uppercase;">▶ Calcular precio de envío</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- B3 · RESULTADOS -->
+      <div style="flex:none;">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.1em; text-transform:uppercase; color:#8A8778; margin-bottom:9px;">03 · Resultados</div>
+        <div style="width:560px; background:#0D1018; border-radius:3px; overflow:hidden; box-shadow:0 4px 24px rgba(0,0,0,0.28);">
+          <div style="display:flex; height:632px;">
+            <div style="width:172px; flex:none; background:#141A24; border-right:1px solid #1E2636; display:flex; flex-direction:column;">
+              <div style="padding:22px 18px 20px; border-bottom:1px solid #1E2636;">
+                <div style="display:flex; align-items:center; gap:10px;">
+                  <div style="width:32px; height:32px; background:#88E020; border-radius:2px; display:flex; align-items:center; justify-content:center; font-size:15px; flex:none;">🚛</div>
+                  <div style="font-weight:700; font-size:10px; letter-spacing:0.04em; color:#E4E1D6; line-height:1.25; text-transform:uppercase;">Calculadora<br>de Portes</div>
+                </div>
+              </div>
+              <div style="padding:16px 0; flex:1;">
+                <div style="font-family:'JetBrains Mono',monospace; font-size:8px; letter-spacing:0.15em; color:#2E3A50; text-transform:uppercase; padding:0 18px 10px;">Modos</div>
+                <div style="background:#88E020; margin:0 10px 3px; border-radius:2px; padding:9px 12px; display:flex; align-items:center; gap:8px;">
+                  <span style="font-size:11px;">🏗</span><span style="font-weight:700; font-size:11px; color:#0D1018;">Palés</span>
+                </div>
+                <div style="margin:0 10px 3px; padding:9px 12px; display:flex; align-items:center; gap:8px;">
+                  <span style="font-size:11px;">📦</span><span style="font-size:11px; color:#3E4A5E;">Cajas</span>
+                </div>
+                <div style="margin:0 10px 3px; padding:9px 12px; display:flex; align-items:center; gap:8px;">
+                  <span style="font-size:11px;">📊</span><span style="font-size:11px; color:#3E4A5E;">Dashboard</span>
+                </div>
+                <div style="margin:0 10px; padding:9px 12px; display:flex; align-items:center; gap:8px;">
+                  <span style="font-size:11px;">⚙</span><span style="font-size:11px; color:#3E4A5E;">Config.</span>
+                </div>
+              </div>
+              <div style="padding:16px 18px; border-top:1px solid #1E2636;">
+                <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#2E3A50; letter-spacing:0.06em;">← Salir</div>
+              </div>
+            </div>
+            <div style="flex:1; padding:22px 20px; background:#0D1018;">
+              <div style="margin-bottom:15px;">
+                <div style="display:inline-flex; align-items:center; gap:6px; background:#16240E; border:1px solid #2D4820; border-radius:100px; padding:4px 11px; margin-bottom:11px;">
+                  <div style="width:5px; height:5px; border-radius:50%; background:#88E020;"></div>
+                  <span style="font-family:'JetBrains Mono',monospace; font-size:8px; letter-spacing:0.12em; color:#88E020; text-transform:uppercase; font-weight:600;">Resultado del cálculo</span>
+                </div>
+                <div style="font-size:19px; font-weight:700; color:#E4E1D6; letter-spacing:-0.4px;">4 Palés · Madrid · España</div>
+              </div>
+              <div style="background:#141A24; border:1px solid #1E2636; border-radius:3px; padding:14px 16px; margin-bottom:14px; display:flex; align-items:center; justify-content:space-between;">
+                <div>
+                  <div style="font-family:'JetBrains Mono',monospace; font-size:8px; letter-spacing:0.1em; color:#2E3A50; text-transform:uppercase; margin-bottom:3px;">Recomendación</div>
+                  <div style="font-size:13px; font-weight:600; color:#E4E1D6;">🏆 Palletways es más económico</div>
+                </div>
+                <div style="background:#88E020; border-radius:2px; padding:5px 10px; font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700; color:#0D1018; white-space:nowrap;">Ahorro 31€</div>
+              </div>
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px;">
+                <div style="background:#141A24; border:1px solid #5B9BE6; border-radius:3px; padding:14px; position:relative;">
+                  <div style="position:absolute; top:-1px; right:10px; background:#5B9BE6; color:#0D1018; font-family:'JetBrains Mono',monospace; font-size:7px; letter-spacing:0.08em; padding:3px 8px; border-radius:0 0 3px 3px; font-weight:700;">GANADOR</div>
+                  <div style="font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.12em; color:#5B9BE6; text-transform:uppercase; font-weight:600; margin-bottom:10px;">Palletways</div>
+                  <div style="font-size:33px; font-weight:700; color:#E4E1D6; letter-spacing:-1.5px; line-height:1;">142<span style="font-size:15px; font-weight:500; letter-spacing:0;">€</span></div>
+                  <div style="margin:11px 0; height:1px; background:#1E2636;"></div>
+                  <div style="font-family:'JetBrains Mono',monospace; font-size:8px; color:#3E4A5E; line-height:1.95;">
+                    <div>2× SEL · 105,60€</div>
+                    <div>1× Quarter · 36,40€</div>
+                  </div>
+                  <div style="margin-top:11px; background:#5B9BE6; color:#0D1018; border-radius:2px; padding:8px; text-align:center; font-size:9px; font-weight:700; letter-spacing:0.07em; text-transform:uppercase;">Elegir Palletways</div>
+                </div>
+                <div style="background:#141A24; border:1px solid #1E2636; border-radius:3px; padding:14px; opacity:0.6;">
+                  <div style="font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.12em; color:#F0924A; text-transform:uppercase; font-weight:600; margin-bottom:10px;">CEVA</div>
+                  <div style="font-size:33px; font-weight:700; color:#E4E1D6; letter-spacing:-1.5px; line-height:1;">173<span style="font-size:15px; font-weight:500; letter-spacing:0;">€</span></div>
+                  <div style="margin:11px 0; height:1px; background:#1E2636;"></div>
+                  <div style="font-family:'JetBrains Mono',monospace; font-size:8px; color:#3E4A5E; line-height:1.95;">
+                    <div>Precio base · 148,00€</div>
+                    <div>Gestión · 25,00€</div>
+                  </div>
+                  <div style="margin-top:11px; background:#1E2636; color:#3E4A5E; border-radius:2px; padding:8px; text-align:center; font-size:9px; font-weight:600; letter-spacing:0.07em; text-transform:uppercase;">Elegir CEVA</div>
+                </div>
+              </div>
+              <div style="background:#88E020; color:#0D1018; border-radius:2px; padding:12px; text-align:center; font-weight:700; font-size:11px; letter-spacing:0.08em; text-transform:uppercase;">💾 Guardar este envío</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+</x-dc>
+</body>
+</html>

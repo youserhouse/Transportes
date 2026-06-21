@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { overflow: hidden; height: 100vh; }
+    .theme-light {
+      --bg: #F2EFE5; --surface: #FFFFFF; --sidebar: #FFFFFF;
+      --border: #E4E0D6; --text: #1A1915; --text2: #5A5550;
+      --text3: #6A6460; --text4: #9A9590; --on-accent: #FFFFFF;
+      --accent: #D04C32; --accent-tint: #FAE8E5; --accent-border: #FAE8E5;
+      --pw: #1E4D8C; --ceva: #B06820;
+      --in-bg: #FFFFFF; --in-border: #D0CCC2;
+      --hero-bg: #1A1915; --hero-text: #FFFFFF; --hero-sub: #8A8680;
+      --save-bg: #D04C32; --save-text: #FFFFFF;
+      --nav-cat: #7A7570; --nav-off: #4A4540;
+      --step-off-bg: #E8E4DA; --step-off-text: #6A6460;
+      --divider: #E4E0D6; --winner-save: #2E7D48;
+      --card-off-btn-bg: #E8E4DA; --card-off-btn-text: #6A6460;
+    }
+    .theme-dark {
+      --bg: #0D1018; --surface: #141A24; --sidebar: #141A24;
+      --border: #1E2636; --text: #E4E1D6; --text2: #3E4A5E;
+      --text3: #9CA5B5; --text4: #2E3545; --on-accent: #0D1018;
+      --accent: #88E020; --accent-tint: #16240E; --accent-border: #2D4820;
+      --pw: #5B9BE6; --ceva: #F0924A;
+      --in-bg: #141A24; --in-border: #252C3C;
+      --hero-bg: #141A24; --hero-text: #E4E1D6; --hero-sub: #2E3A50;
+      --save-bg: #88E020; --save-text: #0D1018;
+      --nav-cat: #2E3A50; --nav-off: #3E4A5E;
+      --step-off-bg: #1E2636; --step-off-text: #3E4A5E;
+      --divider: #1E2636; --winner-save: #88E020;
+      --card-off-btn-bg: #1E2636; --card-off-btn-text: #3E4A5E;
+    }
+    input, textarea, select { font-family: 'Space Grotesk', sans-serif; }
+    input::placeholder { color: var(--text4); }
+    input:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+  </style>
+</helmet>
+
+<div class="{{ themeClass }}" style="height:100vh; background:var(--bg); font-family:'Space Grotesk',sans-serif; display:flex; flex-direction:column; overflow:hidden;">
+
+  <!-- ════════ LOGIN ════════ -->
+  <sc-if value="{{ isLogin }}" hint-placeholder-val="{{ false }}">
+    <div style="height:100vh; background:var(--bg); display:flex; align-items:center; justify-content:center; position:relative;">
+      <div onclick="{{ toggleTheme }}" style="position:absolute; top:24px; right:24px; background:var(--step-off-bg); border:1px solid var(--border); border-radius:2px; padding:7px 13px; font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.08em; color:var(--text2); cursor:pointer;">{{ themeLabel }}</div>
+      <div style="width:300px;">
+        <div style="text-align:center; margin-bottom:48px;">
+          <div style="width:48px; height:48px; background:var(--accent); border-radius:3px; display:flex; align-items:center; justify-content:center; margin:0 auto 14px; font-size:22px;">🚛</div>
+          <div style="font-weight:700; font-size:15px; letter-spacing:0.05em; color:var(--text); text-transform:uppercase;">Calculadora de Portes</div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--text3); letter-spacing:0.14em; margin-top:5px;">PALLETWAYS + CEVA</div>
+        </div>
+        <div style="margin-bottom:14px;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.1em; color:var(--text3); text-transform:uppercase; margin-bottom:6px;">Correo electrónico</div>
+          <input type="email" placeholder="usuario@empresa.com" style="width:100%; background:var(--in-bg); border:1px solid var(--in-border); border-radius:2px; padding:12px 13px; font-size:13px; color:var(--text);">
+        </div>
+        <div style="margin-bottom:28px;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.1em; color:var(--text3); text-transform:uppercase; margin-bottom:6px;">Contraseña</div>
+          <input type="password" placeholder="••••••••" style="width:100%; background:var(--in-bg); border:1px solid var(--in-border); border-radius:2px; padding:12px 13px; font-size:13px; color:var(--text);">
+        </div>
+        <div onclick="{{ goToApp }}" style="background:var(--accent); color:var(--on-accent); border-radius:2px; padding:14px; text-align:center; font-weight:600; font-size:12px; letter-spacing:0.08em; text-transform:uppercase; cursor:pointer; margin-bottom:18px;">Iniciar sesión →</div>
+        <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--text3); text-align:center;">Acceso restringido · solo usuarios autorizados</div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- ════════ APP ════════ -->
+  <sc-if value="{{ isApp }}" hint-placeholder-val="{{ true }}">
+    <div style="display:flex; height:100vh; overflow:hidden;">
+
+      <!-- SIDEBAR -->
+      <div style="width:204px; flex:none; background:var(--sidebar); border-right:1px solid var(--border); display:flex; flex-direction:column; height:100vh; overflow:hidden;">
+        <div style="padding:22px 20px 20px; border-bottom:1px solid var(--border); flex:none;">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <div style="width:34px; height:34px; background:var(--accent); border-radius:2px; display:flex; align-items:center; justify-content:center; font-size:16px; flex:none;">🚛</div>
+            <div style="font-weight:700; font-size:10px; letter-spacing:0.05em; color:var(--text); line-height:1.3; text-transform:uppercase;">Calculadora<br>de Portes</div>
+          </div>
+        </div>
+        <div style="padding:14px 0; flex:1; overflow-y:auto;">
+          <div style="font-family: 'JetBrains Mono',monospace; font-size: 8px; letter-spacing: 0.15em; color: var(--text3); text-transform: uppercase; padding: 0 20px 10px">Modos</div>
+          <div onclick="{{ setPalets }}" style="background:{{ navPaletsBg }}; margin:0 10px 2px; border-radius:2px; padding:9px 12px; display:flex; align-items:center; gap:9px; cursor:pointer;">
+            <span style="font-size: 13px; color: var(--text3)">🏗</span>
+            <span style="font-weight:{{ navPaletsFw }}; font-size:12px; color:{{ navPaletsColor }};">Palés</span>
+          </div>
+          <div onclick="{{ setCajas }}" style="background:{{ navCajasBg }}; margin:0 10px 2px; border-radius:2px; padding:9px 12px; display:flex; align-items:center; gap:9px; cursor:pointer;">
+            <span style="font-size:13px;">📦</span>
+            <span style="font-weight:{{ navCajasFw }}; font-size:12px; color:{{ navCajasColor }};">Cajas</span>
+          </div>
+          <div style="margin:12px 20px; height:1px; background:var(--border);"></div>
+          <div style="font-family: 'JetBrains Mono',monospace; font-size: 8px; letter-spacing: 0.15em; color: var(--text3); text-transform: uppercase; padding: 0 20px 10px">Datos</div>
+          <div onclick="{{ setDashboard }}" style="background:{{ navDashBg }}; margin:0 10px 2px; border-radius:2px; padding:9px 12px; display:flex; align-items:center; gap:9px; cursor:pointer;">
+            <span style="font-size:13px;">📊</span>
+            <span style="font-weight:{{ navDashFw }}; font-size:12px; color:{{ navDashColor }};">Dashboard</span>
+          </div>
+          <div style="margin:12px 20px; height:1px; background:var(--border);"></div>
+          <div onclick="{{ setConfig }}" style="background:{{ navConfigBg }}; margin:0 10px 2px; border-radius:2px; padding:9px 12px; display:flex; align-items:center; gap:9px; cursor:pointer;">
+            <span style="font-size: 13px; color: var(--text3)">⚙</span>
+            <span style="font-weight:{{ navConfigFw }}; font-size:12px; color:{{ navConfigColor }};">Config.</span>
+          </div>
+        </div>
+        <div style="padding:14px 16px; border-top:1px solid var(--border); flex:none; display:flex; flex-direction:column; gap:8px;">
+          <div onclick="{{ toggleTheme }}" style="background:var(--step-off-bg); border:1px solid var(--border); border-radius:2px; padding:8px; text-align:center; font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.07em; color:var(--text2); cursor:pointer;">{{ themeLabel }}</div>
+          <div onclick="{{ signOut }}" style="font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--text3); letter-spacing:0.06em; cursor:pointer; text-align:center; padding:3px 0;">← Salir</div>
+        </div>
+      </div>
+
+      <!-- CONTENT -->
+      <div style="flex:1; height:100vh; overflow-y:auto; background:var(--bg);">
+
+        <!-- ─── PALÉS FORM ─── -->
+        <sc-if value="{{ isPaletsForm }}" hint-placeholder-val="{{ true }}">
+          <div style="padding:36px 40px; max-width:680px;">
+            <div style="margin-bottom:32px;">
+              <div style="display:inline-flex; align-items:center; gap:7px; background:var(--accent-tint); border:1px solid var(--accent-border); border-radius:100px; padding:5px 13px; margin-bottom:13px;">
+                <div style="width:5px; height:5px; border-radius:50%; background:var(--accent);"></div>
+                <span style="font-family:'JetBrains Mono',monospace; font-size:8px; letter-spacing:0.13em; color:var(--accent); text-transform:uppercase; font-weight:600;">Palletways + CEVA · Comparador</span>
+              </div>
+              <div style="font-size:26px; font-weight:700; color:var(--text); letter-spacing:-0.5px;">Calculadora de Palés</div>
+            </div>
+
+            <div style="background:var(--surface); border:1px solid var(--border); border-radius:3px; padding:24px; margin-bottom:16px;">
+              <div style="display:flex; align-items:center; gap:10px; margin-bottom:18px;">
+                <div style="width:22px; height:22px; border-radius:50%; background:var(--accent); display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; font-size:8px; font-weight:700; color:var(--on-accent); flex:none;">01</div>
+                <span style="font-weight:600; font-size:13px; color:var(--text);">Datos del envío</span>
+              </div>
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                <div>
+                  <div style="font-family: 'JetBrains Mono',monospace; font-size: 8px; letter-spacing: 0.1em; color: var(--text3); text-transform: uppercase; margin-bottom: 7px">Número de palés</div>
+                  <input type="number" value="{{ numPalets }}" oninput="{{ onNumPaletsChange }}" placeholder="Ej: 4" min="1" max="99" style="width:100%; background:var(--in-bg); border:1px solid var(--in-border); border-radius:2px; padding:11px 13px; font-size:14px; color:var(--text);">
+                </div>
+                <div>
+                  <div style="font-family: 'JetBrains Mono',monospace; font-size: 8px; letter-spacing: 0.1em; color: var(--text3); text-transform: uppercase; margin-bottom: 7px">Altura total (uds de palé)</div>
+                  <input type="number" value="{{ altura }}" oninput="{{ onAlturaChange }}" placeholder="Ej: 3.5" min="0.1" step="0.1" style="width:100%; background:var(--in-bg); border:1px solid var(--in-border); border-radius:2px; padding:11px 13px; font-size:14px; color:var(--text);">
+                  <div style="font-family: 'JetBrains Mono',monospace; font-size: 8px; color: var(--text3); margin-top: 5px">1 = 100 cm · máx. 2.2 por palé</div>
+                </div>
+              </div>
+            </div>
+
+            <div style="background:var(--surface); border:1px solid var(--border); border-radius:3px; padding:24px; margin-bottom:24px;">
+              <div style="display:flex; align-items:center; gap:10px; margin-bottom:18px;">
+                <div style="width:22px; height:22px; border-radius:50%; background:var(--step-off-bg); display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; font-size:8px; font-weight:600; color:var(--step-off-text); flex:none;">02</div>
+                <span style="font-weight:600; font-size:13px; color:var(--text);">Destino</span>
+              </div>
+              <div style="display:flex; gap:8px; margin-bottom:16px;">
+                <div onclick="{{ setESP }}" style="flex:1; background:{{ cntEspBg }}; border:1px solid {{ cntEspBd }}; border-radius:2px; padding:10px; text-align:center; font-weight:{{ cntEspFw }}; font-size:12px; color:{{ cntEspText }}; cursor:pointer;">🇪🇸 España</div>
+                <div onclick="{{ setPRT }}" style="flex:1; background:{{ cntPrtBg }}; border:1px solid {{ cntPrtBd }}; border-radius:2px; padding:10px; text-align:center; font-weight:{{ cntPrtFw }}; font-size:12px; color:{{ cntPrtText }}; cursor:pointer;">🇵🇹 Portugal</div>
+              </div>
+              <div style="margin-bottom:13px;">
+                <div style="font-family: 'JetBrains Mono',monospace; font-size: 8px; letter-spacing: 0.1em; color: var(--text3); text-transform: uppercase; margin-bottom: 7px">Buscar por provincia</div>
+                <input type="text" value="{{ provincia }}" oninput="{{ onProvinciaChange }}" placeholder="Madrid, Barcelona, Sevilla…" style="width:100%; background:var(--in-bg); border:1px solid var(--in-border); border-radius:2px; padding:11px 13px; font-size:13px; color:var(--text);">
+              </div>
+              <div style="display:flex; align-items:center; gap:12px; margin:13px 0;">
+                <div style="flex:1; height:1px; background:var(--border);"></div>
+                <div style="font-family: 'JetBrains Mono',monospace; font-size: 8px; color: var(--text3); letter-spacing: 0.1em; text-transform: uppercase">o por código postal</div>
+                <div style="flex:1; height:1px; background:var(--border);"></div>
+              </div>
+              <div style="max-width:220px;">
+                <div style="font-family: 'JetBrains Mono',monospace; font-size: 8px; letter-spacing: 0.1em; color: var(--text3); text-transform: uppercase; margin-bottom: 7px">Código postal</div>
+                <input type="text" value="{{ cp }}" oninput="{{ onCpChange }}" placeholder="28001" maxlength="5" style="width:100%; background:var(--in-bg); border:1px solid var(--in-border); border-radius:2px; padding:11px 13px; font-size:13px; color:var(--text);">
+                <div style="font-family: 'JetBrains Mono',monospace; font-size: 8px; color: var(--text3); margin-top: 5px">Se detecta la provincia automáticamente</div>
+              </div>
+            </div>
+
+            <div onclick="{{ calcularPalets }}" style="background:var(--hero-bg); color:var(--hero-text); border-radius:2px; padding:15px; text-align:center; font-weight:600; font-size:12px; letter-spacing:0.08em; text-transform:uppercase; cursor:pointer;">▶ Calcular precio de envío</div>
+          </div>
+        </sc-if>
+
+        <!-- ─── PALÉS RESULTADOS ─── -->
+        <sc-if value="{{ isPaletsResults }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:36px 40px; max-width:680px;">
+            <div style="display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:24px; gap:16px;">
+              <div>
+                <div style="display:inline-flex; align-items:center; gap:7px; background:var(--accent-tint); border:1px solid var(--accent-border); border-radius:100px; padding:5px 13px; margin-bottom:13px;">
+                  <div style="width:5px; height:5px; border-radius:50%; background:var(--accent);"></div>
+                  <span style="font-family:'JetBrains Mono',monospace; font-size:8px; letter-spacing:0.13em; color:var(--accent); text-transform:uppercase; font-weight:600;">Resultado del cálculo</span>
+                </div>
+                <div style="font-size:26px; font-weight:700; color:var(--text); letter-spacing:-0.5px;">4 Palés · Madrid · España</div>
+              </div>
+              <div onclick="{{ volverPalets }}" style="flex: none; font-family: 'JetBrains Mono',monospace; font-size: 9px; color: var(--text3); cursor: pointer; padding: 7px 11px; border: 1px solid var(--border); border-radius: 2px; white-space: nowrap; margin-top: 4px">← Nuevo</div>
+            </div>
+
+            <div style="background:var(--hero-bg); border-radius:3px; padding:18px 22px; margin-bottom:16px; display:flex; align-items:center; justify-content:space-between; gap:12px;">
+              <div>
+                <div style="font-family: 'JetBrains Mono',monospace; font-size: 8px; letter-spacing: 0.1em; color: var(--text3); text-transform: uppercase; margin-bottom: 5px">Recomendación</div>
+                <div style="font-size:14px; font-weight:600; color:var(--hero-text);">🏆 Palletways es más económico</div>
+              </div>
+              <div style="background:var(--winner-save); border-radius:2px; padding:6px 13px; font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700; color:#FFFFFF; white-space:nowrap;">Ahorro 31€</div>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px;">
+              <div style="background:var(--surface); border:2px solid var(--pw); border-radius:3px; padding:20px; position:relative;">
+                <div style="position:absolute; top:-1px; right:13px; background:var(--pw); color:#FFFFFF; font-family:'JetBrains Mono',monospace; font-size:7px; letter-spacing:0.1em; padding:3px 9px; border-radius:0 0 3px 3px; font-weight:700;">GANADOR</div>
+                <div style="font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.13em; color:var(--pw); text-transform:uppercase; font-weight:600; margin-bottom:12px;">Palletways</div>
+                <div style="font-size:38px; font-weight:700; color:var(--text); letter-spacing:-2px; line-height:1;">142<span style="font-size:17px; font-weight:500; letter-spacing:0;">€</span></div>
+                <div style="margin:13px 0; height:1px; background:var(--divider);"></div>
+                <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--text3); line-height:2.1;">
+                  <div style="color: var(--text3)">2× SEL &nbsp;· 105,60€</div>
+                  <div style="color: var(--text3)">1× Quarter · 36,40€</div>
+                </div>
+                <div onclick="{{ selectPw }}" style="margin-top:13px; background:{{ pwBtnBg }}; color:{{ pwBtnText }}; border-radius:2px; padding:9px; text-align:center; font-size:9px; font-weight:700; letter-spacing:0.08em; cursor:pointer; text-transform:uppercase; border:1px solid {{ pwBtnBorder }};">Elegir Palletways</div>
+              </div>
+              <div style="background:var(--surface); border:1px solid {{ cevaBorder }}; border-radius:3px; padding:20px;">
+                <div style="font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.13em; color:var(--ceva); text-transform:uppercase; font-weight:600; margin-bottom:12px;">CEVA</div>
+                <div style="font-size:38px; font-weight:700; color:var(--text); letter-spacing:-2px; line-height:1; opacity:0.7;">173<span style="font-size:17px; font-weight:500; letter-spacing:0;">€</span></div>
+                <div style="margin:13px 0; height:1px; background:var(--divider);"></div>
+                <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--text3); line-height:2.1;">
+                  <div style="color: var(--text3)">Precio base · 148,00€</div>
+                  <div style="color: var(--text3)">Gestión &nbsp;&nbsp;· 25,00€</div>
+                </div>
+                <div onclick="{{ selectCeva }}" style="margin-top:13px; background:{{ cevaBtnBg }}; color:{{ cevaBtnText }}; border-radius:2px; padding:9px; text-align:center; font-size:9px; font-weight:700; letter-spacing:0.08em; cursor:pointer; text-transform:uppercase; border:1px solid {{ cevaBtnBorder }};">Elegir CEVA</div>
+              </div>
+            </div>
+
+            <div style="background:var(--surface); border:1px solid var(--border); border-radius:3px; padding:20px 24px;">
+              <div style="font-family: 'JetBrains Mono',monospace; font-size: 10px; letter-spacing: 0.1em; color: var(--text3); text-transform: uppercase; margin-bottom: 13px">¿Qué transportista se va a usar realmente?</div>
+              <div onclick="{{ guardarEnvio }}" style="background:{{ saveBg }}; color:{{ saveTxt }}; border-radius:2px; padding:14px; text-align:center; font-weight:700; font-size:12px; letter-spacing:0.08em; text-transform:uppercase; cursor:{{ saveCursor }};">💾 Guardar este envío</div>
+              <sc-if value="{{ hasMsgG }}" hint-placeholder-val="{{ false }}">
+                <div style="margin-top:11px; font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--winner-save); text-align:center; letter-spacing:0.05em;">{{ guardadoMsg }}</div>
+              </sc-if>
+            </div>
+          </div>
+        </sc-if>
+
+        <!-- ─── CAJAS FORM ─── -->
+        <sc-if value="{{ isCajasForm }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:36px 40px; max-width:600px;">
+            <div style="margin-bottom:32px;">
+              <div style="display:inline-flex; align-items:center; gap:7px; background:var(--accent-tint); border:1px solid var(--accent-border); border-radius:100px; padding:5px 13px; margin-bottom:13px;">
+                <div style="width:5px; height:5px; border-radius:50%; background:var(--accent);"></div>
+                <span style="font-family:'JetBrains Mono',monospace; font-size:8px; letter-spacing:0.13em; color:var(--accent); text-transform:uppercase; font-weight:600;">CEVA · Solo cajas</span>
+              </div>
+              <div style="font-size:26px; font-weight:700; color:var(--text); letter-spacing:-0.5px;">Calculadora de Cajas</div>
+            </div>
+
+            <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:24px;">
+              <div style="background:var(--surface); border:1px solid var(--border); border-radius:2px; padding:9px 13px; font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--text3);">Cada caja: <span style="color:var(--text); font-weight:600;">0,15 uds</span></div>
+              <div style="background:var(--surface); border:1px solid var(--border); border-radius:2px; padding:9px 13px; font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--text3);">Peso: <span style="color:var(--text); font-weight:600;">37,5 kg / caja</span></div>
+              <div style="background:var(--surface); border:1px solid var(--border); border-radius:2px; padding:9px 13px; font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--text3);">Máximo: <span style="color:var(--text); font-weight:600;">14 cajas</span></div>
+              <div style="background:var(--accent-tint); border:1px solid var(--accent-border); border-radius:2px; padding:9px 13px; font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--accent);">Transportista: <span style="font-weight:700;">CEVA</span></div>
+            </div>
+
+            <div style="background:var(--surface); border:1px solid var(--border); border-radius:3px; padding:24px; margin-bottom:16px;">
+              <div style="display:flex; align-items:center; gap:10px; margin-bottom:18px;">
+                <div style="width:22px; height:22px; border-radius:50%; background:var(--accent); display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; font-size:8px; font-weight:700; color:var(--on-accent); flex:none;">01</div>
+                <span style="font-weight:600; font-size:13px; color:var(--text);">Número de cajas (1–14)</span>
+              </div>
+              <div style="display:flex; align-items:stretch; gap:0; max-width:180px; margin-bottom:11px;">
+                <div onclick="{{ decrementCajas }}" style="width:44px; background:var(--step-off-bg); border:1px solid var(--border); border-radius:2px 0 0 2px; display:flex; align-items:center; justify-content:center; font-size:20px; color:var(--text); cursor:pointer; user-select:none; line-height:1;">−</div>
+                <input type="number" value="{{ numCajas }}" oninput="{{ onCajasChange }}" min="1" max="14" style="flex:1; background:var(--in-bg); border:1px solid var(--in-border); border-left:none; border-right:none; border-radius:0; padding:10px 8px; font-size:17px; font-weight:700; color:var(--text); text-align:center;">
+                <div onclick="{{ incrementCajas }}" style="width:44px; background:var(--step-off-bg); border:1px solid var(--border); border-radius:0 2px 2px 0; display:flex; align-items:center; justify-content:center; font-size:20px; color:var(--text); cursor:pointer; user-select:none; line-height:1;">+</div>
+              </div>
+              <div style="font-family: 'JetBrains Mono',monospace; font-size: 9px; color: var(--text3)">{{ numCajas }} cajas · {{ cajasUds }} uds · {{ cajasPeso }} kg</div>
+            </div>
+
+            <div style="background:var(--surface); border:1px solid var(--border); border-radius:3px; padding:24px; margin-bottom:24px;">
+              <div style="display:flex; align-items:center; gap:10px; margin-bottom:18px;">
+                <div style="width:22px; height:22px; border-radius:50%; background:var(--step-off-bg); display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; font-size:8px; font-weight:600; color:var(--step-off-text); flex:none;">02</div>
+                <span style="font-weight:600; font-size:13px; color:var(--text);">Provincia de destino</span>
+              </div>
+              <div style="margin-bottom:13px;">
+                <div style="font-family: 'JetBrains Mono',monospace; font-size: 8px; letter-spacing: 0.1em; color: var(--text3); text-transform: uppercase; margin-bottom: 7px">Buscar provincia</div>
+                <input type="text" placeholder="Madrid, Barcelona, Sevilla…" style="width:100%; background:var(--in-bg); border:1px solid var(--in-border); border-radius:2px; padding:11px 13px; font-size:13px; color:var(--text);">
+              </div>
+              <div style="display:flex; align-items:center; gap:12px; margin:13px 0;">
+                <div style="flex:1; height:1px; background:var(--border);"></div>
+                <div style="font-family: 'JetBrains Mono',monospace; font-size: 8px; color: var(--text3); letter-spacing: 0.1em; text-transform: uppercase">o por CP</div>
+                <div style="flex:1; height:1px; background:var(--border);"></div>
+              </div>
+              <div style="max-width:200px;">
+                <input type="text" placeholder="28001" maxlength="5" style="width:100%; background:var(--in-bg); border:1px solid var(--in-border); border-radius:2px; padding:11px 13px; font-size:13px; color:var(--text);">
+              </div>
+            </div>
+
+            <div onclick="{{ calcularCajas }}" style="background:var(--hero-bg); color:var(--hero-text); border-radius:2px; padding:15px; text-align:center; font-weight:600; font-size:12px; letter-spacing:0.08em; text-transform:uppercase; cursor:pointer;">▶ Calcular precio de cajas</div>
+          </div>
+        </sc-if>
+
+        <!-- ─── CAJAS RESULTADOS ─── -->
+        <sc-if value="{{ isCajasResults }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:36px 40px; max-width:520px;">
+            <div style="display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:24px; gap:16px;">
+              <div>
+                <div style="display:inline-flex; align-items:center; gap:7px; background:var(--accent-tint); border:1px solid var(--accent-border); border-radius:100px; padding:5px 13px; margin-bottom:13px;">
+                  <div style="width:5px; height:5px; border-radius:50%; background:var(--accent);"></div>
+                  <span style="font-family:'JetBrains Mono',monospace; font-size:8px; letter-spacing:0.13em; color:var(--accent); text-transform:uppercase; font-weight:600;">CEVA · Resultado</span>
+                </div>
+                <div style="font-size:26px; font-weight:700; color:var(--text); letter-spacing:-0.5px;">{{ numCajas }} cajas · Madrid</div>
+              </div>
+              <div onclick="{{ volverCajas }}" style="flex:none; font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--text3); cursor:pointer; padding:7px 11px; border:1px solid var(--border); border-radius:2px; white-space:nowrap; margin-top:4px;">← Nuevo</div>
+            </div>
+            <div style="background:var(--surface); border:1px solid var(--ceva); border-radius:3px; padding:28px; margin-bottom:16px;">
+              <div style="font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.13em; color:var(--ceva); text-transform:uppercase; font-weight:600; margin-bottom:14px;">CEVA — Envío por Cajas</div>
+              <div style="font-size:48px; font-weight:700; color:var(--text); letter-spacing:-2.5px; line-height:1;">{{ cajasPrice }}<span style="font-size:22px; font-weight:500; letter-spacing:0;">€</span></div>
+              <div style="margin:16px 0; height:1px; background:var(--divider);"></div>
+              <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--text3); line-height:2.1;">
+                <div style="color: var(--text3)">{{ numCajas }} cajas × tarifa base</div>
+                <div style="color: var(--text3)">Peso total: {{ cajasPeso }} kg</div>
+                <div style="color: var(--text3)">Transportista: CEVA</div>
+              </div>
+            </div>
+            <div onclick="{{ guardarCajas }}" style="background:var(--save-bg); color:var(--save-text); border-radius:2px; padding:14px; text-align:center; font-weight:700; font-size:12px; letter-spacing:0.08em; text-transform:uppercase; cursor:pointer;">💾 Guardar este envío</div>
+          </div>
+        </sc-if>
+
+        <!-- ─── DASHBOARD ─── -->
+        <sc-if value="{{ isDashboard }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:28px 32px; max-width:1000px;">
+            <!-- Header -->
+            <div style="margin-bottom:18px;">
+              <div style="display:inline-flex; align-items:center; gap:7px; background:var(--accent-tint); border:1px solid var(--accent-border); border-radius:100px; padding:5px 13px; margin-bottom:13px;">
+                <div style="width:5px; height:5px; border-radius:50%; background:var(--accent);"></div>
+                <span style="font-family:'JetBrains Mono',monospace; font-size:8px; letter-spacing:0.13em; color:var(--accent); text-transform:uppercase; font-weight:600;">Panel de control · Tiempo real</span>
+              </div>
+              <div style="font-size:26px; font-weight:700; color:var(--text); letter-spacing:-0.5px;">Dashboard de Portes</div>
+            </div>
+
+            <!-- Filter toolbar -->
+            <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:22px;">
+              <div style="display:flex; gap:3px; background:var(--surface); border:1px solid var(--border); border-radius:3px; padding:3px;">
+                <div onclick="{{ setPerHoy }}" style="background:{{ perHoyBg }}; color:{{ perHoyColor }}; font-weight:{{ perHoyFw }}; border-radius:2px; padding:6px 13px; font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.08em; text-transform:uppercase; cursor:pointer;">Hoy</div>
+                <div onclick="{{ setPerSem }}" style="background:{{ perSemBg }}; color:{{ perSemColor }}; font-weight:{{ perSemFw }}; border-radius:2px; padding:6px 13px; font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.08em; text-transform:uppercase; cursor:pointer;">Semana</div>
+                <div onclick="{{ setPerMes }}" style="background:{{ perMesBg }}; color:{{ perMesColor }}; font-weight:{{ perMesFw }}; border-radius:2px; padding:6px 13px; font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.08em; text-transform:uppercase; cursor:pointer;">Mes</div>
+              </div>
+              <div style="display:flex; gap:3px; background:var(--surface); border:1px solid var(--border); border-radius:3px; padding:3px;">
+                <div onclick="{{ setCarAmbos }}" style="background:{{ carAmbosBg }}; color:{{ carAmbosColor }}; font-weight:{{ carAmbosFw }}; border-radius:2px; padding:6px 13px; font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.08em; text-transform:uppercase; cursor:pointer;">Ambos</div>
+                <div onclick="{{ setCarPw }}" style="background:{{ carPwBg }}; color:{{ carPwColor }}; font-weight:{{ carPwFw }}; border-radius:2px; padding:6px 13px; font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.08em; text-transform:uppercase; cursor:pointer;">Palletways</div>
+                <div onclick="{{ setCarCeva }}" style="background:{{ carCevaBg }}; color:{{ carCevaColor }}; font-weight:{{ carCevaFw }}; border-radius:2px; padding:6px 13px; font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.08em; text-transform:uppercase; cursor:pointer;">CEVA</div>
+              </div>
+              <div style="background:var(--surface); border:1px solid var(--border); border-radius:3px; padding:7px 14px; font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.06em; color:var(--text2); cursor:pointer; display:flex; align-items:center; gap:8px;">Junio 2026 <span style="color:var(--text3);">▾</span></div>
+            </div>
+
+            <!-- KPI cards -->
+            <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:28px;">
+              <div style="background:var(--surface); border:1px solid var(--border); border-top:3px solid var(--pw); border-radius:3px; padding:18px;">
+                <div style="font-family:'JetBrains Mono',monospace; font-size:8px; letter-spacing:0.12em; color:var(--text3); text-transform:uppercase; margin-bottom:11px;">Total portes</div>
+                <div style="font-size:34px; font-weight:700; color:var(--text); letter-spacing:-1.5px; line-height:1;">2</div>
+                <div style="font-family:'JetBrains Mono',monospace; font-size:8px; color:var(--text3); margin-top:8px;">2 envíos en el período</div>
+              </div>
+              <div style="background:var(--surface); border:1px solid var(--border); border-top:3px solid var(--accent); border-radius:3px; padding:18px;">
+                <div style="font-family:'JetBrains Mono',monospace; font-size:8px; letter-spacing:0.12em; color:var(--text3); text-transform:uppercase; margin-bottom:11px;">Gasto total</div>
+                <div style="font-size:34px; font-weight:700; color:var(--accent); letter-spacing:-1.5px; line-height:1;">69,10<span style="font-size:17px; font-weight:500;">€</span></div>
+                <div style="font-family:'JetBrains Mono',monospace; font-size:8px; color:var(--text3); margin-top:8px;">euros acumulados</div>
+              </div>
+              <div style="background:var(--surface); border:1px solid var(--border); border-top:3px solid var(--winner-save); border-radius:3px; padding:18px;">
+                <div style="font-family:'JetBrains Mono',monospace; font-size:8px; letter-spacing:0.12em; color:var(--text3); text-transform:uppercase; margin-bottom:11px;">Más usado 🏆</div>
+                <div style="font-size:20px; font-weight:700; color:var(--pw); letter-spacing:-0.3px; line-height:1.1;">Palletways</div>
+                <div style="font-family:'JetBrains Mono',monospace; font-size:8px; color:var(--text3); margin-top:10px;">2 Pall. · 0 CEVA</div>
+              </div>
+              <div style="background:var(--surface); border:1px solid var(--border); border-top:3px solid var(--winner-save); border-radius:3px; padding:18px;">
+                <div style="font-family:'JetBrains Mono',monospace; font-size:8px; letter-spacing:0.12em; color:var(--text3); text-transform:uppercase; margin-bottom:11px;">Ahorro total ✂</div>
+                <div style="font-size:34px; font-weight:700; color:var(--winner-save); letter-spacing:-1.5px; line-height:1;">19,73<span style="font-size:17px; font-weight:500;">€</span></div>
+                <div style="font-family:'JetBrains Mono',monospace; font-size:8px; color:var(--text3); margin-top:8px;">eligiendo el más barato</div>
+              </div>
+            </div>
+
+            <!-- COMPARATIVA -->
+            <div style="font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.15em; color:var(--text3); text-transform:uppercase; margin-bottom:13px; display:flex; align-items:center; gap:12px;"><span>Comparativa de transportistas</span><span style="flex:1; height:1px; background:var(--border);"></span></div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:28px;">
+              <!-- PW -->
+              <div style="background:var(--surface); border:1px solid var(--border); border-radius:3px; padding:20px;">
+                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
+                  <div style="display:flex; align-items:center; gap:8px;"><div style="width:9px; height:9px; border-radius:50%; background:var(--pw);"></div><span style="font-weight:700; font-size:13px; color:var(--text); letter-spacing:0.02em;">PALLETWAYS</span></div>
+                  <div style="background:var(--accent-tint); border:1px solid var(--accent-border); border-radius:100px; padding:3px 9px; font-family:'JetBrains Mono',monospace; font-size:9px; font-weight:700; color:var(--pw);">100%</div>
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:9px; margin-bottom:9px;">
+                  <div style="background:var(--bg); border:1px solid var(--border); border-radius:2px; padding:12px;"><div style="font-family:'JetBrains Mono',monospace; font-size:8px; letter-spacing:0.1em; color:var(--text3); text-transform:uppercase; margin-bottom:7px;">Envíos</div><div style="font-size:20px; font-weight:700; color:var(--text);">2</div></div>
+                  <div style="background:var(--bg); border:1px solid var(--border); border-radius:2px; padding:12px;"><div style="font-family:'JetBrains Mono',monospace; font-size:8px; letter-spacing:0.1em; color:var(--text3); text-transform:uppercase; margin-bottom:7px;">Gasto total</div><div style="font-size:20px; font-weight:700; color:var(--text);">69,10€</div></div>
+                </div>
+                <div style="background:var(--bg); border:1px solid var(--border); border-radius:2px; padding:12px; margin-bottom:16px;"><div style="font-family:'JetBrains Mono',monospace; font-size:8px; letter-spacing:0.1em; color:var(--text3); text-transform:uppercase; margin-bottom:7px;">Ticket medio</div><div style="font-size:20px; font-weight:700; color:var(--pw);">34,55€</div></div>
+                <div style="position:relative; height:96px; border-bottom:1px solid var(--border); display:flex; align-items:flex-end; gap:2px; background:repeating-linear-gradient(to top, transparent, transparent 23px, var(--divider) 23px, var(--divider) 24px);">
+                  <sc-for list="{{ pwBars }}" as="b" hint-placeholder-count="30">
+                    <div style="flex:1; height:{{ b.h }}; min-height:0; background:var(--pw); border-radius:1px 1px 0 0;"></div>
+                  </sc-for>
+                </div>
+                <div style="display:flex; justify-content:space-between; font-family:'JetBrains Mono',monospace; font-size:7px; color:var(--text3); margin-top:5px;"><span>1</span><span>15</span><span>30</span></div>
+              </div>
+              <!-- CEVA -->
+              <div style="background:var(--surface); border:1px solid var(--border); border-radius:3px; padding:20px;">
+                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
+                  <div style="display:flex; align-items:center; gap:8px;"><div style="width:9px; height:9px; border-radius:50%; background:var(--ceva);"></div><span style="font-weight:700; font-size:13px; color:var(--text); letter-spacing:0.02em;">CEVA</span></div>
+                  <div style="background:var(--bg); border:1px solid var(--border); border-radius:100px; padding:3px 9px; font-family:'JetBrains Mono',monospace; font-size:9px; font-weight:700; color:var(--ceva);">0%</div>
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:9px; margin-bottom:9px;">
+                  <div style="background:var(--bg); border:1px solid var(--border); border-radius:2px; padding:12px;"><div style="font-family:'JetBrains Mono',monospace; font-size:8px; letter-spacing:0.1em; color:var(--text3); text-transform:uppercase; margin-bottom:7px;">Envíos</div><div style="font-size:20px; font-weight:700; color:var(--text);">0</div></div>
+                  <div style="background:var(--bg); border:1px solid var(--border); border-radius:2px; padding:12px;"><div style="font-family:'JetBrains Mono',monospace; font-size:8px; letter-spacing:0.1em; color:var(--text3); text-transform:uppercase; margin-bottom:7px;">Gasto total</div><div style="font-size:20px; font-weight:700; color:var(--text);">0,00€</div></div>
+                </div>
+                <div style="background:var(--bg); border:1px solid var(--border); border-radius:2px; padding:12px; margin-bottom:16px;"><div style="font-family:'JetBrains Mono',monospace; font-size:8px; letter-spacing:0.1em; color:var(--text3); text-transform:uppercase; margin-bottom:7px;">Ticket medio</div><div style="font-size:20px; font-weight:700; color:var(--text3);">—</div></div>
+                <div style="position:relative; height:96px; border-bottom:1px solid var(--border); display:flex; align-items:flex-end; gap:2px; background:repeating-linear-gradient(to top, transparent, transparent 23px, var(--divider) 23px, var(--divider) 24px);">
+                  <sc-for list="{{ cevaBars }}" as="b" hint-placeholder-count="30">
+                    <div style="flex:1; height:{{ b.h }}; min-height:0; background:var(--ceva); border-radius:1px 1px 0 0;"></div>
+                  </sc-for>
+                </div>
+                <div style="display:flex; justify-content:space-between; font-family:'JetBrains Mono',monospace; font-size:7px; color:var(--text3); margin-top:5px;"><span>1</span><span>15</span><span>30</span></div>
+              </div>
+            </div>
+
+            <!-- EVOLUCIÓN -->
+            <div style="background:var(--surface); border:1px solid var(--border); border-radius:3px; padding:22px 24px; margin-bottom:28px;">
+              <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:18px;">
+                <div style="font-weight:600; font-size:13px; color:var(--text);">Evolución del gasto</div>
+                <div style="display:flex; gap:14px;">
+                  <div style="display:flex; align-items:center; gap:6px; font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--text2);"><div style="width:9px; height:9px; border-radius:2px; background:var(--pw);"></div>Palletways</div>
+                  <div style="display:flex; align-items:center; gap:6px; font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--text2);"><div style="width:9px; height:9px; border-radius:2px; background:var(--ceva);"></div>CEVA</div>
+                </div>
+              </div>
+              <div style="display:flex; gap:10px;">
+                <div style="display:flex; flex-direction:column; justify-content:space-between; font-family:'JetBrains Mono',monospace; font-size:8px; color:var(--text3); padding:2px 0; flex:none;"><span>70€</span><span>35€</span><span>0€</span></div>
+                <svg viewBox="0 0 600 160" preserveAspectRatio="none" style="width:100%; height:160px; background:repeating-linear-gradient(to top, transparent, transparent 39px, var(--divider) 39px, var(--divider) 40px);">
+                  <polyline points="{{ evoPoints }}" fill="none" stroke="var(--pw)" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linejoin="round"></polyline>
+                  <polyline points="{{ cevaLinePoints }}" fill="none" stroke="var(--ceva)" stroke-width="2" stroke-dasharray="4 4" vector-effect="non-scaling-stroke"></polyline>
+                </svg>
+              </div>
+              <div style="display:flex; justify-content:space-between; font-family:'JetBrains Mono',monospace; font-size:7px; color:var(--text3); margin-top:6px; padding-left:32px;"><span>1</span><span>8</span><span>15</span><span>22</span><span>30</span></div>
+            </div>
+
+            <!-- ANÁLISIS PALETS -->
+            <div style="font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.15em; color:var(--text3); text-transform:uppercase; margin-bottom:13px; display:flex; align-items:center; gap:12px;"><span>Análisis de palés enviados por transportista</span><span style="flex:1; height:1px; background:var(--border);"></span></div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:28px;">
+              <div style="background:var(--surface); border:1px solid var(--border); border-radius:3px; padding:20px;">
+                <div style="font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.12em; color:var(--pw); text-transform:uppercase; font-weight:600; margin-bottom:10px;">Palletways</div>
+                <div style="font-size:38px; font-weight:700; color:var(--pw); letter-spacing:-2px; line-height:1;">1.5<span style="font-size:15px; font-weight:500; color:var(--text3); letter-spacing:0;"> pal</span></div>
+                <div style="font-family:'JetBrains Mono',monospace; font-size:8px; color:var(--text3); margin-top:8px; margin-bottom:16px;">palés medios por envío</div>
+                <div style="height:4px; background:var(--bg); border-radius:2px; overflow:hidden; margin-bottom:14px;"><div style="width:75%; height:100%; background:var(--pw);"></div></div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:9px; font-size:11px;"><span style="color:var(--text2); display:flex; align-items:center; gap:7px;"><span style="width:7px; height:7px; border-radius:50%; background:var(--pw);"></span>1 palé</span><span style="font-family:'JetBrains Mono',monospace; font-weight:700; color:var(--text);">50%</span></div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:9px; font-size:11px;"><span style="color:var(--text2); display:flex; align-items:center; gap:7px;"><span style="width:7px; height:7px; border-radius:50%; background:var(--pw);"></span>2–3 palés</span><span style="font-family:'JetBrains Mono',monospace; font-weight:700; color:var(--text);">50%</span></div>
+                <div style="display:flex; justify-content:space-between; align-items:center; font-size:11px;"><span style="color:var(--text2); display:flex; align-items:center; gap:7px;"><span style="width:7px; height:7px; border-radius:50%; background:var(--ceva);"></span>4+ palés</span><span style="font-family:'JetBrains Mono',monospace; font-weight:700; color:var(--text3);">0%</span></div>
+              </div>
+              <div style="background:var(--surface); border:1px solid var(--border); border-radius:3px; padding:20px;">
+                <div style="font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.12em; color:var(--ceva); text-transform:uppercase; font-weight:600; margin-bottom:10px;">CEVA</div>
+                <div style="font-size:38px; font-weight:700; color:var(--ceva); letter-spacing:-2px; line-height:1;">0.0<span style="font-size:15px; font-weight:500; color:var(--text3); letter-spacing:0;"> pal</span></div>
+                <div style="font-family:'JetBrains Mono',monospace; font-size:8px; color:var(--text3); margin-top:8px; margin-bottom:16px;">palés medios por envío</div>
+                <div style="height:4px; background:var(--bg); border-radius:2px; overflow:hidden; margin-bottom:14px;"><div style="width:0%; height:100%; background:var(--ceva);"></div></div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:9px; font-size:11px;"><span style="color:var(--text2); display:flex; align-items:center; gap:7px;"><span style="width:7px; height:7px; border-radius:50%; background:var(--text3);"></span>1 palé</span><span style="font-family:'JetBrains Mono',monospace; font-weight:700; color:var(--text3);">0%</span></div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:9px; font-size:11px;"><span style="color:var(--text2); display:flex; align-items:center; gap:7px;"><span style="width:7px; height:7px; border-radius:50%; background:var(--text3);"></span>2–3 palés</span><span style="font-family:'JetBrains Mono',monospace; font-weight:700; color:var(--text3);">0%</span></div>
+                <div style="display:flex; justify-content:space-between; align-items:center; font-size:11px;"><span style="color:var(--text2); display:flex; align-items:center; gap:7px;"><span style="width:7px; height:7px; border-radius:50%; background:var(--text3);"></span>4+ palés</span><span style="font-family:'JetBrains Mono',monospace; font-weight:700; color:var(--text3);">0%</span></div>
+              </div>
+            </div>
+
+            <!-- DISTRIBUCIÓN -->
+            <div style="background:var(--surface); border:1px solid var(--border); border-radius:3px; padding:22px 24px; margin-bottom:28px;">
+              <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;">
+                <div style="font-weight:600; font-size:13px; color:var(--text);">Distribución por rango de palés</div>
+                <div style="display:flex; gap:14px;">
+                  <div style="display:flex; align-items:center; gap:6px; font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--text2);"><div style="width:9px; height:9px; border-radius:2px; background:var(--pw);"></div>Palletways</div>
+                  <div style="display:flex; align-items:center; gap:6px; font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--text2);"><div style="width:9px; height:9px; border-radius:2px; background:var(--ceva);"></div>CEVA</div>
+                </div>
+              </div>
+              <div style="display:flex; align-items:flex-end; gap:60px; height:150px; padding:0 60px; border-bottom:1px solid var(--border);">
+                <div style="flex:1; display:flex; align-items:flex-end; justify-content:center; gap:8px; height:100%;"><div style="width:46px; height:100%; background:var(--pw); border-radius:2px 2px 0 0;"></div></div>
+                <div style="flex:1; display:flex; align-items:flex-end; justify-content:center; gap:8px; height:100%;"><div style="width:46px; height:100%; background:var(--pw); border-radius:2px 2px 0 0;"></div></div>
+                <div style="flex:1; display:flex; align-items:flex-end; justify-content:center; gap:8px; height:100%;"><div style="width:46px; height:2px; background:var(--divider);"></div></div>
+              </div>
+              <div style="display:flex; gap:60px; padding:0 60px; margin-top:10px;">
+                <div style="flex:1; text-align:center; font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--text2);">1 palé</div>
+                <div style="flex:1; text-align:center; font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--text2);">2–3 palés</div>
+                <div style="flex:1; text-align:center; font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--text2);">4+ palés</div>
+              </div>
+            </div>
+
+            <!-- PROVINCIA + HISTORIAL -->
+            <div style="display:grid; grid-template-columns:280px 1fr; gap:12px;">
+              <div style="background:var(--surface); border:1px solid var(--border); border-radius:3px; padding:22px;">
+                <div style="font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.12em; color:var(--text3); text-transform:uppercase; margin-bottom:18px;">Por provincia</div>
+                <div style="display:flex; align-items:center; justify-content:center; margin-bottom:18px;">
+                  <div style="width:130px; height:130px; border-radius:50%; background:conic-gradient(var(--pw) 0% 100%); display:flex; align-items:center; justify-content:center;">
+                    <div style="width:78px; height:78px; border-radius:50%; background:var(--surface);"></div>
+                  </div>
+                </div>
+                <div style="display:flex; align-items:center; justify-content:space-between; font-size:11px;"><span style="color:var(--text2); display:flex; align-items:center; gap:7px;"><span style="width:8px; height:8px; border-radius:50%; background:var(--pw);"></span>Madrid</span><span style="font-family:'JetBrains Mono',monospace; font-weight:700; color:var(--text);">2 (100%)</span></div>
+              </div>
+              <div style="background:var(--surface); border:1px solid var(--border); border-radius:3px; padding:22px 24px; overflow:hidden;">
+                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
+                  <div style="font-weight:600; font-size:13px; color:var(--text);">Historial de cálculos</div>
+                  <div style="background:var(--winner-save); color:#FFFFFF; border-radius:2px; padding:7px 13px; font-family:'JetBrains Mono',monospace; font-size:9px; font-weight:600; letter-spacing:0.06em; cursor:pointer;">↓ Exportar CSV</div>
+                </div>
+                <div style="overflow-x:auto;">
+                  <div style="min-width:560px;">
+                    <div style="display:grid; grid-template-columns:118px 64px 76px 78px 56px 96px 96px; gap:8px; padding-bottom:11px; border-bottom:1px solid var(--border); font-family:'JetBrains Mono',monospace; font-size:8px; letter-spacing:0.08em; color:var(--text3); text-transform:uppercase;">
+                      <div>Fecha</div><div>Tipo</div><div>Destino</div><div>Provincia</div><div>Palés</div><div style="text-align:right;">Palletways €</div><div style="text-align:right;">CEVA €</div>
+                    </div>
+                    <sc-for list="{{ historial }}" as="h" hint-placeholder-count="2">
+                      <div style="display:grid; grid-template-columns:118px 64px 76px 78px 56px 96px 96px; gap:8px; padding:12px 0; border-bottom:1px solid var(--divider); align-items:center; font-size:11px;">
+                        <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--text2);">{{ h.fecha }}</div>
+                        <div><span style="background:var(--bg); border:1px solid var(--border); border-radius:2px; padding:2px 7px; font-family:'JetBrains Mono',monospace; font-size:8px; font-weight:600; color:var(--text2);">{{ h.tipo }}</span></div>
+                        <div><span style="font-family:'JetBrains Mono',monospace; font-size:8px; font-weight:700; color:var(--winner-save);">{{ h.destino }}</span></div>
+                        <div style="color:var(--text); font-weight:500;">{{ h.provincia }}</div>
+                        <div style="color:var(--text); font-weight:600;">{{ h.pales }}</div>
+                        <div style="text-align:right; font-family:'JetBrains Mono',monospace; font-weight:700; color:var(--pw);">{{ h.pw }}€</div>
+                        <div style="text-align:right; font-family:'JetBrains Mono',monospace; font-weight:700; color:var(--ceva);">{{ h.ceva }}€</div>
+                      </div>
+                    </sc-for>
+                    <div style="display:flex; align-items:center; justify-content:space-between; margin-top:14px;">
+                      <div style="font-family:'JetBrains Mono',monospace; font-size:8px; color:var(--text3);">1–2 de 2 registros</div>
+                      <div style="display:flex; gap:5px;">
+                        <div style="width:24px; height:24px; border:1px solid var(--border); border-radius:2px; display:flex; align-items:center; justify-content:center; font-size:11px; color:var(--text3); cursor:pointer;">‹</div>
+                        <div style="width:24px; height:24px; background:var(--accent); border-radius:2px; display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700; color:var(--on-accent);">1</div>
+                        <div style="width:24px; height:24px; border:1px solid var(--border); border-radius:2px; display:flex; align-items:center; justify-content:center; font-size:11px; color:var(--text3); cursor:pointer;">›</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </sc-if>
+
+        <!-- ─── CONFIGURACIONES ─── -->
+        <sc-if value="{{ isConfig }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:36px 40px; max-width:580px;">
+            <div style="margin-bottom:32px;">
+              <div style="display:inline-flex; align-items:center; gap:7px; background:var(--accent-tint); border:1px solid var(--accent-border); border-radius:100px; padding:5px 13px; margin-bottom:13px;">
+                <div style="width:5px; height:5px; border-radius:50%; background:var(--accent);"></div>
+                <span style="font-family:'JetBrains Mono',monospace; font-size:8px; letter-spacing:0.13em; color:var(--accent); text-transform:uppercase; font-weight:600;">Herramientas</span>
+              </div>
+              <div style="font-size:26px; font-weight:700; color:var(--text); letter-spacing:-0.5px;">Configuraciones</div>
+            </div>
+
+            <div style="background:var(--surface); border:1px solid var(--border); border-radius:3px; padding:24px; margin-bottom:16px;">
+              <div style="font-weight:600; font-size:13px; color:var(--text); margin-bottom:6px;">Exportar último cálculo</div>
+              <div style="font-family: 'JetBrains Mono',monospace; font-size: 9px; color: var(--text3); margin-bottom: 20px">Imprime o exporta el último cálculo de palés realizado.</div>
+              <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                <div style="background:var(--hero-bg); color:var(--hero-text); border-radius:2px; padding:11px 18px; font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.07em; font-weight:600; cursor:pointer; text-transform:uppercase;">🖨️ Imprimir</div>
+                <div style="background:var(--surface); border:1px solid var(--border); color:var(--text); border-radius:2px; padding:11px 18px; font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.07em; font-weight:600; cursor:pointer; text-transform:uppercase;">📄 CSV</div>
+                <div style="background:var(--surface); border:1px solid var(--border); color:var(--text); border-radius:2px; padding:11px 18px; font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.07em; font-weight:600; cursor:pointer; text-transform:uppercase;">📊 Excel</div>
+              </div>
+            </div>
+
+            <div style="background:var(--surface); border:1px solid var(--border); border-radius:3px; padding:24px;">
+              <div style="font-weight:600; font-size:13px; color:var(--text); margin-bottom:6px;">Apariencia</div>
+              <div style="font-family: 'JetBrains Mono',monospace; font-size: 9px; color: var(--text3); margin-bottom: 18px">Alterna entre tema claro y oscuro.</div>
+              <div onclick="{{ toggleTheme }}" style="display:inline-flex; align-items:center; gap:12px; background:var(--step-off-bg); border:1px solid var(--border); border-radius:2px; padding:12px 18px; cursor:pointer;">
+                <div style="font-size:18px;">{{ themeEmoji }}</div>
+                <div>
+                  <div style="font-weight:600; font-size:13px; color:var(--text);">{{ themeNameLabel }}</div>
+                  <div style="font-family:'JetBrains Mono',monospace; font-size:8px; color:var(--text3); margin-top:3px; letter-spacing:0.06em;">Clic para cambiar</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </sc-if>
+
+      </div>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;$preview&quot;: {&quot;width&quot;: 1200, &quot;height&quot;: 800},
+  &quot;theme&quot;: {&quot;editor&quot;: &quot;enum&quot;, &quot;options&quot;: [&quot;light&quot;, &quot;dark&quot;], &quot;default&quot;: &quot;light&quot;}
+}">
+class Component extends DCLogic {
+  state = {
+    theme: 'light',
+    screen: 'app',
+    mode: 'palets',
+    paletsStep: 'form',
+    cajasStep: 'form',
+    country: 'ESP',
+    numPalets: '',
+    altura: '',
+    provincia: '',
+    cp: '',
+    numCajas: 1,
+    selectedCarrier: null,
+    guardadoMsg: '',
+  };
+
+  renderVals() {
+    const {
+      theme, screen, mode, paletsStep, cajasStep,
+      country, numPalets, altura, provincia, cp,
+      numCajas, selectedCarrier, guardadoMsg,
+    } = this.state;
+
+    const isDark = theme === 'dark';
+
+    const navStyle = (active) => ({
+      bg: active ? 'var(--accent)' : 'transparent',
+      color: active ? 'var(--on-accent)' : 'var(--nav-off)',
+      fw: active ? '700' : '400',
+    });
+    const nPalets = navStyle(mode === 'palets');
+    const nCajas  = navStyle(mode === 'cajas');
+    const nConfig = navStyle(mode === 'config');
+    const nDash   = navStyle(mode === 'dashboard');
+
+    // Dashboard filters
+    const dashPeriod  = this.state.dashPeriod  || 'mes';
+    const dashCarrier = this.state.dashCarrier || 'ambos';
+    const tab = (active) => ({
+      bg:    active ? 'var(--accent)' : 'transparent',
+      color: active ? 'var(--on-accent)' : 'var(--text2)',
+      fw:    active ? '700' : '500',
+    });
+    const tHoy = tab(dashPeriod === 'hoy'), tSem = tab(dashPeriod === 'semana'), tMes = tab(dashPeriod === 'mes');
+    const tAmb = tab(dashCarrier === 'ambos'), tPw = tab(dashCarrier === 'pw'), tCv = tab(dashCarrier === 'ceva');
+
+    // Daily bar charts (30 days; spike on day 21 for Palletways)
+    const mkBars = (vals, max) => vals.map(v => ({ h: (Math.max(0, v) / max * 100).toFixed(1) + '%' }));
+    const pwDaily   = Array.from({ length: 30 }, (_, i) => (i === 20 ? 69.10 : 0));
+    const cevaDaily = Array.from({ length: 30 }, () => 0);
+    const pwBars   = mkBars(pwDaily, 70);
+    const cevaBars = mkBars(cevaDaily, 1);
+
+    // Evolución del gasto — cumulative line (flat until day 21, then steps up)
+    const evoW = 600, evoH = 150, evoPad = 5, evoMax = 70;
+    const toPts = (vals) => vals.map((v, i) => {
+      const x = (i / 29) * evoW;
+      const y = evoPad + (1 - v / evoMax) * (evoH - evoPad);
+      return `${x.toFixed(0)},${y.toFixed(0)}`;
+    }).join(' ');
+    const evoPw   = Array.from({ length: 30 }, (_, i) => (i >= 20 ? 69.10 : 0));
+    const evoCeva = Array.from({ length: 30 }, () => 0);
+    const evoPoints     = toPts(evoPw);
+    const cevaLinePoints = toPts(evoCeva);
+
+    // Historial de cálculos
+    const historial = [
+      { fecha: '21/06/2026 00:24', tipo: 'PALÉS', destino: 'ESPAÑA', provincia: 'Madrid', pales: '2', pw: '39,79', ceva: '59,52' },
+      { fecha: '21/06/2026 00:19', tipo: 'PALÉS', destino: 'ESPAÑA', provincia: 'Madrid', pales: '1', pw: '29,32', ceva: '29,80' },
+    ];
+
+    const cntStyle = (active) => ({
+      bg:   active ? 'var(--accent)' : 'var(--in-bg)',
+      bd:   active ? 'var(--accent)' : 'var(--in-border)',
+      text: active ? 'var(--on-accent)' : 'var(--text3)',
+      fw:   active ? '700' : '400',
+    });
+    const esp = cntStyle(country === 'ESP');
+    const prt = cntStyle(country === 'PRT');
+
+    const pwSel   = selectedCarrier === 'PALLETWAYS';
+    const cevaSel = selectedCarrier === 'CEVA';
+    const pwBtnBg     = pwSel   ? 'var(--pw)'   : 'var(--card-off-btn-bg)';
+    const pwBtnText   = pwSel   ? '#FFFFFF'      : 'var(--card-off-btn-text)';
+    const pwBtnBorder = pwSel   ? 'var(--pw)'    : 'var(--card-off-btn-bg)';
+    const cevaBtnBg   = cevaSel ? 'var(--ceva)'  : 'var(--card-off-btn-bg)';
+    const cevaBtnText = cevaSel ? '#FFFFFF'       : 'var(--card-off-btn-text)';
+    const cevaBtnBorder = cevaSel ? 'var(--ceva)' : 'var(--card-off-btn-bg)';
+    const cevaBorder  = cevaSel ? 'var(--ceva)'  : 'var(--card-off-btn-bg)';
+
+    const canSave = !!selectedCarrier;
+    const saveBg  = canSave ? 'var(--save-bg)'       : 'var(--step-off-bg)';
+    const saveTxt = canSave ? 'var(--save-text)'     : 'var(--step-off-text)';
+    const saveCursor = canSave ? 'pointer' : 'not-allowed';
+
+    const cajasUds   = (numCajas * 0.15).toFixed(2);
+    const cajasPeso  = (numCajas * 37.5).toFixed(0);
+    const cajasPrice = (45 + (numCajas - 1) * 22).toFixed(2);
+
+    return {
+      themeClass: `theme-${theme}`,
+      toggleTheme: () => this.setState(s => ({ theme: s.theme === 'light' ? 'dark' : 'light' })),
+      themeLabel:     isDark ? '☀ Claro' : '☾ Oscuro',
+      themeEmoji:     isDark ? '☀'       : '☾',
+      themeNameLabel: isDark ? 'Tema oscuro activo' : 'Tema claro activo',
+
+      isLogin: screen === 'login',
+      isApp:   screen !== 'login',
+      goToApp: () => this.setState({ screen: 'app' }),
+      signOut: () => this.setState({ screen: 'login', selectedCarrier: null, guardadoMsg: '' }),
+
+      navPaletsBg:    nPalets.bg,    navPaletsColor:  nPalets.color,  navPaletsFw:  nPalets.fw,
+      navCajasBg:     nCajas.bg,     navCajasColor:   nCajas.color,   navCajasFw:   nCajas.fw,
+      navConfigBg:    nConfig.bg,    navConfigColor:  nConfig.color,  navConfigFw:  nConfig.fw,
+      navDashBg:      nDash.bg,      navDashColor:    nDash.color,    navDashFw:    nDash.fw,
+
+      setPalets:    () => this.setState({ mode: 'palets' }),
+      setCajas:     () => this.setState({ mode: 'cajas'  }),
+      setConfig:    () => this.setState({ mode: 'config' }),
+      setDashboard: () => this.setState({ mode: 'dashboard' }),
+      isDashboard:  mode === 'dashboard',
+
+      // Dashboard filter tabs
+      perHoyBg: tHoy.bg, perHoyColor: tHoy.color, perHoyFw: tHoy.fw,
+      perSemBg: tSem.bg, perSemColor: tSem.color, perSemFw: tSem.fw,
+      perMesBg: tMes.bg, perMesColor: tMes.color, perMesFw: tMes.fw,
+      carAmbosBg: tAmb.bg, carAmbosColor: tAmb.color, carAmbosFw: tAmb.fw,
+      carPwBg: tPw.bg,   carPwColor: tPw.color,   carPwFw: tPw.fw,
+      carCevaBg: tCv.bg, carCevaColor: tCv.color, carCevaFw: tCv.fw,
+      setPerHoy: () => this.setState({ dashPeriod: 'hoy' }),
+      setPerSem: () => this.setState({ dashPeriod: 'semana' }),
+      setPerMes: () => this.setState({ dashPeriod: 'mes' }),
+      setCarAmbos: () => this.setState({ dashCarrier: 'ambos' }),
+      setCarPw:   () => this.setState({ dashCarrier: 'pw' }),
+      setCarCeva: () => this.setState({ dashCarrier: 'ceva' }),
+
+      // Charts
+      pwBars, cevaBars, evoPoints, cevaLinePoints,
+
+      // Historial
+      historial,
+
+      isPaletsForm:    mode === 'palets' && paletsStep === 'form',
+      isPaletsResults: mode === 'palets' && paletsStep === 'results',
+      isCajasForm:     mode === 'cajas'  && cajasStep  === 'form',
+      isCajasResults:  mode === 'cajas'  && cajasStep  === 'results',
+      isConfig:        mode === 'config',
+
+      calcularPalets: () => this.setState({ paletsStep: 'results', selectedCarrier: null }),
+      calcularCajas:  () => this.setState({ cajasStep:  'results' }),
+      volverPalets:   () => this.setState({ paletsStep: 'form',    selectedCarrier: null }),
+      volverCajas:    () => this.setState({ cajasStep:  'form' }),
+
+      isESP: country === 'ESP', isPRT: country === 'PRT',
+      setESP: () => this.setState({ country: 'ESP' }),
+      setPRT: () => this.setState({ country: 'PRT' }),
+
+      cntEspBg: esp.bg, cntEspBd: esp.bd, cntEspText: esp.text, cntEspFw: esp.fw,
+      cntPrtBg: prt.bg, cntPrtBd: prt.bd, cntPrtText: prt.text, cntPrtFw: prt.fw,
+
+      numPalets, altura, provincia, cp,
+      onNumPaletsChange:  (e) => this.setState({ numPalets: e.target.value }),
+      onAlturaChange:     (e) => this.setState({ altura:    e.target.value }),
+      onProvinciaChange:  (e) => this.setState({ provincia: e.target.value }),
+      onCpChange:         (e) => this.setState({ cp:        e.target.value }),
+
+      numCajas, cajasUds, cajasPeso, cajasPrice,
+      incrementCajas: () => this.setState(s => ({ numCajas: Math.min(14, s.numCajas + 1) })),
+      decrementCajas: () => this.setState(s => ({ numCajas: Math.max(1,  s.numCajas - 1) })),
+      onCajasChange:  (e) => this.setState({ numCajas: Math.max(1, Math.min(14, parseInt(e.target.value) || 1)) }),
+
+      pwBtnBg,    pwBtnText,    pwBtnBorder,
+      cevaBtnBg,  cevaBtnText,  cevaBtnBorder,  cevaBorder,
+      saveBg, saveTxt, saveCursor,
+
+      selectPw:   () => this.setState({ selectedCarrier: 'PALLETWAYS' }),
+      selectCeva: () => this.setState({ selectedCarrier: 'CEVA' }),
+
+      hasMsgG: !!guardadoMsg,
+      guardadoMsg,
+      guardarEnvio: () => {
+        if (!selectedCarrier) return;
+        this.setState({ guardadoMsg: '✓ Envío guardado correctamente en el Dashboard' });
+        setTimeout(() => this.setState({ guardadoMsg: '' }), 3500);
+      },
+      guardarCajas: () => {
+        this.setState({ guardadoMsg: '✓ Envío guardado correctamente en el Dashboard' });
+        setTimeout(() => this.setState({ guardadoMsg: '' }), 3500);
+      },
+    };
+  }
+}
+</script>
+</body>
+</html>
