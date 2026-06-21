@@ -97,8 +97,22 @@ function getExportChoice() {
   return null; // Called directly from buttons, no need for choice dialog
 }
 
+function configMsg(text) {
+  const el = document.getElementById('config-msg');
+  if (!el) return;
+  el.textContent = text;
+  el.className = 'config-msg' + (text ? ' show' : '');
+}
+
+function imprimirResultado() {
+  if (!lastPwRes||!lastCevaRes||!lastInput) { configMsg('⚠ Debes realizar un cálculo de palés antes de imprimir.'); return; }
+  configMsg('');
+  window.print();
+}
+
 function exportarCSV() {
-  if(!lastPwRes||!lastCevaRes||!lastInput) return;
+  if(!lastPwRes||!lastCevaRes||!lastInput) { configMsg('⚠ Debes realizar un cálculo de palés antes de exportar.'); return; }
+  configMsg('');
   const rows = [
     ['Transportista','Total (€)','Subtotal (€)','Recargo (€)','Provincia','Zona','Palés','Altura'],
     ['Palletways', lastPwRes.total.toFixed(2), lastPwRes.subtotal.toFixed(2), lastPwRes.porte.toFixed(2), lastInput.prov, lastInput.zona, lastInput.palets, lastInput.altura],
@@ -108,7 +122,8 @@ function exportarCSV() {
 }
 
 function exportarExcel() {
-  if(!lastPwRes||!lastCevaRes||!lastInput) return;
+  if(!lastPwRes||!lastCevaRes||!lastInput) { configMsg('⚠ Debes realizar un cálculo de palés antes de exportar.'); return; }
+  configMsg('');
   const rows = [
     ['Transportista','Total (€)','Subtotal (€)','Recargo (€)','Provincia','Zona','Palés','Altura'],
     ['Palletways', lastPwRes.total.toFixed(2), lastPwRes.subtotal.toFixed(2), lastPwRes.porte.toFixed(2), lastInput.prov, lastInput.zona, lastInput.palets, lastInput.altura],
