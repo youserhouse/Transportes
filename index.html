@@ -10,7 +10,7 @@
   font-src https://fonts.gstatic.com;
   connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com;
   img-src 'self' data: blob:;
-  frame-src 'self' https://transporte-99482.firebaseapp.com;
+  frame-src https://transporte-99482.firebaseapp.com;
 ">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Calculadora de Transportes</title>
@@ -57,7 +57,7 @@
 import { initializeApp }   from 'https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signOut }
                             from 'https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js';
-import { getFirestore, doc, getDoc, collection, addDoc, serverTimestamp }
+import { getFirestore, doc, getDoc, collection, addDoc, serverTimestamp, query, orderBy, onSnapshot }
                             from 'https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js';
 
 const firebaseConfig = {
@@ -104,6 +104,19 @@ window.fsGuardarCalculo = async function(datos) {
     savedBy: auth.currentUser.email,
     savedAt: serverTimestamp(),
   });
+};
+
+// Suscripción en tiempo real a la colección 'calculos', usada por el Dashboard
+// nativo (dashboard.js). Lazy: solo se conecta la primera vez que se pide.
+let unsubCalculos = null;
+window.fsListenCalculos = function(callback) {
+  if (unsubCalculos) return unsubCalculos;
+  const q = query(collection(db, 'calculos'), orderBy('fecha', 'desc'));
+  unsubCalculos = onSnapshot(q, snap => {
+    const docs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    callback(docs);
+  });
+  return unsubCalculos;
 };
 </script>
 
@@ -415,15 +428,144 @@ window.fsGuardarCalculo = async function(datos) {
     </div>
   </div>
 
-  <!-- ═══ MODO DASHBOARD (integrado vía iframe) ═══ -->
+  <!-- ═══ MODO DASHBOARD (nativo, datos en tiempo real desde Firestore) ═══ -->
   <div id="mode-dashboard" style="display:none">
     <div class="page-header">
-      <div class="page-pill"><span class="pill-dot"></span>ANALÍTICA</div>
-      <h2 class="page-title">Dashboard</h2>
+      <div class="page-pill"><span class="pill-dot"></span>ANALÍTICA · TIEMPO REAL</div>
+      <h2 class="page-title">Dashboard de Portes</h2>
     </div>
-    <div class="dashboard-frame-wrap">
-      <iframe id="dashboard-iframe" title="Dashboard" loading="lazy"></iframe>
+
+    <div class="dash-toolbar">
+      <div class="dash-filter-group" id="dash-per-group">
+        <button type="button" class="dash-filter-btn" data-per="hoy" onclick="setDashPeriodo('hoy')">Hoy</button>
+        <button type="button" class="dash-filter-btn" data-per="semana" onclick="setDashPeriodo('semana')">Semana</button>
+        <button type="button" class="dash-filter-btn active" data-per="mes" onclick="setDashPeriodo('mes')">Mes</button>
+      </div>
+      <div class="dash-filter-group" id="dash-car-group">
+        <button type="button" class="dash-filter-btn active" data-car="ambos" onclick="setDashCarrier('ambos')">Ambos</button>
+        <button type="button" class="dash-filter-btn" data-car="PALLETWAYS" onclick="setDashCarrier('PALLETWAYS')">Palletways</button>
+        <button type="button" class="dash-filter-btn" data-car="CEVA" onclick="setDashCarrier('CEVA')">CEVA</button>
+      </div>
+      <div class="dash-month-pill" id="dash-month-label">—</div>
     </div>
+
+    <div class="dash-kpi-grid">
+      <div class="dash-kpi-card" style="border-top-color:var(--pw)">
+        <div class="dash-kpi-label">Total portes</div>
+        <div class="dash-kpi-value" id="dash-kpi-total">0</div>
+        <div class="dash-kpi-sub" id="dash-kpi-total-sub">0 envíos en el período</div>
+      </div>
+      <div class="dash-kpi-card" style="border-top-color:var(--accent)">
+        <div class="dash-kpi-label">Gasto total</div>
+        <div class="dash-kpi-value accent" id="dash-kpi-gasto">0,00€</div>
+        <div class="dash-kpi-sub">euros acumulados</div>
+      </div>
+      <div class="dash-kpi-card" style="border-top-color:var(--winner-save)">
+        <div class="dash-kpi-label">Más usado 🏆</div>
+        <div class="dash-kpi-value-sm" id="dash-kpi-mas-usado">—</div>
+        <div class="dash-kpi-sub" id="dash-kpi-mas-usado-sub">0 Pall. · 0 CEVA</div>
+      </div>
+      <div class="dash-kpi-card" style="border-top-color:var(--winner-save)">
+        <div class="dash-kpi-label">Ahorro total ✂</div>
+        <div class="dash-kpi-value save" id="dash-kpi-ahorro">0,00€</div>
+        <div class="dash-kpi-sub">eligiendo el más barato</div>
+      </div>
+    </div>
+
+    <div class="dash-section-title"><span>Comparativa de transportistas</span><span class="dash-rule"></span></div>
+    <div class="dash-compare-grid">
+      <div class="dash-compare-card">
+        <div class="dash-compare-head">
+          <div class="dash-compare-name"><span class="dash-dot" style="background:var(--pw)"></span>PALLETWAYS</div>
+          <div class="dash-compare-pct pw" id="dash-pw-pct">0%</div>
+        </div>
+        <div class="dash-compare-stats">
+          <div class="dash-stat-box"><div class="dash-stat-label">Envíos</div><div class="dash-stat-value" id="dash-pw-count">0</div></div>
+          <div class="dash-stat-box"><div class="dash-stat-label">Gasto total</div><div class="dash-stat-value" id="dash-pw-gasto">0,00€</div></div>
+        </div>
+        <div class="dash-stat-box wide"><div class="dash-stat-label">Ticket medio</div><div class="dash-stat-value pw" id="dash-pw-ticket">—</div></div>
+        <div class="dash-bars-chart" id="dash-pw-bars"></div>
+        <div class="dash-bars-axis"><span>1</span><span id="dash-pw-axis-mid">15</span><span id="dash-pw-axis-end">30</span></div>
+      </div>
+      <div class="dash-compare-card">
+        <div class="dash-compare-head">
+          <div class="dash-compare-name"><span class="dash-dot" style="background:var(--ceva)"></span>CEVA</div>
+          <div class="dash-compare-pct ceva" id="dash-ceva-pct">0%</div>
+        </div>
+        <div class="dash-compare-stats">
+          <div class="dash-stat-box"><div class="dash-stat-label">Envíos</div><div class="dash-stat-value" id="dash-ceva-count">0</div></div>
+          <div class="dash-stat-box"><div class="dash-stat-label">Gasto total</div><div class="dash-stat-value" id="dash-ceva-gasto">0,00€</div></div>
+        </div>
+        <div class="dash-stat-box wide"><div class="dash-stat-label">Ticket medio</div><div class="dash-stat-value ceva" id="dash-ceva-ticket">—</div></div>
+        <div class="dash-bars-chart" id="dash-ceva-bars"></div>
+        <div class="dash-bars-axis"><span>1</span><span id="dash-ceva-axis-mid">15</span><span id="dash-ceva-axis-end">30</span></div>
+      </div>
+    </div>
+
+    <div class="dash-card dash-evo-card">
+      <div class="dash-evo-head">
+        <div class="dash-card-title">Evolución del gasto</div>
+        <div class="dash-evo-legend">
+          <div class="dash-legend-item"><span class="dash-legend-swatch" style="background:var(--pw)"></span>Palletways</div>
+          <div class="dash-legend-item"><span class="dash-legend-swatch" style="background:var(--ceva)"></span>CEVA</div>
+        </div>
+      </div>
+      <div class="dash-evo-body">
+        <div class="dash-evo-axis" id="dash-evo-axis"></div>
+        <svg viewBox="0 0 600 160" preserveAspectRatio="none" class="dash-evo-svg">
+          <polyline id="dash-evo-pw" points="" fill="none" stroke="var(--pw)" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linejoin="round"></polyline>
+          <polyline id="dash-evo-ceva" points="" fill="none" stroke="var(--ceva)" stroke-width="2" stroke-dasharray="4 4" vector-effect="non-scaling-stroke"></polyline>
+        </svg>
+      </div>
+      <div class="dash-evo-xaxis" id="dash-evo-xaxis"></div>
+    </div>
+
+    <div class="dash-section-title"><span>Análisis de palés enviados por transportista</span><span class="dash-rule"></span></div>
+    <div class="dash-analysis-grid" id="dash-analysis-grid"></div>
+
+    <div class="dash-card">
+      <div class="dash-dist-head">
+        <div class="dash-card-title">Distribución por rango de palés</div>
+        <div class="dash-evo-legend">
+          <div class="dash-legend-item"><span class="dash-legend-swatch" style="background:var(--pw)"></span>Palletways</div>
+          <div class="dash-legend-item"><span class="dash-legend-swatch" style="background:var(--ceva)"></span>CEVA</div>
+        </div>
+      </div>
+      <div class="dash-dist-bars" id="dash-dist-bars"></div>
+      <div class="dash-dist-labels"><span>1 palé</span><span>2–3 palés</span><span>4+ palés</span></div>
+    </div>
+
+    <div class="dash-bottom-grid">
+      <div class="dash-card dash-prov-card">
+        <div class="dash-card-title small">Por provincia</div>
+        <div class="dash-donut-wrap"><div class="dash-donut" id="dash-donut"><div class="dash-donut-hole"></div></div></div>
+        <div class="dash-prov-legend" id="dash-prov-legend"></div>
+      </div>
+      <div class="dash-card dash-hist-card">
+        <div class="dash-hist-head">
+          <div class="dash-card-title small">Historial de cálculos</div>
+          <button type="button" class="dash-export-btn" onclick="exportarHistorialDashboardCSV()">↓ Exportar CSV</button>
+        </div>
+        <div class="dash-table-wrap">
+          <div class="dash-table-inner">
+            <div class="dash-table-row dash-table-head">
+              <div>Fecha</div><div>Tipo</div><div>Destino</div><div>Provincia</div><div>Palés</div><div class="r">Palletways €</div><div class="r">CEVA €</div>
+            </div>
+            <div id="dash-table-body"></div>
+          </div>
+        </div>
+        <div class="dash-pagination">
+          <div class="dash-pag-info" id="dash-pag-info">0 registros</div>
+          <div class="dash-pag-btns">
+            <button type="button" class="dash-pag-btn" id="dash-pag-prev" onclick="dashPagePrev()">‹</button>
+            <span class="dash-pag-current" id="dash-pag-current">1</span>
+            <button type="button" class="dash-pag-btn" id="dash-pag-next" onclick="dashPageNext()">›</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dash-empty" id="dash-empty" style="display:none">Aún no hay cálculos guardados en este período.</div>
   </div>
 
 <script src="theme.js"></script>
@@ -433,6 +575,7 @@ window.fsGuardarCalculo = async function(datos) {
 <script src="ui.js"></script>
 <script src="calcular.js"></script>
 <script src="cajas.js"></script>
+<script src="dashboard.js"></script>
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {

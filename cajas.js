@@ -16,25 +16,7 @@ function setMode(mode) {
   document.getElementById('tab-config').className    = 'mode-tab' + (mode==='config'?' active-config':'');
   document.getElementById('tab-dashboard').className = 'mode-tab' + (mode==='dashboard'?' active-dashboard':'');
   if (mode==='cajas') renderCajaVisual();
-  if (mode==='dashboard') {
-    const frame = document.getElementById('dashboard-iframe');
-    if (!frame.src) {
-      frame.addEventListener('load', hideDashboardBackLink);
-      frame.src = 'Dashboard.html';
-    }
-  }
-}
-
-// El Dashboard embebido trae su propio enlace "← Calculadora" (pensado para
-// cuando se abría como página independiente). Al estar ahora integrado en un
-// iframe, ese enlace navegaría el iframe en sí mismo en vez de la app — lo
-// ocultamos porque la pestaña del sidebar ya cubre esa función.
-function hideDashboardBackLink() {
-  try {
-    const frame = document.getElementById('dashboard-iframe');
-    const link = frame.contentDocument.querySelector('a[href="index.html"]');
-    if (link) link.style.display = 'none';
-  } catch (e) { /* cross-origin u otro fallo: ignorar, no es crítico */ }
+  if (mode==='dashboard') initDashboard();
 }
 
 function volverAlFormulario() {
