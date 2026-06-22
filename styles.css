@@ -478,7 +478,7 @@ input, select, button { font-family: var(--sans); }
 .dash-dist-labels { display: flex; justify-content: space-around; padding: 0 20px; margin-top: 10px; font-family: var(--mono); font-size: 0.62rem; color: var(--text2); text-align: center; }
 .dash-dist-labels span { flex: 1; max-width: 90px; }
 
-.dash-bottom-grid { display: grid; grid-template-columns: 280px 1fr; gap: 12px; }
+.dash-bottom-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 @media (max-width: 760px) { .dash-bottom-grid { grid-template-columns: 1fr; } }
 .dash-prov-card { margin-bottom: 0; }
 .dash-donut-wrap { display: flex; align-items: center; justify-content: center; margin: 18px 0; }
