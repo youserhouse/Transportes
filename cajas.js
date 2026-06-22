@@ -11,7 +11,6 @@ function setMode(mode) {
   document.getElementById('mode-cajas').style.display     = mode==='cajas'     ? '' : 'none';
   document.getElementById('mode-config').style.display    = mode==='config'    ? '' : 'none';
   document.getElementById('mode-dashboard').style.display = mode==='dashboard' ? '' : 'none';
-  document.querySelector('.content').classList.toggle('content-dashboard', mode==='dashboard');
   document.getElementById('tab-palets').className    = 'mode-tab' + (mode==='palets'?' active-palets':'');
   document.getElementById('tab-cajas').className     = 'mode-tab' + (mode==='cajas' ?' active-cajas':'');
   document.getElementById('tab-config').className    = 'mode-tab' + (mode==='config'?' active-config':'');
