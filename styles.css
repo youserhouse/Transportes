@@ -91,6 +91,7 @@ input, select, button { font-family: var(--sans); }
 .btn-signout:hover { border-color: var(--danger); color: var(--danger); }
 
 .content { flex: 1; min-height: 100vh; padding: 36px 40px 80px; max-width: 760px; }
+.content.content-dashboard { max-width: 1180px; }
 @media (max-width: 860px) {
   .app-shell { flex-direction: column; }
   .sidebar { width: 100%; min-height: auto; position: static; flex-direction: row; align-items: center; }
