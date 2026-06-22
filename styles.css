@@ -338,17 +338,35 @@ input, select, button { font-family: var(--sans); }
 }
 .cp-disclaimer.show { display: block; }
 
-/* DESGLOSE MANUAL */
-.desglose-section { margin-bottom: 20px; }
-.desglose-toggle {
-  width: 100%; padding: 10px 14px; background: var(--surface2); border-radius: 3px;
-  border: 1px solid var(--border2); color: var(--text3);
-  font-family: var(--mono); font-size: 0.74rem; letter-spacing: 0.05em;
-  cursor: pointer; text-align: left; display: flex; justify-content: space-between;
-  align-items: center; transition: all 0.15s;
+/* CONFIRMACIÓN DESGLOSE PALLETWAYS (modal) */
+.pw-modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.55); display: flex;
+  align-items: center; justify-content: center; z-index: 300; padding: 16px;
+  opacity: 0; visibility: hidden; transition: opacity 0.2s ease;
 }
-.desglose-toggle:hover { border-color: var(--accent); color: var(--accent); }
-#desglose-body { padding: 14px 0 4px; }
+.pw-modal-overlay.show { opacity: 1; visibility: visible; }
+.pw-modal {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 6px;
+  border-top: 3px solid var(--pw); width: 100%; max-width: 460px; max-height: 90vh;
+  overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  transform: translateY(10px) scale(0.97); opacity: 0;
+  transition: transform 0.25s cubic-bezier(.2,.8,.2,1), opacity 0.2s ease;
+}
+.pw-modal-overlay.show .pw-modal { transform: translateY(0) scale(1); opacity: 1; }
+.pw-modal-head { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid var(--border); }
+.pw-modal-title { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 0.85rem; color: var(--text); }
+.pw-modal-icon { font-size: 0.9rem; }
+.pw-modal-close { background: transparent; border: none; color: var(--text3); font-size: 0.9rem; cursor: pointer; line-height: 1; transition: color 0.15s; }
+.pw-modal-close:hover { color: var(--text); }
+.pw-modal-body { padding: 18px 20px; }
+.pw-modal-info { font-family: var(--mono); font-size: 0.72rem; color: var(--pw-light); line-height: 1.6; margin-bottom: 16px; padding: 10px 12px; background: var(--pw-bg); border-left: 3px solid var(--pw); border-radius: 2px; }
+.pw-modal-body .field-inline-error { margin-top: 12px; }
+.pw-modal-foot { display: flex; align-items: center; justify-content: flex-end; gap: 10px; padding: 14px 20px; border-top: 1px solid var(--border); }
+.pw-modal-btn-cancel { background: transparent; border: 1px solid var(--border); border-radius: 2px; padding: 9px 16px; font-family: var(--mono); font-size: 0.66rem; font-weight: 600; letter-spacing: 0.05em; color: var(--text2); cursor: pointer; transition: border-color 0.15s; }
+.pw-modal-btn-cancel:hover { border-color: var(--text3); }
+.pw-modal-btn-confirm { background: var(--pw); border: none; border-radius: 2px; padding: 9px 16px; font-family: var(--mono); font-size: 0.66rem; font-weight: 700; letter-spacing: 0.05em; color: #FFFFFF; cursor: pointer; transition: opacity 0.15s, transform 0.1s; }
+.pw-modal-btn-confirm:hover { opacity: 0.88; }
+.pw-modal-btn-confirm:active { transform: scale(0.97); }
 
 /* ═══ DASHBOARD (nativo) ═══ */
 .dash-toolbar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 22px; }

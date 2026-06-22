@@ -187,49 +187,6 @@ window.fsActualizarCalculo = async function(id, datos) {
       </div>
     </div>
 
-    <!-- DESGLOSE PALLETWAYS (opcional) -->
-    <div class="desglose-section" id="desglose-section">
-      <button class="desglose-toggle" onclick="toggleDesglose()" type="button">
-        <span style="color: #FFC107;">≡ Especificar desglose Palletways (opcional)</span>
-        <span id="desglose-chevron">▸</span>
-      </button>
-      <div id="desglose-body" style="display:none">
-        <p class="field-hint" style="margin-bottom:10px">
-          Si conoces el desglose real (factura o confirmación), introdúcelo aquí.
-          Si lo dejas a 0, se calcula automáticamente.
-        </p>
-        <div class="input-row-3">
-          <div class="field">
-            <label>Super Euro Light (≤220cm)</label>
-            <div class="caja-counter">
-              <button type="button" onclick="cambiarDesglose('sel',-1)" aria-label="Reducir SEL">−</button>
-              <input type="number" id="n-sel" min="0" value="0" oninput="onDesgloseInput()">
-              <button type="button" onclick="cambiarDesglose('sel',1)" aria-label="Aumentar SEL">+</button>
-            </div>
-          </div>
-          <div class="field">
-            <label>Quarter (≤110cm)</label>
-            <div class="caja-counter">
-              <button type="button" onclick="cambiarDesglose('q',-1)" aria-label="Reducir Quarter">−</button>
-              <input type="number" id="n-quarter" min="0" value="0" oninput="onDesgloseInput()">
-              <button type="button" onclick="cambiarDesglose('q',1)" aria-label="Aumentar Quarter">+</button>
-            </div>
-          </div>
-          <div class="field">
-            <label>Mini Quarter (≤80cm)</label>
-            <div class="caja-counter">
-              <button type="button" onclick="cambiarDesglose('mq',-1)" aria-label="Reducir Mini Quarter">−</button>
-              <input type="number" id="n-mini-q" min="0" value="0" oninput="onDesgloseInput()">
-              <button type="button" onclick="cambiarDesglose('mq',1)" aria-label="Aumentar Mini Quarter">+</button>
-            </div>
-          </div>
-        </div>
-        <div id="desglose-active-msg" style="display:none;margin-top:10px;padding:7px 12px;background:var(--pw-bg);border-left:3px solid var(--pw);font-family:var(--mono);font-size:0.72rem;color:var(--pw-light)">
-          ✓ Desglose manual activo — el cálculo de Palletways usará estos valores
-        </div>
-      </div>
-    </div>
-
     <!-- PASO 2 -->
     <div class="section">
       <div class="section-label">
@@ -277,7 +234,7 @@ window.fsActualizarCalculo = async function(id, datos) {
       <div id="zona-detected"></div>
     </div>
 
-    <button id="calc-btn" onclick="calcular()">▶ Calcular precio de envío</button>
+    <button id="calc-btn" onclick="iniciarCalculo()">▶ Calcular precio de envío</button>
     <div id="error-msg"></div>
     <div class="divider"></div>
 
@@ -628,6 +585,53 @@ window.fsActualizarCalculo = async function(id, datos) {
           <button type="button" class="dash-modal-btn-cancel" onclick="closeDashEditModal()">Cancelar</button>
           <button type="button" class="dash-modal-btn-save" id="dash-edit-save-btn" onclick="guardarEdicionDashboard()">Guardar cambios</button>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONFIRMACIÓN DESGLOSE PALLETWAYS (altura > 4.2) -->
+  <div class="pw-modal-overlay" id="pw-modal-overlay">
+    <div class="pw-modal">
+      <div class="pw-modal-head">
+        <div class="pw-modal-title">
+          <span class="pw-modal-icon">🔵</span>
+          <span>Confirma el desglose Palletways</span>
+        </div>
+        <button type="button" class="pw-modal-close" onclick="cerrarModalDesglose()" aria-label="Cerrar">✕</button>
+      </div>
+      <div class="pw-modal-body">
+        <p class="pw-modal-info" id="pw-modal-info">—</p>
+        <div class="input-row-3">
+          <div class="field">
+            <label>Super Euro Light (≤220cm)</label>
+            <div class="caja-counter">
+              <button type="button" onclick="cambiarDesgloseModal('sel',-1)" aria-label="Reducir SEL">−</button>
+              <input type="number" id="modal-n-sel" min="0" value="0" oninput="onDesgloseModalInput()">
+              <button type="button" onclick="cambiarDesgloseModal('sel',1)" aria-label="Aumentar SEL">+</button>
+            </div>
+          </div>
+          <div class="field">
+            <label>Quarter (≤110cm)</label>
+            <div class="caja-counter">
+              <button type="button" onclick="cambiarDesgloseModal('q',-1)" aria-label="Reducir Quarter">−</button>
+              <input type="number" id="modal-n-quarter" min="0" value="0" oninput="onDesgloseModalInput()">
+              <button type="button" onclick="cambiarDesgloseModal('q',1)" aria-label="Aumentar Quarter">+</button>
+            </div>
+          </div>
+          <div class="field">
+            <label>Mini Quarter (≤80cm)</label>
+            <div class="caja-counter">
+              <button type="button" onclick="cambiarDesgloseModal('mq',-1)" aria-label="Reducir Mini Quarter">−</button>
+              <input type="number" id="modal-n-mini-q" min="0" value="0" oninput="onDesgloseModalInput()">
+              <button type="button" onclick="cambiarDesgloseModal('mq',1)" aria-label="Aumentar Mini Quarter">+</button>
+            </div>
+          </div>
+        </div>
+        <span class="field-inline-error" id="pw-modal-error">⚠ Introduce al menos una postura para continuar.</span>
+      </div>
+      <div class="pw-modal-foot">
+        <button type="button" class="pw-modal-btn-cancel" onclick="cerrarModalDesglose()">Cancelar</button>
+        <button type="button" class="pw-modal-btn-confirm" onclick="confirmarDesglose()">Confirmar y calcular</button>
       </div>
     </div>
   </div>
