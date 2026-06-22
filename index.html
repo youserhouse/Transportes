@@ -523,16 +523,27 @@ window.fsListenCalculos = function(callback) {
     <div class="dash-section-title"><span>Análisis de palés enviados por transportista</span><span class="dash-rule"></span></div>
     <div class="dash-analysis-grid" id="dash-analysis-grid"></div>
 
-    <div class="dash-card">
-      <div class="dash-dist-head">
-        <div class="dash-card-title">Distribución por rango de palés</div>
-        <div class="dash-evo-legend">
-          <div class="dash-legend-item"><span class="dash-legend-swatch" style="background:var(--pw)"></span>Palletways</div>
-          <div class="dash-legend-item"><span class="dash-legend-swatch" style="background:var(--ceva)"></span>CEVA</div>
+    <div class="dash-card dash-hist-card">
+      <div class="dash-hist-head">
+        <div class="dash-card-title">Historial de cálculos</div>
+        <button type="button" class="dash-export-btn" onclick="exportarHistorialDashboardCSV()">↓ Exportar CSV</button>
+      </div>
+      <div class="dash-table-wrap">
+        <div class="dash-table-inner">
+          <div class="dash-table-row dash-table-head">
+            <div>Fecha</div><div>Tipo</div><div>Destino</div><div>Provincia</div><div>Palés</div><div class="r">Palletways €</div><div class="r">CEVA €</div>
+          </div>
+          <div id="dash-table-body"></div>
         </div>
       </div>
-      <div class="dash-dist-bars" id="dash-dist-bars"></div>
-      <div class="dash-dist-labels"><span>1 palé</span><span>2–3 palés</span><span>4+ palés</span></div>
+      <div class="dash-pagination">
+        <div class="dash-pag-info" id="dash-pag-info">0 registros</div>
+        <div class="dash-pag-btns">
+          <button type="button" class="dash-pag-btn" id="dash-pag-prev" onclick="dashPagePrev()">‹</button>
+          <span class="dash-pag-current" id="dash-pag-current">1</span>
+          <button type="button" class="dash-pag-btn" id="dash-pag-next" onclick="dashPageNext()">›</button>
+        </div>
+      </div>
     </div>
 
     <div class="dash-bottom-grid">
@@ -541,27 +552,16 @@ window.fsListenCalculos = function(callback) {
         <div class="dash-donut-wrap"><div class="dash-donut" id="dash-donut"><div class="dash-donut-hole"></div></div></div>
         <div class="dash-prov-legend" id="dash-prov-legend"></div>
       </div>
-      <div class="dash-card dash-hist-card">
-        <div class="dash-hist-head">
-          <div class="dash-card-title small">Historial de cálculos</div>
-          <button type="button" class="dash-export-btn" onclick="exportarHistorialDashboardCSV()">↓ Exportar CSV</button>
-        </div>
-        <div class="dash-table-wrap">
-          <div class="dash-table-inner">
-            <div class="dash-table-row dash-table-head">
-              <div>Fecha</div><div>Tipo</div><div>Destino</div><div>Provincia</div><div>Palés</div><div class="r">Palletways €</div><div class="r">CEVA €</div>
-            </div>
-            <div id="dash-table-body"></div>
+      <div class="dash-card">
+        <div class="dash-dist-head">
+          <div class="dash-card-title small">Distribución por rango de palés</div>
+          <div class="dash-evo-legend">
+            <div class="dash-legend-item"><span class="dash-legend-swatch" style="background:var(--pw)"></span>Palletways</div>
+            <div class="dash-legend-item"><span class="dash-legend-swatch" style="background:var(--ceva)"></span>CEVA</div>
           </div>
         </div>
-        <div class="dash-pagination">
-          <div class="dash-pag-info" id="dash-pag-info">0 registros</div>
-          <div class="dash-pag-btns">
-            <button type="button" class="dash-pag-btn" id="dash-pag-prev" onclick="dashPagePrev()">‹</button>
-            <span class="dash-pag-current" id="dash-pag-current">1</span>
-            <button type="button" class="dash-pag-btn" id="dash-pag-next" onclick="dashPageNext()">›</button>
-          </div>
-        </div>
+        <div class="dash-dist-bars" id="dash-dist-bars"></div>
+        <div class="dash-dist-labels"><span>1 palé</span><span>2–3 palés</span><span>4+ palés</span></div>
       </div>
     </div>
 
