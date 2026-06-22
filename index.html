@@ -458,7 +458,11 @@ window.fsActualizarCalculo = async function(id, datos) {
         <button type="button" class="dash-filter-btn" data-car="PALLETWAYS" onclick="setDashCarrier('PALLETWAYS')">Palletways</button>
         <button type="button" class="dash-filter-btn" data-car="CEVA" onclick="setDashCarrier('CEVA')">CEVA</button>
       </div>
-      <div class="dash-month-pill" id="dash-month-label">—</div>
+      <div class="dash-month-nav">
+        <button type="button" class="dash-month-btn" id="dash-month-prev" onclick="dashMonthPrev()" title="Mes anterior">‹</button>
+        <div class="dash-month-pill" id="dash-month-label">—</div>
+        <button type="button" class="dash-month-btn" id="dash-month-next" onclick="dashMonthNext()" title="Mes siguiente">›</button>
+      </div>
     </div>
 
     <div class="dash-kpi-grid">

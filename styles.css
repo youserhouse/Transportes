@@ -359,7 +359,11 @@ input, select, button { font-family: var(--sans); }
 }
 .dash-filter-btn:hover { color: var(--text); }
 .dash-filter-btn.active { background: var(--accent); color: var(--on-accent); font-weight: 700; }
-.dash-month-pill { background: var(--surface); border: 1px solid var(--border); border-radius: 3px; padding: 7px 14px; font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.06em; color: var(--text2); }
+.dash-month-pill { background: var(--surface); border: 1px solid var(--border); border-radius: 3px; padding: 7px 14px; font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.06em; color: var(--text2); min-width: 120px; text-align: center; }
+.dash-month-nav { display: flex; align-items: center; gap: 6px; margin-left: auto; }
+.dash-month-btn { width: 28px; height: 28px; border: 1px solid var(--border); border-radius: 3px; background: var(--surface); display: flex; align-items: center; justify-content: center; font-size: 0.8rem; color: var(--text2); cursor: pointer; transition: all 0.15s; }
+.dash-month-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+.dash-month-btn:disabled { opacity: 0.35; cursor: not-allowed; }
 
 .dash-kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 28px; }
 @media (max-width: 900px) { .dash-kpi-grid { grid-template-columns: repeat(2, 1fr); } }

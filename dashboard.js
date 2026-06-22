@@ -7,7 +7,7 @@
 const DASH_PAGE_SIZE = 8;
 const DASH_DONUT_COLORS = ['var(--pw)', 'var(--ceva)', 'var(--accent)', 'var(--winner-save)', 'var(--yellow)', 'var(--text3)'];
 
-let dashState = { periodo: 'mes', carrier: 'ambos', page: 1, calculos: [], listening: false, _currentList: [] };
+let dashState = { periodo: 'mes', carrier: 'ambos', page: 1, calculos: [], listening: false, _currentList: [], viewMonth: null };
 
 function initDashboard() {
   if (!dashState.listening) {
@@ -41,6 +41,22 @@ function dashPrecioElegido(c) {
 function setDashPeriodo(p) { dashState.periodo = p; dashState.page = 1; updateDashFilterButtons(); renderDashboard(); }
 function setDashCarrier(c) { dashState.carrier = c; dashState.page = 1; updateDashFilterButtons(); renderDashboard(); }
 
+function dashMonthPrev() {
+  dashState.viewMonth.setMonth(dashState.viewMonth.getMonth() - 1);
+  dashState.page = 1;
+  renderDashboard();
+}
+
+function dashMonthNext() {
+  const now = new Date();
+  const candidate = new Date(dashState.viewMonth);
+  candidate.setMonth(candidate.getMonth() + 1);
+  if (candidate.getFullYear() > now.getFullYear() || (candidate.getFullYear() === now.getFullYear() && candidate.getMonth() > now.getMonth())) return;
+  dashState.viewMonth = candidate;
+  dashState.page = 1;
+  renderDashboard();
+}
+
 function updateDashFilterButtons() {
   document.querySelectorAll('#dash-per-group .dash-filter-btn').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.per === dashState.periodo);
@@ -50,7 +66,7 @@ function updateDashFilterButtons() {
   });
 }
 
-function dashPeriodPredicate(d, now) {
+function dashPeriodPredicate(d, now, viewMonth) {
   if (dashState.periodo === 'hoy') {
     return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth() && d.getDate() === now.getDate();
   }
@@ -60,23 +76,27 @@ function dashPeriodPredicate(d, now) {
     weekAgo.setHours(0, 0, 0, 0);
     return d >= weekAgo && d <= now;
   }
-  return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth();
+  return d.getFullYear() === viewMonth.getFullYear() && d.getMonth() === viewMonth.getMonth();
 }
 
 function renderDashboard() {
   const now = new Date();
-  const periodFiltered = dashState.calculos.filter(c => c._fecha && dashPeriodPredicate(c._fecha, now));
+  if (!dashState.viewMonth) dashState.viewMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  const viewMonth = dashState.viewMonth;
+  const periodFiltered = dashState.calculos.filter(c => c._fecha && dashPeriodPredicate(c._fecha, now, viewMonth));
   const viewFiltered = dashState.carrier === 'ambos' ? periodFiltered : periodFiltered.filter(c => c.elegido === dashState.carrier);
 
   renderDashKPIs(periodFiltered, viewFiltered);
   renderDashCompare(periodFiltered);
-  renderDashMonthlyBars(now);
-  renderDashEvolucion(now);
+  renderDashMonthlyBars(viewMonth);
+  renderDashEvolucion(viewMonth);
   renderDashAnalisisPalets(periodFiltered);
   renderDashDistribucion(periodFiltered);
   renderDashProvincia(viewFiltered);
   renderDashHistorial(viewFiltered);
 
+  const isCurrentMonth = viewMonth.getFullYear() === now.getFullYear() && viewMonth.getMonth() === now.getMonth();
+  document.getElementById('dash-month-next').disabled = isCurrentMonth;
   document.getElementById('dash-empty').style.display = dashState.calculos.length ? 'none' : 'block';
 }
 
@@ -123,13 +143,13 @@ function renderDashCompare(list) {
   document.getElementById('dash-ceva-ticket').textContent = ceva.length ? fmt(cevaGasto / ceva.length) : '—';
 }
 
-// ── Barras diarias (mes en curso) dentro de las tarjetas comparativa ──
-function renderDashMonthlyBars(now) {
-  const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+// ── Barras diarias del mes seleccionado, dentro de las tarjetas comparativa ──
+function renderDashMonthlyBars(viewMonth) {
+  const daysInMonth = new Date(viewMonth.getFullYear(), viewMonth.getMonth() + 1, 0).getDate();
   const pwDaily = new Array(daysInMonth).fill(0);
   const cevaDaily = new Array(daysInMonth).fill(0);
   for (const c of dashState.calculos) {
-    if (!c._fecha || c._fecha.getFullYear() !== now.getFullYear() || c._fecha.getMonth() !== now.getMonth()) continue;
+    if (!c._fecha || c._fecha.getFullYear() !== viewMonth.getFullYear() || c._fecha.getMonth() !== viewMonth.getMonth()) continue;
     const day = c._fecha.getDate() - 1;
     if (c.elegido === 'PALLETWAYS') pwDaily[day] += Number(c.precioPall) || 0;
     else if (c.elegido === 'CEVA') cevaDaily[day] += Number(c.precioCeva) || 0;
@@ -141,7 +161,7 @@ function renderDashMonthlyBars(now) {
   document.getElementById('dash-pw-axis-end').textContent = daysInMonth;
   document.getElementById('dash-ceva-axis-mid').textContent = Math.round(daysInMonth / 2);
   document.getElementById('dash-ceva-axis-end').textContent = daysInMonth;
-  document.getElementById('dash-month-label').textContent = dashCapitalize(now.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' }));
+  document.getElementById('dash-month-label').textContent = dashCapitalize(viewMonth.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' }));
 }
 
 function dashRenderBars(containerId, values, maxVal) {
@@ -151,13 +171,13 @@ function dashRenderBars(containerId, values, maxVal) {
 
 function dashCapitalize(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
 
-// ── Evolución del gasto (gasto acumulado del mes en curso) ──
-function renderDashEvolucion(now) {
-  const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+// ── Evolución del gasto (gasto acumulado del mes seleccionado) ──
+function renderDashEvolucion(viewMonth) {
+  const daysInMonth = new Date(viewMonth.getFullYear(), viewMonth.getMonth() + 1, 0).getDate();
   const pwDaily = new Array(daysInMonth).fill(0);
   const cevaDaily = new Array(daysInMonth).fill(0);
   for (const c of dashState.calculos) {
-    if (!c._fecha || c._fecha.getFullYear() !== now.getFullYear() || c._fecha.getMonth() !== now.getMonth()) continue;
+    if (!c._fecha || c._fecha.getFullYear() !== viewMonth.getFullYear() || c._fecha.getMonth() !== viewMonth.getMonth()) continue;
     const day = c._fecha.getDate() - 1;
     if (c.elegido === 'PALLETWAYS') pwDaily[day] += Number(c.precioPall) || 0;
     else if (c.elegido === 'CEVA') cevaDaily[day] += Number(c.precioCeva) || 0;
