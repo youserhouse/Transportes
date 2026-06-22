@@ -340,26 +340,33 @@ input, select, button { font-family: var(--sans); }
 
 /* CONFIRMACIÓN DESGLOSE PALLETWAYS (modal) */
 .pw-modal-overlay {
-  position: fixed; inset: 0; background: rgba(0,0,0,0.55); display: flex;
+  position: fixed; inset: 0; background: rgba(0,0,0,0.55); -webkit-backdrop-filter: blur(0px); backdrop-filter: blur(0px); display: flex;
   align-items: center; justify-content: center; z-index: 300; padding: 16px;
-  opacity: 0; visibility: hidden; transition: opacity 0.2s ease;
+  opacity: 0; visibility: hidden; transition: opacity 0.25s ease, backdrop-filter 0.3s ease, -webkit-backdrop-filter 0.3s ease;
 }
-.pw-modal-overlay.show { opacity: 1; visibility: visible; }
+.pw-modal-overlay.show { opacity: 1; visibility: visible; -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
 .pw-modal {
-  background: var(--surface); border: 1px solid var(--border); border-radius: 6px;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
   border-top: 3px solid var(--pw); width: 100%; max-width: 580px; max-height: 90vh;
-  overflow-y: auto; overflow-x: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-  transform: translateY(10px) scale(0.97); opacity: 0;
-  transition: transform 0.25s cubic-bezier(.2,.8,.2,1), opacity 0.2s ease;
+  overflow-y: auto; overflow-x: hidden; box-shadow: 0 24px 70px rgba(0,0,0,0.35);
+  transform: translateY(28px) scale(0.92); opacity: 0;
+  transition: transform 0.4s cubic-bezier(.22,1.5,.4,1), opacity 0.22s ease;
 }
 .pw-modal-overlay.show .pw-modal { transform: translateY(0) scale(1); opacity: 1; }
 .pw-modal-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 20px; border-bottom: 1px solid var(--border); }
 .pw-modal-title { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 0.85rem; color: var(--text); }
-.pw-modal-icon { font-size: 0.9rem; flex-shrink: 0; }
+.pw-modal-icon { font-size: 0.9rem; flex-shrink: 0; position: relative; display: inline-flex; }
+.pw-modal-icon::after {
+  content: ''; position: absolute; inset: -5px; border-radius: 50%; border: 2px solid var(--pw); opacity: 0;
+}
+.pw-modal-overlay.show .pw-modal-icon::after { animation: pwIconPulse 0.7s ease-out 0.18s; }
 .pw-modal-close { background: transparent; border: none; color: var(--text3); font-size: 0.9rem; cursor: pointer; line-height: 1; transition: color 0.15s; flex-shrink: 0; }
 .pw-modal-close:hover { color: var(--text); }
 .pw-modal-body { padding: 18px 20px; }
 .pw-modal-info { font-family: var(--mono); font-size: 0.72rem; color: var(--pw-light); line-height: 1.6; margin-bottom: 18px; padding: 10px 12px; background: var(--pw-bg); border-left: 3px solid var(--pw); border-radius: 2px; }
+.pw-modal-overlay.show .pw-modal-info { animation: pwFadeUp 0.32s ease-out both; }
+.pw-modal-overlay.show .pw-modal-body .input-row-3 { animation: pwFadeUp 0.32s ease-out 0.06s both; }
+.pw-modal-overlay.show .pw-modal-foot { animation: pwFadeUp 0.32s ease-out 0.12s both; }
 .pw-modal-body .input-row-3 { gap: 10px; }
 .pw-modal-body .input-row-3 .field { min-width: 0; }
 .pw-modal-body .field label { display: block; min-height: 2.4em; }
@@ -370,6 +377,11 @@ input, select, button { font-family: var(--sans); }
 .pw-modal-foot { display: flex; align-items: center; justify-content: flex-end; gap: 10px; padding: 14px 20px; border-top: 1px solid var(--border); }
 @media (max-width: 640px) {
   .pw-modal-body .input-row-3 { grid-template-columns: 1fr; gap: 14px; }
+}
+@keyframes pwFadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes pwIconPulse {
+  0% { transform: scale(0.6); opacity: 0.9; }
+  100% { transform: scale(1.9); opacity: 0; }
 }
 .pw-modal-btn-cancel { background: transparent; border: 1px solid var(--border); border-radius: 2px; padding: 9px 16px; font-family: var(--mono); font-size: 0.66rem; font-weight: 600; letter-spacing: 0.05em; color: var(--text2); cursor: pointer; transition: border-color 0.15s; }
 .pw-modal-btn-cancel:hover { border-color: var(--text3); }
