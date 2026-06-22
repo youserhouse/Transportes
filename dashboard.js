@@ -264,6 +264,8 @@ function renderDashHistorial(list) {
       <div>${c.pales != null ? c.pales : '—'}</div>
       <div class="r dash-table-pw">${c.precioPall ? fmt(Number(c.precioPall)) : '—'}</div>
       <div class="r dash-table-ceva">${c.precioCeva ? fmt(Number(c.precioCeva)) : '—'}</div>
+      <div class="dash-table-actions"><button type="button" class="dash-action-btn edit" onclick="abrirEdicionDashboard('${c.id}')" title="Editar">✎</button></div>
+      <div class="dash-table-actions"><button type="button" class="dash-action-btn delete" onclick="eliminarCalculoDashboard('${c.id}')" title="Eliminar">✕</button></div>
     </div>`).join('');
 
   const from = list.length ? start + 1 : 0;
@@ -301,4 +303,76 @@ function exportarHistorialDashboardCSV() {
   a.href = url; a.download = 'dashboard_historial.csv';
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
   URL.revokeObjectURL(url);
+}
+
+// ── Edición y eliminación de registros ──
+let dashEditId = null;
+
+function abrirEdicionDashboard(id) {
+  const c = dashState.calculos.find(x => x.id === id);
+  if (!c) return;
+  dashEditId = id;
+  document.getElementById('dash-edit-fecha').value = dashToDatetimeLocal(c._fecha);
+  document.getElementById('dash-edit-tipo').value = c.tipo || 'PALÉS';
+  document.getElementById('dash-edit-destino').value = c.destino || 'ESPAÑA';
+  document.getElementById('dash-edit-provincia').value = c.provincia || '';
+  document.getElementById('dash-edit-pales').value = c.pales != null ? c.pales : '';
+  document.getElementById('dash-edit-elegido').value = c.elegido || 'PALLETWAYS';
+  document.getElementById('dash-edit-precio-pall').value = c.precioPall != null ? Number(c.precioPall) : '';
+  document.getElementById('dash-edit-precio-ceva').value = c.precioCeva != null ? Number(c.precioCeva) : '';
+  document.getElementById('dash-edit-msg').textContent = '';
+  document.getElementById('dash-edit-overlay').style.display = 'flex';
+}
+
+function closeDashEditModal() {
+  document.getElementById('dash-edit-overlay').style.display = 'none';
+  dashEditId = null;
+}
+
+function dashToDatetimeLocal(d) {
+  if (!d) return '';
+  const pad = n => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+async function guardarEdicionDashboard() {
+  if (!dashEditId) return;
+  const btn = document.getElementById('dash-edit-save-btn');
+  const msgEl = document.getElementById('dash-edit-msg');
+
+  const tipo = document.getElementById('dash-edit-tipo').value;
+  const destino = document.getElementById('dash-edit-destino').value;
+  const provincia = document.getElementById('dash-edit-provincia').value.trim();
+  const pales = parseInt(document.getElementById('dash-edit-pales').value) || 0;
+  const elegido = document.getElementById('dash-edit-elegido').value;
+  const precioPall = parseFloat(document.getElementById('dash-edit-precio-pall').value) || 0;
+  const precioCeva = parseFloat(document.getElementById('dash-edit-precio-ceva').value) || 0;
+  const fechaVal = document.getElementById('dash-edit-fecha').value;
+  const fecha = fechaVal ? new Date(fechaVal) : new Date();
+
+  const precioElegido = elegido === 'PALLETWAYS' ? precioPall : precioCeva;
+  const precioOtro = elegido === 'PALLETWAYS' ? precioCeva : precioPall;
+  const ahorro = (precioOtro > 0 && precioElegido > 0) ? (precioOtro - precioElegido) : 0;
+
+  btn.disabled = true;
+  btn.textContent = 'Guardando…';
+  msgEl.textContent = '';
+  try {
+    await window.fsActualizarCalculo(dashEditId, { tipo, destino, provincia, pales, elegido, precioPall, precioCeva, ahorro, fecha });
+    closeDashEditModal();
+  } catch (e) {
+    msgEl.textContent = '⚠ Error: ' + (e.message || e);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Guardar cambios';
+  }
+}
+
+async function eliminarCalculoDashboard(id) {
+  if (!confirm('¿Eliminar este cálculo? Esta acción no se puede deshacer.')) return;
+  try {
+    await window.fsEliminarCalculo(id);
+  } catch (e) {
+    alert('Error al eliminar: ' + (e.message || e));
+  }
 }

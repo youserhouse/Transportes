@@ -57,7 +57,7 @@
 import { initializeApp }   from 'https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signOut }
                             from 'https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js';
-import { getFirestore, doc, getDoc, collection, addDoc, serverTimestamp, query, orderBy, onSnapshot }
+import { getFirestore, doc, getDoc, collection, addDoc, deleteDoc, updateDoc, serverTimestamp, query, orderBy, onSnapshot }
                             from 'https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js';
 
 const firebaseConfig = {
@@ -117,6 +117,18 @@ window.fsListenCalculos = function(callback) {
     callback(docs);
   });
   return unsubCalculos;
+};
+
+// Elimina un cálculo guardado (botón "✕" en el historial del Dashboard).
+window.fsEliminarCalculo = async function(id) {
+  if (!auth.currentUser) throw new Error('No autenticado');
+  await deleteDoc(doc(db, 'calculos', id));
+};
+
+// Actualiza los campos editables de un cálculo (botón "✎" en el historial del Dashboard).
+window.fsActualizarCalculo = async function(id, datos) {
+  if (!auth.currentUser) throw new Error('No autenticado');
+  await updateDoc(doc(db, 'calculos', id), datos);
 };
 </script>
 
@@ -531,7 +543,7 @@ window.fsListenCalculos = function(callback) {
       <div class="dash-table-wrap">
         <div class="dash-table-inner">
           <div class="dash-table-row dash-table-head">
-            <div>Fecha</div><div>Tipo</div><div>Destino</div><div>Provincia</div><div>Palés</div><div class="r">Palletways €</div><div class="r">CEVA €</div>
+            <div>Fecha</div><div>Tipo</div><div>Destino</div><div>Provincia</div><div>Palés</div><div class="r">Palletways €</div><div class="r">CEVA €</div><div></div><div></div>
           </div>
           <div id="dash-table-body"></div>
         </div>
@@ -566,6 +578,54 @@ window.fsListenCalculos = function(callback) {
     </div>
 
     <div class="dash-empty" id="dash-empty" style="display:none">Aún no hay cálculos guardados en este período.</div>
+
+    <div class="dash-modal-overlay" id="dash-edit-overlay" style="display:none">
+      <div class="dash-modal">
+        <div class="dash-modal-head">
+          <div class="dash-modal-title">Editar cálculo</div>
+          <button type="button" class="dash-modal-close" onclick="closeDashEditModal()">✕</button>
+        </div>
+        <div class="dash-modal-body">
+          <label class="dash-modal-label" for="dash-edit-fecha">Fecha</label>
+          <input type="datetime-local" id="dash-edit-fecha" class="dash-modal-input">
+
+          <label class="dash-modal-label" for="dash-edit-tipo">Tipo</label>
+          <select id="dash-edit-tipo" class="dash-modal-input">
+            <option value="PALÉS">PALÉS</option>
+            <option value="CAJAS">CAJAS</option>
+          </select>
+
+          <label class="dash-modal-label" for="dash-edit-destino">Destino</label>
+          <select id="dash-edit-destino" class="dash-modal-input">
+            <option value="ESPAÑA">ESPAÑA</option>
+            <option value="PORTUGAL">PORTUGAL</option>
+          </select>
+
+          <label class="dash-modal-label" for="dash-edit-provincia">Provincia</label>
+          <input type="text" id="dash-edit-provincia" class="dash-modal-input">
+
+          <label class="dash-modal-label" for="dash-edit-pales">Palés / Cajas</label>
+          <input type="number" id="dash-edit-pales" class="dash-modal-input" min="0">
+
+          <label class="dash-modal-label" for="dash-edit-elegido">Transportista elegido</label>
+          <select id="dash-edit-elegido" class="dash-modal-input">
+            <option value="PALLETWAYS">PALLETWAYS</option>
+            <option value="CEVA">CEVA</option>
+          </select>
+
+          <label class="dash-modal-label" for="dash-edit-precio-pall">Precio Palletways (€)</label>
+          <input type="number" id="dash-edit-precio-pall" class="dash-modal-input" step="0.01" min="0">
+
+          <label class="dash-modal-label" for="dash-edit-precio-ceva">Precio CEVA (€)</label>
+          <input type="number" id="dash-edit-precio-ceva" class="dash-modal-input" step="0.01" min="0">
+        </div>
+        <div class="dash-modal-foot">
+          <span class="dash-modal-msg" id="dash-edit-msg"></span>
+          <button type="button" class="dash-modal-btn-cancel" onclick="closeDashEditModal()">Cancelar</button>
+          <button type="button" class="dash-modal-btn-save" id="dash-edit-save-btn" onclick="guardarEdicionDashboard()">Guardar cambios</button>
+        </div>
+      </div>
+    </div>
   </div>
 
 <script src="theme.js"></script>
