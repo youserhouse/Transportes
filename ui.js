@@ -123,29 +123,25 @@ function validateAltura() {
 // ═══════════════════════════════════════════════════════════════
 function calcPalletways(numPalets, alturaTotal, zona) {
   const t = PW_TARIFA[zona]; if (!t) return null;
-  const SEL_MAX = 2.2;
+  const SEL_BASE = 2.0; // altura "natural" de una postura SEL (en la práctica casi nunca se deja a su máximo de 220cm)
 
-  // If there are enough pallets to fill ceil(H/2.2) SEL pairs (2 pallets per pair),
-  // all slots bill as SEL — avoids misclassifying exact boundary remainders.
-  const numSEL_ceil = Math.ceil(alturaTotal / SEL_MAX);
-  if (numPalets >= 2 * numSEL_ceil) {
-    const subtotal = numSEL_ceil * t.C;
-    const porte    = subtotal * CONFIG.PW_PORTE_PCT;
-    return { total: subtotal + porte, subtotal, porte, totalSEL: numSEL_ceil, extra: null, precioSEL: t.C };
-  }
+  const pairs = Math.floor(numPalets / 2);
+  const hasLeftoverPallet = numPalets % 2 === 1;
 
-  const numSEL_base = Math.floor(alturaTotal / SEL_MAX);
-  const remainder   = Math.round((alturaTotal - numSEL_base * SEL_MAX) * 1000) / 1000;
-
-  let totalSEL = numSEL_base;
+  let totalSEL = pairs;
   let extra = null;
 
-  if (remainder > 1.10) {
-    totalSEL += 1;
-  } else if (remainder > 0.80) {
-    extra = { tipo: 'Quarter (≤110cm)', cm: Math.round(remainder * 100), precio: t.B };
-  } else if (remainder > 0) {
-    extra = { tipo: 'Mini Quarter (≤80cm)', cm: Math.round(remainder * 100), precio: t.A };
+  if (hasLeftoverPallet) {
+    let leftoverHeight = Math.round((alturaTotal - pairs * SEL_BASE) * 1000) / 1000;
+    leftoverHeight = Math.max(0, leftoverHeight);
+
+    if (leftoverHeight > 1.10) {
+      totalSEL += 1;
+    } else if (leftoverHeight > 0.80) {
+      extra = { tipo: 'Quarter (≤110cm)', cm: Math.round(leftoverHeight * 100), precio: t.B };
+    } else {
+      extra = { tipo: 'Mini Quarter (≤80cm)', cm: Math.round(leftoverHeight * 100), precio: t.A };
+    }
   }
 
   const subtotalSEL   = totalSEL * t.C;
