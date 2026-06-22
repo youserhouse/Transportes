@@ -7,7 +7,7 @@
 const DASH_PAGE_SIZE = 8;
 const DASH_DONUT_COLORS = ['var(--pw)', 'var(--ceva)', 'var(--accent)', 'var(--winner-save)', 'var(--yellow)', 'var(--text3)'];
 
-let dashState = { periodo: 'mes', carrier: 'ambos', page: 1, calculos: [], listening: false, _currentList: [] };
+let dashState = { periodo: 'mes', carrier: 'ambos', page: 1, calculos: [], listening: false, _currentList: [], viewMonth: null };
 
 function initDashboard() {
   if (!dashState.listening) {
@@ -41,6 +41,22 @@ function dashPrecioElegido(c) {
 function setDashPeriodo(p) { dashState.periodo = p; dashState.page = 1; updateDashFilterButtons(); renderDashboard(); }
 function setDashCarrier(c) { dashState.carrier = c; dashState.page = 1; updateDashFilterButtons(); renderDashboard(); }
 
+function dashMonthPrev() {
+  dashState.viewMonth.setMonth(dashState.viewMonth.getMonth() - 1);
+  dashState.page = 1;
+  renderDashboard();
+}
+
+function dashMonthNext() {
+  const now = new Date();
+  const candidate = new Date(dashState.viewMonth);
+  candidate.setMonth(candidate.getMonth() + 1);
+  if (candidate.getFullYear() > now.getFullYear() || (candidate.getFullYear() === now.getFullYear() && candidate.getMonth() > now.getMonth())) return;
+  dashState.viewMonth = candidate;
+  dashState.page = 1;
+  renderDashboard();
+}
+
 function updateDashFilterButtons() {
   document.querySelectorAll('#dash-per-group .dash-filter-btn').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.per === dashState.periodo);
@@ -50,7 +66,7 @@ function updateDashFilterButtons() {
   });
 }
 
-function dashPeriodPredicate(d, now) {
+function dashPeriodPredicate(d, now, viewMonth) {
   if (dashState.periodo === 'hoy') {
     return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth() && d.getDate() === now.getDate();
   }
@@ -60,23 +76,27 @@ function dashPeriodPredicate(d, now) {
     weekAgo.setHours(0, 0, 0, 0);
     return d >= weekAgo && d <= now;
   }
-  return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth();
+  return d.getFullYear() === viewMonth.getFullYear() && d.getMonth() === viewMonth.getMonth();
 }
 
 function renderDashboard() {
   const now = new Date();
-  const periodFiltered = dashState.calculos.filter(c => c._fecha && dashPeriodPredicate(c._fecha, now));
+  if (!dashState.viewMonth) dashState.viewMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  const viewMonth = dashState.viewMonth;
+  const periodFiltered = dashState.calculos.filter(c => c._fecha && dashPeriodPredicate(c._fecha, now, viewMonth));
   const viewFiltered = dashState.carrier === 'ambos' ? periodFiltered : periodFiltered.filter(c => c.elegido === dashState.carrier);
 
   renderDashKPIs(periodFiltered, viewFiltered);
   renderDashCompare(periodFiltered);
-  renderDashMonthlyBars(now);
-  renderDashEvolucion(now);
+  renderDashMonthlyBars(viewMonth);
+  renderDashEvolucion(viewMonth);
   renderDashAnalisisPalets(periodFiltered);
   renderDashDistribucion(periodFiltered);
   renderDashProvincia(viewFiltered);
   renderDashHistorial(viewFiltered);
 
+  const isCurrentMonth = viewMonth.getFullYear() === now.getFullYear() && viewMonth.getMonth() === now.getMonth();
+  document.getElementById('dash-month-next').disabled = isCurrentMonth;
   document.getElementById('dash-empty').style.display = dashState.calculos.length ? 'none' : 'block';
 }
 
@@ -123,13 +143,13 @@ function renderDashCompare(list) {
   document.getElementById('dash-ceva-ticket').textContent = ceva.length ? fmt(cevaGasto / ceva.length) : '—';
 }
 
-// ── Barras diarias (mes en curso) dentro de las tarjetas comparativa ──
-function renderDashMonthlyBars(now) {
-  const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+// ── Barras diarias del mes seleccionado, dentro de las tarjetas comparativa ──
+function renderDashMonthlyBars(viewMonth) {
+  const daysInMonth = new Date(viewMonth.getFullYear(), viewMonth.getMonth() + 1, 0).getDate();
   const pwDaily = new Array(daysInMonth).fill(0);
   const cevaDaily = new Array(daysInMonth).fill(0);
   for (const c of dashState.calculos) {
-    if (!c._fecha || c._fecha.getFullYear() !== now.getFullYear() || c._fecha.getMonth() !== now.getMonth()) continue;
+    if (!c._fecha || c._fecha.getFullYear() !== viewMonth.getFullYear() || c._fecha.getMonth() !== viewMonth.getMonth()) continue;
     const day = c._fecha.getDate() - 1;
     if (c.elegido === 'PALLETWAYS') pwDaily[day] += Number(c.precioPall) || 0;
     else if (c.elegido === 'CEVA') cevaDaily[day] += Number(c.precioCeva) || 0;
@@ -141,7 +161,7 @@ function renderDashMonthlyBars(now) {
   document.getElementById('dash-pw-axis-end').textContent = daysInMonth;
   document.getElementById('dash-ceva-axis-mid').textContent = Math.round(daysInMonth / 2);
   document.getElementById('dash-ceva-axis-end').textContent = daysInMonth;
-  document.getElementById('dash-month-label').textContent = dashCapitalize(now.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' }));
+  document.getElementById('dash-month-label').textContent = dashCapitalize(viewMonth.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' }));
 }
 
 function dashRenderBars(containerId, values, maxVal) {
@@ -151,13 +171,13 @@ function dashRenderBars(containerId, values, maxVal) {
 
 function dashCapitalize(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
 
-// ── Evolución del gasto (gasto acumulado del mes en curso) ──
-function renderDashEvolucion(now) {
-  const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+// ── Evolución del gasto (gasto acumulado del mes seleccionado) ──
+function renderDashEvolucion(viewMonth) {
+  const daysInMonth = new Date(viewMonth.getFullYear(), viewMonth.getMonth() + 1, 0).getDate();
   const pwDaily = new Array(daysInMonth).fill(0);
   const cevaDaily = new Array(daysInMonth).fill(0);
   for (const c of dashState.calculos) {
-    if (!c._fecha || c._fecha.getFullYear() !== now.getFullYear() || c._fecha.getMonth() !== now.getMonth()) continue;
+    if (!c._fecha || c._fecha.getFullYear() !== viewMonth.getFullYear() || c._fecha.getMonth() !== viewMonth.getMonth()) continue;
     const day = c._fecha.getDate() - 1;
     if (c.elegido === 'PALLETWAYS') pwDaily[day] += Number(c.precioPall) || 0;
     else if (c.elegido === 'CEVA') cevaDaily[day] += Number(c.precioCeva) || 0;
@@ -264,6 +284,8 @@ function renderDashHistorial(list) {
       <div>${c.pales != null ? c.pales : '—'}</div>
       <div class="r dash-table-pw">${c.precioPall ? fmt(Number(c.precioPall)) : '—'}</div>
       <div class="r dash-table-ceva">${c.precioCeva ? fmt(Number(c.precioCeva)) : '—'}</div>
+      <div class="dash-table-actions"><button type="button" class="dash-action-btn edit" onclick="abrirEdicionDashboard('${c.id}')" title="Editar">✎</button></div>
+      <div class="dash-table-actions"><button type="button" class="dash-action-btn delete" onclick="eliminarCalculoDashboard('${c.id}')" title="Eliminar">✕</button></div>
     </div>`).join('');
 
   const from = list.length ? start + 1 : 0;
@@ -301,4 +323,76 @@ function exportarHistorialDashboardCSV() {
   a.href = url; a.download = 'dashboard_historial.csv';
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
   URL.revokeObjectURL(url);
+}
+
+// ── Edición y eliminación de registros ──
+let dashEditId = null;
+
+function abrirEdicionDashboard(id) {
+  const c = dashState.calculos.find(x => x.id === id);
+  if (!c) return;
+  dashEditId = id;
+  document.getElementById('dash-edit-fecha').value = dashToDatetimeLocal(c._fecha);
+  document.getElementById('dash-edit-tipo').value = c.tipo || 'PALÉS';
+  document.getElementById('dash-edit-destino').value = c.destino || 'ESPAÑA';
+  document.getElementById('dash-edit-provincia').value = c.provincia || '';
+  document.getElementById('dash-edit-pales').value = c.pales != null ? c.pales : '';
+  document.getElementById('dash-edit-elegido').value = c.elegido || 'PALLETWAYS';
+  document.getElementById('dash-edit-precio-pall').value = c.precioPall != null ? Number(c.precioPall) : '';
+  document.getElementById('dash-edit-precio-ceva').value = c.precioCeva != null ? Number(c.precioCeva) : '';
+  document.getElementById('dash-edit-msg').textContent = '';
+  document.getElementById('dash-edit-overlay').style.display = 'flex';
+}
+
+function closeDashEditModal() {
+  document.getElementById('dash-edit-overlay').style.display = 'none';
+  dashEditId = null;
+}
+
+function dashToDatetimeLocal(d) {
+  if (!d) return '';
+  const pad = n => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+async function guardarEdicionDashboard() {
+  if (!dashEditId) return;
+  const btn = document.getElementById('dash-edit-save-btn');
+  const msgEl = document.getElementById('dash-edit-msg');
+
+  const tipo = document.getElementById('dash-edit-tipo').value;
+  const destino = document.getElementById('dash-edit-destino').value;
+  const provincia = document.getElementById('dash-edit-provincia').value.trim();
+  const pales = parseInt(document.getElementById('dash-edit-pales').value) || 0;
+  const elegido = document.getElementById('dash-edit-elegido').value;
+  const precioPall = parseFloat(document.getElementById('dash-edit-precio-pall').value) || 0;
+  const precioCeva = parseFloat(document.getElementById('dash-edit-precio-ceva').value) || 0;
+  const fechaVal = document.getElementById('dash-edit-fecha').value;
+  const fecha = fechaVal ? new Date(fechaVal) : new Date();
+
+  const precioElegido = elegido === 'PALLETWAYS' ? precioPall : precioCeva;
+  const precioOtro = elegido === 'PALLETWAYS' ? precioCeva : precioPall;
+  const ahorro = (precioOtro > 0 && precioElegido > 0) ? (precioOtro - precioElegido) : 0;
+
+  btn.disabled = true;
+  btn.textContent = 'Guardando…';
+  msgEl.textContent = '';
+  try {
+    await window.fsActualizarCalculo(dashEditId, { tipo, destino, provincia, pales, elegido, precioPall, precioCeva, ahorro, fecha });
+    closeDashEditModal();
+  } catch (e) {
+    msgEl.textContent = '⚠ Error: ' + (e.message || e);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Guardar cambios';
+  }
+}
+
+async function eliminarCalculoDashboard(id) {
+  if (!confirm('¿Eliminar este cálculo? Esta acción no se puede deshacer.')) return;
+  try {
+    await window.fsEliminarCalculo(id);
+  } catch (e) {
+    alert('Error al eliminar: ' + (e.message || e));
+  }
 }
