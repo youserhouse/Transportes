@@ -2,6 +2,10 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Git Workflow
+
+After committing and pushing work to a feature branch, always merge it into `main` and push `main` too — do this automatically without asking each time.
+
 ## What This Is
 
 A vanilla JS PWA (Progressive Web App) that compares shipping rates between two Spanish carriers — **Palletways** and **CEVA** — for pallets and boxes destined for Spain and Portugal. No build tools, no npm, no framework. Open `index.html` directly in a browser to run.
