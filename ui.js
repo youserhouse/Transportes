@@ -237,29 +237,74 @@ function renderCEVA(res, isWinner) {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// DESGLOSE MANUAL PALLETWAYS
+// DESGLOSE MANUAL PALLETWAYS — confirmación vía modal (altura > 4.2)
 // ═══════════════════════════════════════════════════════════════
-function toggleDesglose() {
-  const body = document.getElementById('desglose-body');
-  const open = body.style.display !== 'none';
-  body.style.display = open ? 'none' : 'block';
-  document.getElementById('desglose-chevron').textContent = open ? '▸' : '▾';
+const PW_DESGLOSE_UMBRAL = 4.2;
+let manualDesglose = { sel: 0, q: 0, mq: 0 };
+
+function iniciarCalculo() {
+  manualDesglose = { sel: 0, q: 0, mq: 0 };
+  const numPalets = parseInt(document.getElementById('num-palets').value);
+  const alturaTotal = parseFloat(document.getElementById('altura-total').value);
+  const destinoListo = state.country === 'PRT' ? !!state.cpPrt : !!(state.prov && state.zona);
+
+  if (numPalets > 0 && alturaTotal > PW_DESGLOSE_UMBRAL && alturaTotal <= numPalets * 2.2 && destinoListo) {
+    abrirModalDesglose(numPalets, alturaTotal);
+  } else {
+    calcular();
+  }
 }
 
-function cambiarDesglose(type, delta) {
-  const id = type==='sel' ? 'n-sel' : type==='q' ? 'n-quarter' : 'n-mini-q';
+function abrirModalDesglose(numPalets, alturaTotal) {
+  const zona = state.country === 'PRT' ? getPwZonaPrt(state.cpPrt) : state.zona;
+  const sugerido = zona ? calcPalletways(numPalets, alturaTotal, zona) : null;
+
+  let sel = 0, q = 0, mq = 0;
+  if (sugerido) {
+    sel = sugerido.totalSEL;
+    if (sugerido.extra) {
+      if (sugerido.extra.tipo.startsWith('Mini')) mq = 1; else q = 1;
+    }
+  }
+
+  document.getElementById('modal-n-sel').value = sel;
+  document.getElementById('modal-n-quarter').value = q;
+  document.getElementById('modal-n-mini-q').value = mq;
+  document.getElementById('pw-modal-error').className = 'field-inline-error';
+  document.getElementById('pw-modal-info').textContent =
+    `${numPalets} palé${numPalets>1?'s':''} · ${alturaTotal} uds de altura supera el umbral de ${PW_DESGLOSE_UMBRAL} uds. Confirma o ajusta el desglose real de posturas (sugerido a partir de la altura indicada).`;
+  document.getElementById('pw-modal-overlay').classList.add('show');
+}
+
+function cerrarModalDesglose() {
+  document.getElementById('pw-modal-overlay').classList.remove('show');
+  manualDesglose = { sel: 0, q: 0, mq: 0 };
+}
+
+function cambiarDesgloseModal(type, delta) {
+  const id = type==='sel' ? 'modal-n-sel' : type==='q' ? 'modal-n-quarter' : 'modal-n-mini-q';
   const inp = document.getElementById(id);
   inp.value = Math.max(0, (parseInt(inp.value)||0) + delta);
-  onDesgloseInput();
+  onDesgloseModalInput();
 }
 
-function onDesgloseInput() {
-  const active = (parseInt(document.getElementById('n-sel').value)||0) > 0
-              || (parseInt(document.getElementById('n-quarter').value)||0) > 0
-              || (parseInt(document.getElementById('n-mini-q').value)||0) > 0;
-  document.getElementById('desglose-active-msg').style.display = active ? 'block' : 'none';
-  document.getElementById('results').className = '';
-  document.getElementById('winner-banner').className = '';
+function onDesgloseModalInput() {
+  document.getElementById('pw-modal-error').className = 'field-inline-error';
+}
+
+function confirmarDesglose() {
+  const sel = parseInt(document.getElementById('modal-n-sel').value)||0;
+  const q   = parseInt(document.getElementById('modal-n-quarter').value)||0;
+  const mq  = parseInt(document.getElementById('modal-n-mini-q').value)||0;
+
+  if (sel===0 && q===0 && mq===0) {
+    document.getElementById('pw-modal-error').className = 'field-inline-error show';
+    return;
+  }
+
+  manualDesglose = { sel, q, mq };
+  document.getElementById('pw-modal-overlay').classList.remove('show');
+  calcular();
 }
 
 function calcPallettaysManual(nSEL, nQ, nMQ, zona) {
