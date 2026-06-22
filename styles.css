@@ -347,21 +347,30 @@ input, select, button { font-family: var(--sans); }
 .pw-modal-overlay.show { opacity: 1; visibility: visible; }
 .pw-modal {
   background: var(--surface); border: 1px solid var(--border); border-radius: 6px;
-  border-top: 3px solid var(--pw); width: 100%; max-width: 460px; max-height: 90vh;
-  overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  border-top: 3px solid var(--pw); width: 100%; max-width: 580px; max-height: 90vh;
+  overflow-y: auto; overflow-x: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.3);
   transform: translateY(10px) scale(0.97); opacity: 0;
   transition: transform 0.25s cubic-bezier(.2,.8,.2,1), opacity 0.2s ease;
 }
 .pw-modal-overlay.show .pw-modal { transform: translateY(0) scale(1); opacity: 1; }
-.pw-modal-head { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid var(--border); }
+.pw-modal-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 20px; border-bottom: 1px solid var(--border); }
 .pw-modal-title { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 0.85rem; color: var(--text); }
-.pw-modal-icon { font-size: 0.9rem; }
-.pw-modal-close { background: transparent; border: none; color: var(--text3); font-size: 0.9rem; cursor: pointer; line-height: 1; transition: color 0.15s; }
+.pw-modal-icon { font-size: 0.9rem; flex-shrink: 0; }
+.pw-modal-close { background: transparent; border: none; color: var(--text3); font-size: 0.9rem; cursor: pointer; line-height: 1; transition: color 0.15s; flex-shrink: 0; }
 .pw-modal-close:hover { color: var(--text); }
 .pw-modal-body { padding: 18px 20px; }
-.pw-modal-info { font-family: var(--mono); font-size: 0.72rem; color: var(--pw-light); line-height: 1.6; margin-bottom: 16px; padding: 10px 12px; background: var(--pw-bg); border-left: 3px solid var(--pw); border-radius: 2px; }
+.pw-modal-info { font-family: var(--mono); font-size: 0.72rem; color: var(--pw-light); line-height: 1.6; margin-bottom: 18px; padding: 10px 12px; background: var(--pw-bg); border-left: 3px solid var(--pw); border-radius: 2px; }
+.pw-modal-body .input-row-3 { gap: 10px; }
+.pw-modal-body .input-row-3 .field { min-width: 0; }
+.pw-modal-body .field label { display: block; min-height: 2.4em; }
+.pw-modal-body .caja-counter { justify-content: center; }
+.pw-modal-body .caja-counter button { width: 34px; height: 38px; font-size: 1.1rem; }
+.pw-modal-body .caja-counter input { flex: 1 1 auto; width: auto; min-width: 0; height: 38px; font-size: 1rem; }
 .pw-modal-body .field-inline-error { margin-top: 12px; }
 .pw-modal-foot { display: flex; align-items: center; justify-content: flex-end; gap: 10px; padding: 14px 20px; border-top: 1px solid var(--border); }
+@media (max-width: 640px) {
+  .pw-modal-body .input-row-3 { grid-template-columns: 1fr; gap: 14px; }
+}
 .pw-modal-btn-cancel { background: transparent; border: 1px solid var(--border); border-radius: 2px; padding: 9px 16px; font-family: var(--mono); font-size: 0.66rem; font-weight: 600; letter-spacing: 0.05em; color: var(--text2); cursor: pointer; transition: border-color 0.15s; }
 .pw-modal-btn-cancel:hover { border-color: var(--text3); }
 .pw-modal-btn-confirm { background: var(--pw); border: none; border-radius: 2px; padding: 9px 16px; font-family: var(--mono); font-size: 0.66rem; font-weight: 700; letter-spacing: 0.05em; color: #FFFFFF; cursor: pointer; transition: opacity 0.15s, transform 0.1s; }
