@@ -477,11 +477,16 @@ window.fsActualizarCalculo = async function(id, datos) {
 
     <div class="dash-card dash-evo-card">
       <div class="dash-evo-head">
-        <div class="dash-card-title">Evolución del gasto</div>
+        <div class="dash-card-title">Gasto total si se usara un solo transportista</div>
         <div class="dash-evo-legend">
           <div class="dash-legend-item"><span class="dash-legend-swatch" style="background:var(--pw)"></span>Palletways</div>
           <div class="dash-legend-item"><span class="dash-legend-swatch" style="background:var(--ceva)"></span>CEVA</div>
         </div>
+      </div>
+      <div class="dash-sim-kpis">
+        <div class="dash-stat-box"><div class="dash-stat-label">Todo Palletways</div><div class="dash-stat-value pw" id="dash-sim-pw-total">0,00€</div></div>
+        <div class="dash-stat-box"><div class="dash-stat-label">Todo CEVA</div><div class="dash-stat-value ceva" id="dash-sim-ceva-total">0,00€</div></div>
+        <div class="dash-stat-box"><div class="dash-stat-label">Diferencia</div><div class="dash-stat-value save" id="dash-sim-diff">0,00€</div><div class="dash-stat-sub" id="dash-sim-diff-sub"></div></div>
       </div>
       <div class="dash-evo-body">
         <div class="dash-evo-axis" id="dash-evo-axis"></div>
@@ -492,9 +497,6 @@ window.fsActualizarCalculo = async function(id, datos) {
       </div>
       <div class="dash-evo-xaxis" id="dash-evo-xaxis"></div>
     </div>
-
-    <div class="dash-section-title"><span>Análisis de palés enviados por transportista</span><span class="dash-rule"></span></div>
-    <div class="dash-analysis-grid" id="dash-analysis-grid"></div>
 
     <div class="dash-card dash-hist-card">
       <div class="dash-hist-head">

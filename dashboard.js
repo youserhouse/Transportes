@@ -90,7 +90,6 @@ function renderDashboard() {
   renderDashCompare(periodFiltered);
   renderDashMonthlyBars(viewMonth);
   renderDashEvolucion(viewMonth);
-  renderDashAnalisisPalets(periodFiltered);
   renderDashDistribucion(periodFiltered);
   renderDashProvincia(viewFiltered);
   renderDashHistorial(viewFiltered);
@@ -171,7 +170,9 @@ function dashRenderBars(containerId, values, maxVal) {
 
 function dashCapitalize(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
 
-// ── Evolución del gasto (gasto acumulado del mes seleccionado) ──
+// ── Simulación: gasto acumulado del mes si todos los envíos hubieran ido
+// con un único transportista (suma precioPall / precioCeva de cada registro,
+// sin filtrar por cuál fue el elegido en su momento) ──
 function renderDashEvolucion(viewMonth) {
   const daysInMonth = new Date(viewMonth.getFullYear(), viewMonth.getMonth() + 1, 0).getDate();
   const pwDaily = new Array(daysInMonth).fill(0);
@@ -179,12 +180,15 @@ function renderDashEvolucion(viewMonth) {
   for (const c of dashState.calculos) {
     if (!c._fecha || c._fecha.getFullYear() !== viewMonth.getFullYear() || c._fecha.getMonth() !== viewMonth.getMonth()) continue;
     const day = c._fecha.getDate() - 1;
-    if (c.elegido === 'PALLETWAYS') pwDaily[day] += Number(c.precioPall) || 0;
-    else if (c.elegido === 'CEVA') cevaDaily[day] += Number(c.precioCeva) || 0;
+    pwDaily[day] += Number(c.precioPall) || 0;
+    cevaDaily[day] += Number(c.precioCeva) || 0;
   }
+  const pwTotal = pwDaily.reduce((a, b) => a + b, 0);
+  const cevaTotal = cevaDaily.reduce((a, b) => a + b, 0);
+
   let pwCum = 0, cevaCum = 0;
   const pwPoints = [], cevaPoints = [];
-  const maxCum = Math.max(1, pwDaily.reduce((a, b) => a + b, 0), cevaDaily.reduce((a, b) => a + b, 0));
+  const maxCum = Math.max(1, pwTotal, cevaTotal);
   for (let i = 0; i < daysInMonth; i++) {
     pwCum += pwDaily[i];
     cevaCum += cevaDaily[i];
@@ -197,34 +201,13 @@ function renderDashEvolucion(viewMonth) {
   document.getElementById('dash-evo-axis').innerHTML = `<span>${fmt(maxCum)}</span><span>${fmt(maxCum / 2)}</span><span>0€</span>`;
   document.getElementById('dash-evo-xaxis').innerHTML =
     `<span>1</span><span>${Math.round(daysInMonth * 0.25)}</span><span>${Math.round(daysInMonth * 0.5)}</span><span>${Math.round(daysInMonth * 0.75)}</span><span>${daysInMonth}</span>`;
-}
 
-// ── Análisis de palés enviados por transportista (solo tipo PALÉS) ──
-function renderDashAnalisisPalets(list) {
-  const palets = list.filter(c => c.tipo === 'PALÉS');
-  const pw = palets.filter(c => c.elegido === 'PALLETWAYS');
-  const ceva = palets.filter(c => c.elegido === 'CEVA');
-  document.getElementById('dash-analysis-grid').innerHTML =
-    dashAnalysisCard('Palletways', 'var(--pw)', pw) + dashAnalysisCard('CEVA', 'var(--ceva)', ceva);
-}
-
-function dashAnalysisCard(label, color, list) {
-  const avg = list.length ? list.reduce((s, c) => s + (Number(c.pales) || 0), 0) / list.length : 0;
-  const total = list.length || 1;
-  const n1 = list.filter(c => Number(c.pales) === 1).length;
-  const n23 = list.filter(c => { const p = Number(c.pales); return p >= 2 && p <= 3; }).length;
-  const n4 = list.filter(c => Number(c.pales) >= 4).length;
-  const barPct = Math.min(100, avg / 4 * 100);
-  return `
-    <div class="dash-card dash-analysis-card">
-      <div class="dash-analysis-label" style="color:${color}">${label}</div>
-      <div class="dash-analysis-avg" style="color:${color}">${avg.toFixed(1)}<span> pal</span></div>
-      <div class="dash-analysis-sub">palés medios por envío</div>
-      <div class="dash-progress"><div class="dash-progress-fill" style="width:${barPct}%;background:${color}"></div></div>
-      <div class="dash-analysis-row"><span><span class="dash-dot-sm" style="background:${color}"></span>1 palé</span><span>${Math.round(n1 / total * 100)}%</span></div>
-      <div class="dash-analysis-row"><span><span class="dash-dot-sm" style="background:${color}"></span>2–3 palés</span><span>${Math.round(n23 / total * 100)}%</span></div>
-      <div class="dash-analysis-row"><span><span class="dash-dot-sm" style="background:${color}"></span>4+ palés</span><span>${Math.round(n4 / total * 100)}%</span></div>
-    </div>`;
+  document.getElementById('dash-sim-pw-total').textContent = fmt(pwTotal);
+  document.getElementById('dash-sim-ceva-total').textContent = fmt(cevaTotal);
+  const diff = Math.abs(pwTotal - cevaTotal);
+  document.getElementById('dash-sim-diff').textContent = fmt(diff);
+  document.getElementById('dash-sim-diff-sub').textContent =
+    diff > 0.01 ? `${pwTotal <= cevaTotal ? 'Palletways' : 'CEVA'} saldría más barato` : 'Mismo coste';
 }
 
 // ── Distribución por rango de palés (PW vs CEVA, agrupado) ──
