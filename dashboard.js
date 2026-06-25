@@ -265,6 +265,7 @@ function renderDashHistorial(list) {
       <div><span class="dash-table-destino">${c.destino || '—'}</span></div>
       <div>${c.provincia || '—'}</div>
       <div>${c.pales != null ? c.pales : '—'}</div>
+      <div>${c.altura != null ? String(c.altura).replace('.', ',') : '—'}</div>
       <div class="r dash-table-pw">${c.precioPall ? fmt(Number(c.precioPall)) : '—'}</div>
       <div class="r dash-table-ceva">${c.precioCeva ? fmt(Number(c.precioCeva)) : '—'}</div>
       <div class="dash-table-actions"><button type="button" class="dash-action-btn edit" onclick="abrirEdicionDashboard('${c.id}')" title="Editar">✎</button></div>
@@ -292,10 +293,11 @@ function dashPageNext() { dashState.page++; renderDashboard(); }
 function exportarHistorialDashboardCSV() {
   const list = dashState._currentList || [];
   if (!list.length) return;
-  const header = ['Fecha', 'Tipo', 'Destino', 'Provincia', 'Palés', 'Palletways €', 'CEVA €'];
+  const header = ['Fecha', 'Tipo', 'Destino', 'Provincia', 'Palés', 'Altura Total', 'Palletways €', 'CEVA €'];
   const rows = list.map(c => [
     dashFechaLabel(c._fecha), c.tipo || '', c.destino || '', c.provincia || '',
     c.pales != null ? c.pales : '',
+    c.altura != null ? c.altura : '',
     c.precioPall ? Number(c.precioPall).toFixed(2) : '',
     c.precioCeva ? Number(c.precioCeva).toFixed(2) : '',
   ]);
