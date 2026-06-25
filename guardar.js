@@ -57,6 +57,7 @@ function prepararGuardadoCajas(datos) {
   btnGuardar.classList.remove('saved');
   document.getElementById('guardar-cajas-msg').textContent = '';
   document.getElementById('guardar-cajas-msg').className = 'guardar-msg';
+  document.getElementById('guardar-cajas-section').className = 'guardar-section show';
 }
 
 async function guardarCalculoCajasActual() {
