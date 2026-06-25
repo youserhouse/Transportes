@@ -78,6 +78,7 @@ Each box = 0.15 height units = 37.5 kg. Max 14 boxes. Uses `calcCevaByKg()` in `
 - **Both accented and unaccented forms** exist as keys throughout `CEVA_TARIFA` and `PROV_ZONA` (e.g., `"ÁLAVA"` and `"ALAVA"`). When adding a new province, add both forms.
 - **Visibility via CSS class toggling** — results appear by adding `show` / `open` / `winner` class names; they hide by removing them. Avoid `style.display` in pallet mode UI.
 - **Service worker cache version** (`CACHE_NAME` in `sw.js`) must be incremented whenever any cached asset changes, otherwise users will see stale content.
+- **Cache-busting query params**: local `<script src="...">` / `<link href="...">` tags in `index.html` carry a `?v=N` query string, and the `ASSETS` list in `sw.js` mirrors the same `?v=N` suffix. `N` must match the numeric suffix of `CACHE_NAME` (e.g. `transportes-v40` → `?v=40`). Bump all of them together on every change — otherwise GitHub Pages/browser HTTP caching can serve a stale `.js` file alongside a fresh `index.html`, causing subtle bugs (e.g. new HTML fields that silently fail to populate because the JS that fills them is outdated).
 - **`fmt(n)`** in `ui.js` formats euros as `"1.234,56 €"` (Spanish locale). Use it for all monetary display.
 - The historial stores one object per calculation and caps the daily array at 50 entries.
 
