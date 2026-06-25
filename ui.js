@@ -126,15 +126,14 @@ function calcPalletways(numPalets, alturaTotal, zona) {
   const SEL_BASE = 2.0; // altura "natural" de una postura SEL (en la práctica casi nunca se deja a su máximo de 220cm)
 
   const pairs = Math.floor(numPalets / 2);
-  const hasLeftoverPallet = numPalets % 2 === 1;
 
   let totalSEL = pairs;
   let extra = null;
 
-  if (hasLeftoverPallet) {
-    let leftoverHeight = Math.round((alturaTotal - pairs * SEL_BASE) * 1000) / 1000;
-    leftoverHeight = Math.max(0, leftoverHeight);
+  let leftoverHeight = Math.round((alturaTotal - pairs * SEL_BASE) * 1000) / 1000;
+  leftoverHeight = Math.max(0, leftoverHeight);
 
+  if (leftoverHeight > 0) {
     if (leftoverHeight > 1.10) {
       totalSEL += 1;
     } else if (leftoverHeight > 0.80) {
