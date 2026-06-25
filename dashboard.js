@@ -322,6 +322,7 @@ function abrirEdicionDashboard(id) {
   document.getElementById('dash-edit-destino').value = c.destino || 'ESPAÑA';
   document.getElementById('dash-edit-provincia').value = c.provincia || '';
   document.getElementById('dash-edit-pales').value = c.pales != null ? c.pales : '';
+  document.getElementById('dash-edit-altura').value = c.altura != null ? c.altura : '';
   document.getElementById('dash-edit-elegido').value = c.elegido || 'PALLETWAYS';
   document.getElementById('dash-edit-precio-pall').value = c.precioPall != null ? Number(c.precioPall) : '';
   document.getElementById('dash-edit-precio-ceva').value = c.precioCeva != null ? Number(c.precioCeva) : '';
@@ -349,6 +350,8 @@ async function guardarEdicionDashboard() {
   const destino = document.getElementById('dash-edit-destino').value;
   const provincia = document.getElementById('dash-edit-provincia').value.trim();
   const pales = parseInt(document.getElementById('dash-edit-pales').value) || 0;
+  const alturaVal = document.getElementById('dash-edit-altura').value;
+  const altura = alturaVal !== '' ? parseFloat(alturaVal) : null;
   const elegido = document.getElementById('dash-edit-elegido').value;
   const precioPall = parseFloat(document.getElementById('dash-edit-precio-pall').value) || 0;
   const precioCeva = parseFloat(document.getElementById('dash-edit-precio-ceva').value) || 0;
@@ -363,7 +366,7 @@ async function guardarEdicionDashboard() {
   btn.textContent = 'Guardando…';
   msgEl.textContent = '';
   try {
-    await window.fsActualizarCalculo(dashEditId, { tipo, destino, provincia, pales, elegido, precioPall, precioCeva, ahorro, fecha });
+    await window.fsActualizarCalculo(dashEditId, { tipo, destino, provincia, pales, altura, elegido, precioPall, precioCeva, ahorro, fecha });
     closeDashEditModal();
   } catch (e) {
     msgEl.textContent = '⚠ Error: ' + (e.message || e);
