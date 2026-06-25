@@ -89,6 +89,13 @@ Each box = 0.15 height units = 37.5 kg. Max 14 boxes. Uses `calcCevaByKg()` in `
 - **Session persistence**: Firebase SDK maintains session across page reloads via browser cookies/indexedDB.
 - **Logout**: Button in header calls `signOutUser()`, clears session, redirects to `login.html`.
 
+## Hosting / Deployment
+
+- **Production URL**: `https://youserhouse.github.io/Transportes/` — GitHub Pages, serving directly from `main`. Every push to `main` deploys automatically (no manual step, no CI workflow file needed since GitHub Pages handles it natively via repo settings).
+- **Firebase Hosting (`transporte-99482.web.app`) is no longer the primary URL.** It does not auto-deploy from this repo (there's no `firebase.json` or CI workflow wiring it up) — it would require a manual `firebase deploy`, which is why it was dropped in favor of GitHub Pages.
+- Firebase is still used for **Auth + Firestore** (`authorized_users` check) regardless of where the static files are hosted — hosting and auth are decoupled. `youserhouse.github.io` must be present in Firebase Console → Authentication → Settings → **Authorized domains**, or Google Sign-In will fail with `auth/unauthorized-domain`. (Already added and confirmed working.)
+- Trade-off to keep in mind: GitHub Pages auto-publishing means any push to `main` goes live immediately, with no manual review/deploy gate in between.
+
 ## Dashboard Integration
 
 **Data Flow:**
