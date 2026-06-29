@@ -487,8 +487,8 @@ input, select, button { font-family: var(--sans); }
 .dash-export-btn { background: var(--winner-save); color: #fff; border: none; border-radius: 2px; padding: 7px 13px; font-family: var(--mono); font-size: 0.62rem; font-weight: 600; letter-spacing: 0.06em; cursor: pointer; }
 .dash-export-btn:hover { opacity: 0.88; }
 .dash-table-wrap { overflow-x: auto; }
-.dash-table-inner { min-width: 680px; }
-.dash-table-row { display: grid; grid-template-columns: 1.3fr 0.7fr 0.9fr 1fr 0.6fr 0.7fr 1fr 1fr 26px 26px; gap: 8px; padding: 12px 0; border-bottom: 1px solid var(--divider); align-items: center; font-size: 0.72rem; }
+.dash-table-inner { min-width: 780px; }
+.dash-table-row { display: grid; grid-template-columns: 1.1fr 1fr 0.7fr 0.9fr 1fr 0.6fr 0.7fr 1fr 1fr 26px 26px; gap: 8px; padding: 12px 0; border-bottom: 1px solid var(--divider); align-items: center; font-size: 0.72rem; }
 .dash-table-row.dash-table-head { padding-bottom: 11px; border-bottom: 1px solid var(--border); font-family: var(--mono); font-size: 0.54rem; letter-spacing: 0.08em; color: var(--text3); text-transform: uppercase; }
 .dash-table-row .r { text-align: right; }
 .dash-table-row:last-child { border-bottom: none; }

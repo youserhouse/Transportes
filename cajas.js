@@ -64,9 +64,23 @@ function calcCevaByKg(prov, totalKg) {
   return { total: basePrice + surcharge, basePrice, surcharge, totalKg, rangeLabel };
 }
 
+function validateClienteCajas() {
+  const inp = document.getElementById('cliente-cajas-nombre');
+  const errEl = document.getElementById('err-cliente-cajas');
+  if (!inp.value.trim()) {
+    inp.classList.remove('input-ok'); errEl.className='field-inline-error';
+  } else {
+    inp.classList.add('input-ok'); inp.classList.remove('input-error');
+    errEl.className='field-inline-error';
+  }
+}
+
 function calcularCajas() {
   const errEl = document.getElementById('error-cajas-msg');
   errEl.style.display = 'none';
+
+  const cliente = document.getElementById('cliente-cajas-nombre').value.trim();
+  if (!cliente) { errEl.textContent='⚠ Introduce el nombre del cliente.'; errEl.style.display='block'; return; }
 
   const numCajas = parseInt(document.getElementById('num-cajas').value);
   if (!numCajas || numCajas < 1) { errEl.textContent='⚠ Introduce el número de cajas.'; errEl.style.display='block'; return; }
@@ -102,6 +116,7 @@ function calcularCajas() {
 
   prepararGuardadoCajas({
     tipo: 'CAJAS', destino: 'ESPAÑA',
+    cliente,
     provincia: stateCajas.prov.charAt(0) + stateCajas.prov.slice(1).toLowerCase(), cp: '', zona: '—',
     pales: numCajas, altura, peso: totalKg,
     precioPall: 0, precioCeva: res.total,

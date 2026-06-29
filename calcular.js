@@ -6,8 +6,10 @@
 function calcular() {
   const errEl = document.getElementById('error-msg');
   errEl.className='';
+  const cliente = document.getElementById('cliente-nombre').value.trim();
   const numPalets = parseInt(document.getElementById('num-palets').value);
   const alturaTotal = parseFloat(document.getElementById('altura-total').value);
+  if(!cliente){errEl.innerHTML='⚠ Introduce el nombre del cliente.';errEl.className='show';return;}
   if(!numPalets||numPalets<1){errEl.innerHTML='⚠ Introduce el número de palés.';errEl.className='show';return;}
   if(!alturaTotal||alturaTotal<=0){errEl.innerHTML='⚠ Introduce la altura total del envío.';errEl.className='show';return;}
   if(alturaTotal > numPalets * 2.2){errEl.innerHTML=`⚠ La altura total (${alturaTotal}) supera el máximo de ${(numPalets*2.2).toFixed(1)} para ${numPalets} palé${numPalets>1?'s':''} (220 cm/palé).`;errEl.className='show';return;}
@@ -50,6 +52,7 @@ function calcular() {
 
     prepararGuardado({
       tipo: 'PALÉS', destino: 'PORTUGAL',
+      cliente,
       provincia: 'Portugal', cp: state.cpPrt.substring(0,2), zona: pwZona,
       pales: numPalets, altura: alturaTotal, peso: null,
       precioPall: pwRes?pwRes.total:0, precioCeva: cevaRes?cevaRes.total:0,
@@ -86,6 +89,7 @@ function calcular() {
 
   prepararGuardado({
     tipo: 'PALÉS', destino: 'ESPAÑA',
+    cliente,
     provincia: state.prov.charAt(0) + state.prov.slice(1).toLowerCase(), cp: '', zona: state.zona,
     pales: numPalets, altura: alturaTotal, peso: null,
     precioPall: pwRes?pwRes.total:0, precioCeva: cevaRes?cevaRes.total:0,

@@ -84,6 +84,17 @@ function onInputChange() {
 }
 
 // ── VALIDACIÓN EN TIEMPO REAL ──
+function validateCliente() {
+  const inp = document.getElementById('cliente-nombre');
+  const errEl = document.getElementById('err-cliente');
+  if (!inp.value.trim()) {
+    inp.classList.remove('input-ok'); errEl.className='field-inline-error';
+  } else {
+    inp.classList.add('input-ok'); inp.classList.remove('input-error');
+    errEl.className='field-inline-error';
+  }
+}
+
 function validatePalets() {
   const inp = document.getElementById('num-palets');
   const errEl = document.getElementById('err-palets');

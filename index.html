@@ -22,7 +22,7 @@
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=41">
+<link rel="stylesheet" href="styles.css?v=42">
 <script>
   (function () {
     var t = 'dark';
@@ -172,6 +172,11 @@ window.fsActualizarCalculo = async function(id, datos) {
         <div class="section-num active">01</div>
         <span class="section-title">Datos del envío</span>
       </div>
+      <div class="field">
+        <label for="cliente-nombre">Nombre del cliente</label>
+        <input type="text" id="cliente-nombre" placeholder="Ej: Distribuciones García S.L." oninput="validateCliente()" autocomplete="off">
+        <span class="field-inline-error" id="err-cliente"></span>
+      </div>
       <div class="input-row">
         <div class="field">
           <label for="num-palets">Número de palés</label>
@@ -307,6 +312,11 @@ window.fsActualizarCalculo = async function(id, datos) {
         <div class="cajas-pill">Peso por caja: <span>37,5 kg</span></div>
         <div class="cajas-pill">Máximo: <span>14 cajas</span></div>
         <div class="cajas-pill cajas-pill-accent">Transportista: <span>CEVA</span></div>
+      </div>
+      <div class="field">
+        <label for="cliente-cajas-nombre">Nombre del cliente</label>
+        <input type="text" id="cliente-cajas-nombre" placeholder="Ej: Distribuciones García S.L." oninput="validateClienteCajas()" autocomplete="off">
+        <span class="field-inline-error" id="err-cliente-cajas"></span>
       </div>
       <div class="field">
         <label for="num-cajas">Número de cajas (1–14)</label>
@@ -506,7 +516,7 @@ window.fsActualizarCalculo = async function(id, datos) {
       <div class="dash-table-wrap">
         <div class="dash-table-inner">
           <div class="dash-table-row dash-table-head">
-            <div>Fecha</div><div>Tipo</div><div>Destino</div><div>Provincia</div><div>Palés</div><div>Altura Total</div><div class="r">Palletways €</div><div class="r">CEVA €</div><div></div><div></div>
+            <div>Fecha</div><div>Cliente</div><div>Tipo</div><div>Destino</div><div>Provincia</div><div>Palés</div><div>Altura Total</div><div class="r">Palletways €</div><div class="r">CEVA €</div><div></div><div></div>
           </div>
           <div id="dash-table-body"></div>
         </div>
@@ -551,6 +561,9 @@ window.fsActualizarCalculo = async function(id, datos) {
         <div class="dash-modal-body">
           <label class="dash-modal-label" for="dash-edit-fecha">Fecha</label>
           <input type="datetime-local" id="dash-edit-fecha" class="dash-modal-input">
+
+          <label class="dash-modal-label" for="dash-edit-cliente">Cliente</label>
+          <input type="text" id="dash-edit-cliente" class="dash-modal-input">
 
           <label class="dash-modal-label" for="dash-edit-tipo">Tipo</label>
           <select id="dash-edit-tipo" class="dash-modal-input">
@@ -641,14 +654,14 @@ window.fsActualizarCalculo = async function(id, datos) {
     </div>
   </div>
 
-<script src="theme.js?v=41"></script>
-<script src="data.js?v=41"></script>
-<script src="state.js?v=41"></script>
-<script src="guardar.js?v=41"></script>
-<script src="ui.js?v=41"></script>
-<script src="calcular.js?v=41"></script>
-<script src="cajas.js?v=41"></script>
-<script src="dashboard.js?v=41"></script>
+<script src="theme.js?v=42"></script>
+<script src="data.js?v=42"></script>
+<script src="state.js?v=42"></script>
+<script src="guardar.js?v=42"></script>
+<script src="ui.js?v=42"></script>
+<script src="calcular.js?v=42"></script>
+<script src="cajas.js?v=42"></script>
+<script src="dashboard.js?v=42"></script>
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
