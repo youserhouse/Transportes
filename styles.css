@@ -107,11 +107,18 @@ input, select, button { font-family: var(--sans); }
 @media (max-width: 860px) {
   .app-shell { flex-direction: column; }
   .sidebar { width: 100%; min-height: auto; position: static; flex-direction: row; align-items: center; }
-  .sidebar-logo { border-bottom: none; border-right: 1px solid var(--border); }
-  .sidebar-nav { display: flex; padding: 0 6px; overflow-x: auto; }
+  .sidebar-logo { border-bottom: none; border-right: 1px solid var(--border); padding: 10px 12px; flex: none; }
+  .sidebar-logo .logo-text { display: none; }
+  .sidebar-nav { display: flex; flex: 1; min-width: 0; padding: 0 4px; overflow-x: auto; }
   .nav-cat, .nav-divider { display: none; }
-  .mode-tab { width: auto; margin: 6px 4px; white-space: nowrap; }
-  .sidebar-footer { flex-direction: row; border-top: none; border-left: 1px solid var(--border); }
+  .mode-tab {
+    flex: 1; min-width: 0; width: auto; margin: 6px 2px; padding: 8px 4px;
+    justify-content: center; white-space: nowrap;
+  }
+  .mode-tab .tab-label { display: none; }
+  .sidebar-footer { flex: none; flex-direction: row; gap: 4px; padding: 8px; border-top: none; border-left: 1px solid var(--border); }
+  .theme-toggle-btn, .btn-signout { padding: 7px 8px; font-size: 0.58rem; }
+  .btn-signout .signout-label { display: none; }
   .content { max-width: none; padding: 22px 16px 60px; }
 }
 

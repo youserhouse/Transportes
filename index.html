@@ -22,7 +22,7 @@
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=43">
+<link rel="stylesheet" href="styles.css?v=44">
 <script>
   (function () {
     var t = 'dark';
@@ -144,18 +144,18 @@ window.fsActualizarCalculo = async function(id, datos) {
 
   <nav class="sidebar-nav">
     <div class="nav-cat">Modos</div>
-    <button class="mode-tab active-palets" id="tab-palets" onclick="setMode('palets')">🏗 Palés</button>
-    <button class="mode-tab" id="tab-cajas" onclick="setMode('cajas')">📦 Cajas</button>
+    <button class="mode-tab active-palets" id="tab-palets" onclick="setMode('palets')">🏗 <span class="tab-label">Palés</span></button>
+    <button class="mode-tab" id="tab-cajas" onclick="setMode('cajas')">📦 <span class="tab-label">Cajas</span></button>
 
     <div class="nav-divider"></div>
     <div class="nav-cat">Datos</div>
-    <button class="mode-tab" id="tab-dashboard" onclick="setMode('dashboard')">📊 Dashboard</button>
-    <button class="mode-tab" id="tab-config" onclick="setMode('config')">⚙ Configuraciones</button>
+    <button class="mode-tab" id="tab-dashboard" onclick="setMode('dashboard')">📊 <span class="tab-label">Dashboard</span></button>
+    <button class="mode-tab" id="tab-config" onclick="setMode('config')">⚙ <span class="tab-label">Configuraciones</span></button>
   </nav>
 
   <div class="sidebar-footer">
     <button type="button" class="theme-toggle-btn" data-theme-toggle onclick="toggleAppTheme()">☀ Claro</button>
-    <button class="btn-signout" onclick="signOutUser()">← Salir</button>
+    <button class="btn-signout" onclick="signOutUser()">← <span class="signout-label">Salir</span></button>
   </div>
 </aside>
 
@@ -654,14 +654,14 @@ window.fsActualizarCalculo = async function(id, datos) {
     </div>
   </div>
 
-<script src="theme.js?v=43"></script>
-<script src="data.js?v=43"></script>
-<script src="state.js?v=43"></script>
-<script src="guardar.js?v=43"></script>
-<script src="ui.js?v=43"></script>
-<script src="calcular.js?v=43"></script>
-<script src="cajas.js?v=43"></script>
-<script src="dashboard.js?v=43"></script>
+<script src="theme.js?v=44"></script>
+<script src="data.js?v=44"></script>
+<script src="state.js?v=44"></script>
+<script src="guardar.js?v=44"></script>
+<script src="ui.js?v=44"></script>
+<script src="calcular.js?v=44"></script>
+<script src="cajas.js?v=44"></script>
+<script src="dashboard.js?v=44"></script>
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
