@@ -22,7 +22,7 @@
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=46">
+<link rel="stylesheet" href="styles.css?v=47">
 <script>
   (function () {
     var t = 'dark';
@@ -94,12 +94,39 @@ window.signOutUser = async function() {
   window.location.href = 'login.html';
 };
 
+// Campos permitidos en un documento de 'calculos'. Cualquier otro campo que
+// llegue en `datos` se descarta — evita que un bug futuro escriba basura en
+// la colección compartida que lee el Dashboard.
+const CALCULO_STRING_FIELDS = ['tipo', 'destino', 'cliente', 'provincia', 'cp', 'elegido'];
+const CALCULO_NUMBER_FIELDS = ['pales', 'altura', 'precioPall', 'precioCeva', 'ahorro'];
+
+function sanitizeCalculoData(datos) {
+  const out = {};
+  for (const k of CALCULO_STRING_FIELDS) {
+    if (datos[k] != null) out[k] = String(datos[k]);
+  }
+  for (const k of CALCULO_NUMBER_FIELDS) {
+    if (datos[k] != null) {
+      const n = Number(datos[k]);
+      out[k] = Number.isFinite(n) ? n : 0;
+    }
+  }
+  if ('peso' in datos) {
+    const n = Number(datos.peso);
+    out.peso = Number.isFinite(n) ? n : null;
+  }
+  if (typeof datos.zona === 'number' || typeof datos.zona === 'string') out.zona = datos.zona;
+  if (datos.fecha instanceof Date && !isNaN(datos.fecha)) out.fecha = datos.fecha;
+  return out;
+}
+
 // Guarda un cálculo elegido manualmente en la colección compartida 'calculos'.
-// Lo lee el Dashboard (Dashboard.html) vía onSnapshot en tiempo real.
+// Lo lee el Dashboard embebido (dashboard.js, pestaña mode-dashboard) vía
+// onSnapshot en tiempo real.
 window.fsGuardarCalculo = async function(datos) {
   if (!auth.currentUser) throw new Error('No autenticado');
   await addDoc(collection(db, 'calculos'), {
-    ...datos,
+    ...sanitizeCalculoData(datos),
     fecha: new Date(),
     savedBy: auth.currentUser.email,
     savedAt: serverTimestamp(),
@@ -128,7 +155,7 @@ window.fsEliminarCalculo = async function(id) {
 // Actualiza los campos editables de un cálculo (botón "✎" en el historial del Dashboard).
 window.fsActualizarCalculo = async function(id, datos) {
   if (!auth.currentUser) throw new Error('No autenticado');
-  await updateDoc(doc(db, 'calculos', id), datos);
+  await updateDoc(doc(db, 'calculos', id), sanitizeCalculoData(datos));
 };
 </script>
 
@@ -684,14 +711,14 @@ window.fsActualizarCalculo = async function(id, datos) {
     </div>
   </div>
 
-<script src="theme.js?v=46"></script>
-<script src="data.js?v=46"></script>
-<script src="state.js?v=46"></script>
-<script src="guardar.js?v=46"></script>
-<script src="ui.js?v=46"></script>
-<script src="calcular.js?v=46"></script>
-<script src="cajas.js?v=46"></script>
-<script src="dashboard.js?v=46"></script>
+<script src="theme.js?v=47"></script>
+<script src="data.js?v=47"></script>
+<script src="state.js?v=47"></script>
+<script src="guardar.js?v=47"></script>
+<script src="ui.js?v=47"></script>
+<script src="calcular.js?v=47"></script>
+<script src="cajas.js?v=47"></script>
+<script src="dashboard.js?v=47"></script>
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
