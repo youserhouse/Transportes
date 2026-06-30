@@ -22,7 +22,7 @@
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=47">
+<link rel="stylesheet" href="styles.css?v=48">
 <script>
   (function () {
     var t = 'dark';
@@ -57,7 +57,7 @@
 import { initializeApp }   from 'https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signOut }
                             from 'https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js';
-import { getFirestore, doc, getDoc, collection, addDoc, deleteDoc, updateDoc, serverTimestamp, query, orderBy, onSnapshot }
+import { getFirestore, initializeFirestore, persistentLocalCache, persistentMultipleTabManager, doc, getDoc, collection, addDoc, deleteDoc, updateDoc, serverTimestamp, query, orderBy, onSnapshot }
                             from 'https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js';
 
 const firebaseConfig = {
@@ -71,7 +71,22 @@ const firebaseConfig = {
 
 const app  = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-const db   = getFirestore(app);
+
+// Persistencia offline: las escrituras (guardar/editar/borrar cálculo) se
+// encolan en IndexedDB cuando no hay red y se sincronizan solas al volver la
+// conexión, en vez de perderse. persistentMultipleTabManager permite tener
+// la app abierta en varias pestañas a la vez sin desactivar la caché.
+// Si el navegador no soporta IndexedDB (p. ej. algunos modos de navegación
+// privada), se recurre a la caché en memoria habitual.
+let db;
+try {
+  db = initializeFirestore(app, {
+    localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() })
+  });
+} catch (e) {
+  console.warn('Persistencia offline de Firestore no disponible, usando caché en memoria.', e);
+  db = getFirestore(app);
+}
 
 onAuthStateChanged(auth, async user => {
   const overlay = document.getElementById('auth-overlay');
@@ -711,14 +726,14 @@ window.fsActualizarCalculo = async function(id, datos) {
     </div>
   </div>
 
-<script src="theme.js?v=47"></script>
-<script src="data.js?v=47"></script>
-<script src="state.js?v=47"></script>
-<script src="guardar.js?v=47"></script>
-<script src="ui.js?v=47"></script>
-<script src="calcular.js?v=47"></script>
-<script src="cajas.js?v=47"></script>
-<script src="dashboard.js?v=47"></script>
+<script src="theme.js?v=48"></script>
+<script src="data.js?v=48"></script>
+<script src="state.js?v=48"></script>
+<script src="guardar.js?v=48"></script>
+<script src="ui.js?v=48"></script>
+<script src="calcular.js?v=48"></script>
+<script src="cajas.js?v=48"></script>
+<script src="dashboard.js?v=48"></script>
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
