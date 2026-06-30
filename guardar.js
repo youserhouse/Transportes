@@ -79,10 +79,18 @@ async function ejecutarGuardado(datosConElegido, btn, msgEl) {
   btn.textContent = 'Guardando…';
   try {
     await window.fsGuardarCalculo({ ...datosConElegido, ahorro });
-    btn.textContent = '✓ GUARDADO';
-    btn.classList.add('saved');
-    msgEl.textContent = 'Cálculo guardado correctamente en el Dashboard.';
-    msgEl.className = 'guardar-msg ok';
+    const sincronizado = await window.fsEsperarSync(1500);
+    if (sincronizado) {
+      btn.textContent = '✓ GUARDADO';
+      btn.classList.add('saved');
+      msgEl.textContent = 'Cálculo guardado correctamente en el Dashboard.';
+      msgEl.className = 'guardar-msg ok';
+    } else {
+      btn.textContent = '⏳ GUARDADO (pendiente)';
+      btn.classList.add('saved', 'pending');
+      msgEl.textContent = 'Guardado en este dispositivo. Se sincronizará con el Dashboard al recuperar conexión.';
+      msgEl.className = 'guardar-msg warn';
+    }
   } catch (e) {
     btn.disabled = false;
     btn.textContent = '💾 GUARDAR ESTE ENVÍO';

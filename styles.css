@@ -308,8 +308,10 @@ input, select, button { font-family: var(--sans); }
 .btn-guardar-calculo:hover:not(:disabled) { background: var(--save-bg); color: var(--save-text); }
 .btn-guardar-calculo:disabled { border-color: var(--border2); color: var(--text4); cursor: not-allowed; background: var(--surface2); }
 .btn-guardar-calculo.saved { border-color: var(--border2); color: var(--green); background: var(--surface); }
+.btn-guardar-calculo.saved.pending { color: var(--yellow); }
 .guardar-msg { margin-top: 10px; font-family: var(--mono); font-size: 0.72rem; min-height: 1em; }
 .guardar-msg.ok { color: var(--green); }
+.guardar-msg.warn { color: var(--yellow); }
 .guardar-msg.error { color: var(--danger); }
 
 .config-msg { display: none; margin-top: 12px; padding: 9px 14px; border-left: 3px solid var(--yellow); border-radius: 2px; background: var(--yellow-bg); font-family: var(--mono); font-size: 0.74rem; color: var(--yellow); }
