@@ -3,49 +3,29 @@ rules_version = '2';
 // ═══════════════════════════════════════════════════════════════
 // Reglas de seguridad de Firestore para el proyecto transporte-99482.
 //
-// Replican del lado del servidor el mismo control de acceso que
-// index.html / login.html aplican en el cliente (chequeo contra la
-// colección authorized_users). Sin esto, el chequeo del cliente es
-// solo cosmético: cualquier cuenta de Google que inicie sesión con
-// Firebase Auth podría leer/escribir/borrar 'calculos' directamente
-// vía el SDK o la API REST, sin pasar por la app.
+// Este archivo refleja las reglas YA DESPLEGADAS en la consola de
+// Firebase (verificado 2026-06-30) — se versiona aquí únicamente para
+// tener historial de cambios en git. Si editas las reglas en la
+// consola, actualiza también este archivo (o despliega este archivo
+// con `firebase deploy --only firestore:rules` para que ambos sigan
+// coincidiendo).
 //
-// Despliegue: Firebase Console → Firestore Database → Reglas → pegar
-// este archivo y publicar. (O `firebase deploy --only firestore:rules`
-// si usas la CLI — ver firebase.json / .firebaserc en este repo).
+// Lo que hacen: replican del lado del servidor el mismo control de
+// acceso que index.html / login.html aplican en el cliente (chequeo
+// contra la colección authorized_users). Firestore deniega por
+// defecto cualquier operación no permitida explícitamente, así que
+// no hace falta una regla "catch-all" al final.
 // ═══════════════════════════════════════════════════════════════
 
 service cloud.firestore {
   match /databases/{database}/documents {
-
-    function isSignedIn() {
-      return request.auth != null;
-    }
-
-    function isAuthorized() {
-      return isSignedIn() &&
-        exists(/databases/$(database)/documents/authorized_users/$(request.auth.token.email));
-    }
-
-    // Lista de usuarios autorizados (un doc por email). Solo gestionable
-    // desde la consola de Firebase — la app nunca escribe aquí, solo lee
-    // su propio documento para verificar acceso (login.html, index.html).
     match /authorized_users/{email} {
-      allow read: if isSignedIn() && request.auth.token.email == email;
-      allow write: if false;
+      allow read: if request.auth != null && request.auth.token.email == email;
     }
 
-    // Cálculos guardados desde Palés/Cajas (guardar.js) y leídos/editados
-    // en tiempo real desde el Dashboard embebido (dashboard.js). Cualquier
-    // usuario autorizado puede leer, crear, editar y borrar — es una
-    // colección compartida por todo el equipo, sin propietario individual.
-    match /calculos/{calcId} {
-      allow read, write: if isAuthorized();
-    }
-
-    // Todo lo demás, denegado por defecto.
-    match /{document=**} {
-      allow read, write: if false;
+    match /calculos/{docId} {
+      allow read, write: if request.auth != null &&
+        exists(/databases/$(database)/documents/authorized_users/$(request.auth.token.email));
     }
   }
 }

@@ -99,6 +99,7 @@ Each box = 0.15 height units = 37.5 kg. Max 14 boxes. Uses `calcCevaByKg()` in `
 - **Session persistence**: Firebase SDK maintains session across page reloads via browser cookies/indexedDB.
 - **Logout**: Button in header calls `signOutUser()`, clears session, redirects to `login.html`.
 - **Content-Security-Policy**: `index.html` has a CSP `<meta>` tag (`default-src 'self'`, allowing `gstatic.com` scripts, Google Fonts styles, and Firebase/Google API `connect-src`). Keep this in sync if new external origins are introduced (e.g. a new CDN script tag will need its own `script-src` entry or it will be silently blocked).
+- **Firestore security rules**: `firestore.rules` (root, mirrored in `firebase.json`/`.firebaserc`) is versioned here to match what's deployed in Firebase Console → Firestore Database → Reglas (verified 2026-06-30). It enforces server-side that only signed-in users present in `authorized_users` can read/write `calculos` — the client-side check in `index.html`/`login.html` alone would not be sufficient, since any Google account can authenticate via Firebase Auth regardless of `authorized_users` membership. **If you edit rules in the console, update this file too** (or deploy this file via `firebase deploy --only firestore:rules`) so they don't drift apart.
 
 ## Hosting / Deployment
 
