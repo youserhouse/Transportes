@@ -1,4 +1,4 @@
-// Tema claro/oscuro persistente — usado por index.html, Dashboard.html, login.html, splash.html
+// Tema claro/oscuro persistente — usado por index.html, login.html, splash.html
 (function () {
   var KEY = 'transportes_theme';
 

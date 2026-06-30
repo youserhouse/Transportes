@@ -74,7 +74,7 @@ function calcular() {
 
   lastPwRes=pwRes; lastCevaRes=cevaRes;
   lastInput={palets:numPalets,altura:alturaTotal,prov:state.prov,zona:state.zona,country:'ESP'};
-  const provLabel = state.prov.charAt(0) + state.prov.slice(1).toLowerCase();
+  const provLabel = formatProvincia(state.prov);
   document.getElementById('result-title').textContent = `${numPalets} palé${numPalets>1?'s':''} · ${provLabel} · España`;
 
   const pwWins = pwRes&&cevaRes ? pwRes.total<=cevaRes.total : !!pwRes;
@@ -93,7 +93,7 @@ function calcular() {
   prepararGuardado({
     tipo: 'PALÉS', destino: 'ESPAÑA',
     cliente,
-    provincia: state.prov.charAt(0) + state.prov.slice(1).toLowerCase(), cp: cpEsp, zona: state.zona,
+    provincia: formatProvincia(state.prov), cp: cpEsp, zona: state.zona,
     pales: numPalets, altura: alturaTotal, peso: null,
     precioPall: pwRes?pwRes.total:0, precioCeva: cevaRes?cevaRes.total:0,
   });
@@ -102,11 +102,6 @@ function calcular() {
 // ═══════════════════════════════════════════════════════════════
 // EXPORT FUNCTIONS
 // ═══════════════════════════════════════════════════════════════
-function getExportChoice() {
-  // Returns 'csv', 'excel', or null
-  return null; // Called directly from buttons, no need for choice dialog
-}
-
 function configMsg(text) {
   const el = document.getElementById('config-msg');
   if (!el) return;

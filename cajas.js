@@ -98,7 +98,7 @@ function calcularCajas() {
 
   lastCajasRes = { ...res, numCajas, altura, prov: stateCajas.prov };
 
-  const provCajasLabel = stateCajas.prov.charAt(0) + stateCajas.prov.slice(1).toLowerCase();
+  const provCajasLabel = formatProvincia(stateCajas.prov);
   document.getElementById('result-cajas-title').textContent = `${numCajas} caja${numCajas>1?'s':''} · ${provCajasLabel}`;
 
   // Render
@@ -119,7 +119,7 @@ function calcularCajas() {
   prepararGuardadoCajas({
     tipo: 'CAJAS', destino: 'ESPAÑA',
     cliente,
-    provincia: stateCajas.prov.charAt(0) + stateCajas.prov.slice(1).toLowerCase(), cp: cpCajas, zona: '—',
+    provincia: formatProvincia(stateCajas.prov), cp: cpCajas, zona: '—',
     pales: numCajas, altura, peso: totalKg,
     precioPall: 0, precioCeva: res.total,
   });
@@ -171,7 +171,7 @@ function showCajasSugg(q) {
   const matches = ALL_PROVS.filter(p => p.includes(upper)).slice(0, 8);
   if (!matches.length) { box.className=''; return; }
   box.innerHTML = matches.map(p => {
-    const label = p.charAt(0) + p.slice(1).toLowerCase();
+    const label = formatProvincia(p);
     return `<div class="sugg-item" onmousedown="selectProvCajas('${p}')"><span>${label}</span><span class="sugg-zona" style="border-color:var(--ceva);color:var(--ceva-light)">CEVA</span></div>`;
   }).join('');
   box.className = 'open';
@@ -180,7 +180,7 @@ function showCajasSugg(q) {
 function selectProvCajas(p) {
   clearTimeout(blurCajasTO);
   stateCajas.prov = p;
-  const label = p.charAt(0) + p.slice(1).toLowerCase();
+  const label = formatProvincia(p);
   document.getElementById('prov-cajas-input').value = label;
   document.getElementById('cp-cajas-input').value = '';
   document.getElementById('sugg-cajas-box').className = '';
@@ -208,7 +208,7 @@ function onCpCajasInput() {
   }
 
   stateCajas.prov = prov;
-  const label = prov.charAt(0) + prov.slice(1).toLowerCase();
+  const label = formatProvincia(prov);
   document.getElementById('prov-cajas-input').value = label;
   document.getElementById('sugg-cajas-box').className = '';
   const zd = document.getElementById('zona-cajas-detected');

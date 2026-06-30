@@ -23,7 +23,7 @@ function onCpInput() {
 
   state.prov = prov;
   state.zona = PROV_ZONA[prov] || null;
-  const label = prov.charAt(0) + prov.slice(1).toLowerCase();
+  const label = formatProvincia(prov);
   document.getElementById('prov-input').value = label;
   document.getElementById('sugg-box').className = '';
   const zd = document.getElementById('zona-detected');
@@ -60,7 +60,7 @@ function showSuggestions(q) {
   if (!matches.length) { box.className = ''; inp.setAttribute('aria-expanded','false'); return; }
   box.innerHTML = matches.map(p => {
     const z = PROV_ZONA[p];
-    const label = p.charAt(0) + p.slice(1).toLowerCase();
+    const label = formatProvincia(p);
     return `<div class="sugg-item" role="option" onmousedown="selectProv('${p}')"><span>${label}</span><span class="sugg-zona">Zona ${z}</span></div>`;
   }).join('');
   box.className = 'open';
@@ -69,7 +69,7 @@ function showSuggestions(q) {
 function selectProv(p) {
   clearTimeout(blurTO);
   state.prov = p; state.zona = PROV_ZONA[p];
-  const label = p.charAt(0) + p.slice(1).toLowerCase();
+  const label = formatProvincia(p);
   document.getElementById('prov-input').value = label;
   document.getElementById('prov-input').setAttribute('aria-expanded','false');
   document.getElementById('cp-input').value = '';

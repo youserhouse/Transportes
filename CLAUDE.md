@@ -16,7 +16,7 @@ The app has a single shell (`index.html`) with four tab-switched modes:
 - **Configuraciones** — app settings (theme, validation toggles, export/print).
 - **Dashboard** — analytics & history viewer (native, embedded — KPIs, charts, filterable table), reading live from Firestore.
 
-`Dashboard.html` (a standalone React-based dashboard) is **legacy/orphaned** — it's no longer linked from `index.html`'s nav, no longer listed in `sw.js`'s `ASSETS`, and the Dashboard experience now lives entirely inside `index.html`'s `mode-dashboard` tab via `dashboard.js`. Don't add features to `Dashboard.html` unless explicitly asked to revive it.
+The legacy standalone React dashboard (`Dashboard.html`) has been removed — it was no longer linked from `index.html`'s nav and no longer listed in `sw.js`'s `ASSETS`. The Dashboard experience lives entirely inside `index.html`'s `mode-dashboard` tab via `dashboard.js`.
 
 ## Running the App
 
@@ -33,21 +33,21 @@ Then open `http://localhost:8080`. No build step required. There are no tests or
 Scripts are loaded in a specific order in `index.html` and depend on globals declared in earlier files:
 
 ```
-theme.js → data.js → state.js → guardar.js → ui.js → calcular.js → cajas.js → dashboard.js
+theme.js → helpers.js → data.js → state.js → guardar.js → ui.js → calcular.js → cajas.js → dashboard.js
 ```
 
 | File | Responsibility |
 |------|---------------|
 | `index.html` | App shell: Palés/Cajas/Configuraciones/Dashboard mode tabs, Firebase init + auth overlay, CSP meta tag, inline `window.fsGuardarCalculo` / `window.fsListenCalculos` / `window.fsActualizarCalculo` (Firestore CRUD for `calculos` collection). |
 | `data.js` | **Single source of truth for all tariff tables and geographic maps.** Edit only this file to update prices or zones. |
-| `theme.js` | Light/dark theme toggle, persisted to `localStorage` (`transportes_theme`), shared by `index.html`, `Dashboard.html`, `login.html`, `splash.html`. |
+| `theme.js` | Light/dark theme toggle, persisted to `localStorage` (`transportes_theme`), shared by `index.html`, `login.html`, `splash.html`. |
+| `helpers.js` | Small shared utilities used by `ui.js`, `calcular.js`, `cajas.js` — currently just `formatProvincia(p)` (uppercase province name → display-cased, e.g. `"BARCELONA"` → `"Barcelona"`). Add new cross-mode helpers here instead of duplicating logic across the Palés/Cajas files. |
 | `state.js` | Global `state` object `{ prov, zona, country, cpPrt }`, country-switching UI, Portugal CP resolution logic. Also owns `appSettings` (`{ requireCp, requireCliente }`), persisted to `localStorage` (`transportes_settings`) — see Configuraciones below. |
 | `guardar.js` | Manual save flow: results are **not** auto-saved — the user must pick the carrier actually used (Palés mode) and press "Guardar" to write the calculation to Firestore via `window.fsGuardarCalculo`. Cajas mode saves directly (CEVA is the only carrier). |
 | `ui.js` | Province autocomplete, CP→province lookup, inline validation, `calcPalletways()`, `calcCeva()`, `renderPW()`, `renderCEVA()`. |
 | `calcular.js` | Main `calcular()` entry point (España + Portugal pallets), CSV/XLS export helpers `downloadCSV` / `downloadXLS`. |
 | `cajas.js` | Boxes mode: `setMode()` (drives all four tabs), `calcularCajas()`, separate `stateCajas` object, cajas-specific province search, cajas exports. |
 | `dashboard.js` | Native embedded Dashboard (KPIs, comparativa, evolución, distribución, provincias, historial table) rendered inside `index.html`'s `mode-dashboard` tab. Reads **live** from the Firestore `calculos` collection via `window.fsListenCalculos` (`onSnapshot`) — no `localStorage` involved. |
-| `Dashboard.html` | **Legacy/unused** standalone React dashboard. Not linked from `index.html`, not cached by `sw.js`. Superseded by `dashboard.js`. |
 | `login.html` | Google Sign-In UI with Firebase auth. Checks `authorized_users` collection before allowing access. |
 | `splash.html` | Loading screen shown during auth verification and app boot. |
 | `sw.js` | Service Worker for offline PWA. Network-first for JS/HTML/CSS/JSON (always tries network, falls back to cache offline); cache-first for fonts and images. |
@@ -94,7 +94,7 @@ Each box = 0.15 height units = 37.5 kg. Max 14 boxes. Uses `calcCevaByKg()` in `
 
 ## Authentication & Security
 
-- **Firebase project**: `transporte-99482` (configured in `index.html`; legacy config also present in unused `Dashboard.html`).
+- **Firebase project**: `transporte-99482` (configured in `index.html`).
 - **Login flow**: `login.html` → verify in Firestore `authorized_users` collection → `splash.html` (loading) → `index.html` (calculator/dashboard shell).
 - **Session persistence**: Firebase SDK maintains session across page reloads via browser cookies/indexedDB.
 - **Logout**: Button in header calls `signOutUser()`, clears session, redirects to `login.html`.
@@ -114,7 +114,6 @@ Each box = 0.15 height units = 37.5 kg. Max 14 boxes. Uses `calcCevaByKg()` in `
 - Palés/Cajas calculations are **not** auto-saved. After `calcular()` / `calcularCajas()` runs, `guardar.js` shows a "Guardar" UI; the user picks the real carrier used (Palés) and confirms, which calls `window.fsGuardarCalculo` (defined inline in `index.html`) → `addDoc(collection(db, 'calculos'), {...datos, fecha, savedBy, savedAt})`.
 - The embedded Dashboard tab (`dashboard.js`, `mode-dashboard` in `index.html`) calls `window.fsListenCalculos`, which sets up a Firestore `onSnapshot` listener (`orderBy('fecha', 'desc')`) on the `calculos` collection — updates are pushed in real time to every open tab/device, no polling or `storage` events needed.
 - Editing a saved entry from the Dashboard's history table calls `window.fsActualizarCalculo(id, datos)` → Firestore `updateDoc`.
-- `Dashboard.html` (legacy, React-based) is no longer wired into this flow — see Architecture table above.
 
 **Offline Mode:**
 - `sw.js` uses network-first for JS/HTML/CSS, so the app shell always tries to fetch fresh assets first, falling back to cache offline.
