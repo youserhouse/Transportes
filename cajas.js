@@ -86,6 +86,8 @@ function calcularCajas() {
   if (!numCajas || numCajas < 1) { errEl.textContent='⚠ Introduce el número de cajas.'; errEl.style.display='block'; return; }
   if (numCajas > CONFIG.CAJAS_MAX) { errEl.textContent=`⚠ Máximo ${CONFIG.CAJAS_MAX} cajas.`; errEl.style.display='block'; return; }
   if (!stateCajas.prov) { errEl.textContent='⚠ Selecciona una provincia de destino.'; errEl.style.display='block'; return; }
+  const cpCajas = document.getElementById('cp-cajas-input').value.trim();
+  if (!/^\d{5}$/.test(cpCajas)) { errEl.textContent='⚠ Introduce el código postal completo de España (5 dígitos).'; errEl.style.display='block'; return; }
 
   // Lógica: nº cajas × 0.15 × 250 = kg
   const altura = numCajas * CONFIG.CAJAS_ALTURA_POR_CAJA;
@@ -117,7 +119,7 @@ function calcularCajas() {
   prepararGuardadoCajas({
     tipo: 'CAJAS', destino: 'ESPAÑA',
     cliente,
-    provincia: stateCajas.prov.charAt(0) + stateCajas.prov.slice(1).toLowerCase(), cp: '', zona: '—',
+    provincia: stateCajas.prov.charAt(0) + stateCajas.prov.slice(1).toLowerCase(), cp: cpCajas, zona: '—',
     pales: numCajas, altura, peso: totalKg,
     precioPall: 0, precioCeva: res.total,
   });
@@ -183,7 +185,7 @@ function selectProvCajas(p) {
   document.getElementById('cp-cajas-input').value = '';
   document.getElementById('sugg-cajas-box').className = '';
   const zd = document.getElementById('zona-cajas-detected');
-  zd.innerHTML = `Provincia seleccionada: ${label}`;
+  zd.innerHTML = `Provincia seleccionada: ${label} — <span style="color:var(--yellow)">introduce también el código postal completo (5 dígitos)</span>`;
   zd.className = 'show';
 }
 
@@ -215,6 +217,7 @@ function onCpCajasInput() {
     zd.className = 'show warn';
   } else {
     zd.innerHTML = `📮 CP ${val} → ${label}`;
+    if (val.length < 5) zd.innerHTML += ` — <span style="color:var(--yellow)">faltan ${5 - val.length} dígitos</span>`;
     zd.className = 'show';
   }
 }

@@ -60,8 +60,12 @@ function onCpPrtInput() {
   }
 
   const zonaLabel = pwZona===7 ? 'Zona 7 (Portugal norte/centro)' : 'Zona 8 (Portugal resto)';
-  zd.innerHTML = `🇵🇹 CP ${val}xx → CEVA: tabla CP ${cp2} · Palletways: ${zonaLabel}`;
+  const cpLabel = val.length === 7 ? val : `${val}xx`;
+  zd.innerHTML = `🇵🇹 CP ${cpLabel} → CEVA: tabla CP ${cp2} · Palletways: ${zonaLabel}`;
   zd.className = 'show';
+  if (val.length < 7) {
+    zd.innerHTML += ` — <span style="color:var(--yellow)">faltan ${7 - val.length} dígitos</span>`;
+  }
 }
 
 // ═══════════════════════════════════════════════════════════════

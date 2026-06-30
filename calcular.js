@@ -22,6 +22,7 @@ function calcular() {
   // ── PORTUGAL ──
   if (state.country === 'PRT') {
     if (!state.cpPrt) { errEl.innerHTML='⚠ Introduce el código postal de Portugal.'; errEl.className='show'; return; }
+    if (!/^\d{7}$/.test(state.cpPrt)) { errEl.innerHTML='⚠ Introduce el código postal completo de Portugal (7 dígitos).'; errEl.className='show'; return; }
     const cp2 = parseInt(state.cpPrt.substring(0,2));
     if (!CEVA_PRT[cp2]) { errEl.innerHTML='⚠ Código postal no encontrado en la tabla Portugal.'; errEl.className='show'; return; }
 
@@ -34,8 +35,8 @@ function calcular() {
     if(!pwRes&&!cevaRes){errEl.innerHTML='⚠ No se encontraron tarifas.';errEl.className='show';return;}
 
     lastPwRes=pwRes; lastCevaRes=cevaRes;
-    lastInput={palets:numPalets,altura:alturaTotal,prov:`Portugal CP ${state.cpPrt}xx`,zona:pwZona,country:'PRT'};
-    document.getElementById('result-title').textContent = `${numPalets} palé${numPalets>1?'s':''} · Portugal CP ${state.cpPrt}xx`;
+    lastInput={palets:numPalets,altura:alturaTotal,prov:`Portugal CP ${state.cpPrt}`,zona:pwZona,country:'PRT'};
+    document.getElementById('result-title').textContent = `${numPalets} palé${numPalets>1?'s':''} · Portugal CP ${state.cpPrt}`;
 
     const pwWins = pwRes&&cevaRes ? pwRes.total<=cevaRes.total : !!pwRes;
     if(pwRes) renderPW(pwRes, pwWins);
@@ -53,7 +54,7 @@ function calcular() {
     prepararGuardado({
       tipo: 'PALÉS', destino: 'PORTUGAL',
       cliente,
-      provincia: 'Portugal', cp: state.cpPrt.substring(0,2), zona: pwZona,
+      provincia: 'Portugal', cp: state.cpPrt, zona: pwZona,
       pales: numPalets, altura: alturaTotal, peso: null,
       precioPall: pwRes?pwRes.total:0, precioCeva: cevaRes?cevaRes.total:0,
     });
@@ -62,6 +63,8 @@ function calcular() {
 
   // ── ESPAÑA ──
   if(!state.prov||!state.zona){errEl.innerHTML='⚠ Selecciona una provincia de destino.';errEl.className='show';return;}
+  const cpEsp = document.getElementById('cp-input').value.trim();
+  if(!/^\d{5}$/.test(cpEsp)){errEl.innerHTML='⚠ Introduce el código postal completo de España (5 dígitos).';errEl.className='show';return;}
 
   const pwRes = useManual
     ? calcPallettaysManual(nSEL, nQ, nMQ, state.zona)
@@ -90,7 +93,7 @@ function calcular() {
   prepararGuardado({
     tipo: 'PALÉS', destino: 'ESPAÑA',
     cliente,
-    provincia: state.prov.charAt(0) + state.prov.slice(1).toLowerCase(), cp: '', zona: state.zona,
+    provincia: state.prov.charAt(0) + state.prov.slice(1).toLowerCase(), cp: cpEsp, zona: state.zona,
     pales: numPalets, altura: alturaTotal, peso: null,
     precioPall: pwRes?pwRes.total:0, precioCeva: cevaRes?cevaRes.total:0,
   });

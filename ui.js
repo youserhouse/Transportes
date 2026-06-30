@@ -33,6 +33,7 @@ function onCpInput() {
       zd.className = 'show warn';
     } else {
       zd.innerHTML = `📮 CP ${val} → ${label} → Zona ${state.zona} — ${ZONAS_DESC[state.zona]}`;
+      if (val.length < 5) zd.innerHTML += ` — <span style="color:var(--yellow)">faltan ${5 - val.length} dígitos</span>`;
       zd.className = 'show';
     }
   }
@@ -74,7 +75,7 @@ function selectProv(p) {
   document.getElementById('cp-input').value = '';
   document.getElementById('sugg-box').className = '';
   const zd = document.getElementById('zona-detected');
-  zd.innerHTML = `Zona ${state.zona} detectada — ${ZONAS_DESC[state.zona]}`;
+  zd.innerHTML = `Zona ${state.zona} detectada — ${ZONAS_DESC[state.zona]} — <span style="color:var(--yellow)">introduce también el código postal completo (5 dígitos)</span>`;
   zd.className = 'show';
 }
 function onInputChange() {
@@ -252,7 +253,9 @@ function iniciarCalculo() {
   manualDesglose = { sel: 0, q: 0, mq: 0 };
   const numPalets = parseInt(document.getElementById('num-palets').value);
   const alturaTotal = parseFloat(document.getElementById('altura-total').value);
-  const destinoListo = state.country === 'PRT' ? !!state.cpPrt : !!(state.prov && state.zona);
+  const destinoListo = state.country === 'PRT'
+    ? !!(state.cpPrt && state.cpPrt.length === 7)
+    : !!(state.prov && state.zona && document.getElementById('cp-input').value.trim().length === 5);
 
   if (numPalets > 0 && alturaTotal > PW_DESGLOSE_UMBRAL && alturaTotal <= numPalets * 2.2 && destinoListo) {
     abrirModalDesglose(numPalets, alturaTotal);

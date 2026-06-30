@@ -22,7 +22,7 @@
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=44">
+<link rel="stylesheet" href="styles.css?v=45">
 <script>
   (function () {
     var t = 'dark';
@@ -222,10 +222,10 @@ window.fsActualizarCalculo = async function(id, datos) {
       </div>
       <div id="fields-prt" style="display:none">
         <div class="field" style="max-width:220px">
-          <label for="cp-prt-input">Código postal Portugal (2 o 4 dígitos)</label>
-          <input type="text" id="cp-prt-input" maxlength="4" placeholder="Ej: 17 o 3861"
+          <label for="cp-prt-input">Código postal Portugal (7 dígitos)</label>
+          <input type="text" id="cp-prt-input" maxlength="7" placeholder="Ej: 1700000"
             oninput="onCpPrtInput()" autocomplete="off" aria-label="Código postal Portugal" inputmode="numeric">
-          <span class="field-hint">Introduce los 2 primeros dígitos del CP</span>
+          <span class="field-hint">Introduce el código postal completo (7 dígitos)</span>
         </div>
         <div class="cp-disclaimer" id="cp-disclaimer">
           ⚠ Si tu CP está entre 3860–3899 escribe los 4 primeros dígitos para detectar la zona correcta de Palletways
@@ -516,7 +516,7 @@ window.fsActualizarCalculo = async function(id, datos) {
       <div class="dash-table-wrap">
         <div class="dash-table-inner">
           <div class="dash-table-row dash-table-head">
-            <div>Fecha</div><div>Cliente</div><div>Tipo</div><div>Destino</div><div>Provincia</div><div>Palés</div><div>Altura Total</div><div class="r">Palletways €</div><div class="r">CEVA €</div><div></div><div></div>
+            <div>Fecha</div><div>Cliente</div><div>Tipo</div><div>Destino</div><div>Provincia</div><div>Cód. Postal</div><div>Palés</div><div>Altura Total</div><div class="r">Palletways €</div><div class="r">CEVA €</div><div></div><div></div>
           </div>
           <div id="dash-table-body"></div>
         </div>
@@ -579,6 +579,9 @@ window.fsActualizarCalculo = async function(id, datos) {
 
           <label class="dash-modal-label" for="dash-edit-provincia">Provincia</label>
           <input type="text" id="dash-edit-provincia" class="dash-modal-input">
+
+          <label class="dash-modal-label" for="dash-edit-cp">Cód. Postal</label>
+          <input type="text" id="dash-edit-cp" class="dash-modal-input">
 
           <label class="dash-modal-label" for="dash-edit-pales">Palés / Cajas</label>
           <input type="number" id="dash-edit-pales" class="dash-modal-input" min="0">
@@ -654,14 +657,14 @@ window.fsActualizarCalculo = async function(id, datos) {
     </div>
   </div>
 
-<script src="theme.js?v=44"></script>
-<script src="data.js?v=44"></script>
-<script src="state.js?v=44"></script>
-<script src="guardar.js?v=44"></script>
-<script src="ui.js?v=44"></script>
-<script src="calcular.js?v=44"></script>
-<script src="cajas.js?v=44"></script>
-<script src="dashboard.js?v=44"></script>
+<script src="theme.js?v=45"></script>
+<script src="data.js?v=45"></script>
+<script src="state.js?v=45"></script>
+<script src="guardar.js?v=45"></script>
+<script src="ui.js?v=45"></script>
+<script src="calcular.js?v=45"></script>
+<script src="cajas.js?v=45"></script>
+<script src="dashboard.js?v=45"></script>
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {

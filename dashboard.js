@@ -265,6 +265,7 @@ function renderDashHistorial(list) {
       <div><span class="dash-table-tag">${c.tipo || '—'}</span></div>
       <div><span class="dash-table-destino">${c.destino || '—'}</span></div>
       <div>${c.provincia || '—'}</div>
+      <div>${c.cp ? escapeHtml(c.cp) : '—'}</div>
       <div>${c.pales != null ? c.pales : '—'}</div>
       <div>${c.altura != null ? String(c.altura).replace('.', ',') : '—'}</div>
       <div class="r dash-table-pw">${c.precioPall ? fmt(Number(c.precioPall)) : '—'}</div>
@@ -298,9 +299,9 @@ function dashPageNext() { dashState.page++; renderDashboard(); }
 function exportarHistorialDashboardCSV() {
   const list = dashState._currentList || [];
   if (!list.length) return;
-  const header = ['Fecha', 'Cliente', 'Tipo', 'Destino', 'Provincia', 'Palés', 'Altura Total', 'Palletways €', 'CEVA €'];
+  const header = ['Fecha', 'Cliente', 'Tipo', 'Destino', 'Provincia', 'Cód. Postal', 'Palés', 'Altura Total', 'Palletways €', 'CEVA €'];
   const rows = list.map(c => [
-    dashFechaLabel(c._fecha), c.cliente || '', c.tipo || '', c.destino || '', c.provincia || '',
+    dashFechaLabel(c._fecha), c.cliente || '', c.tipo || '', c.destino || '', c.provincia || '', c.cp || '',
     c.pales != null ? c.pales : '',
     c.altura != null ? c.altura : '',
     c.precioPall ? Number(c.precioPall).toFixed(2) : '',
@@ -327,6 +328,7 @@ function abrirEdicionDashboard(id) {
   document.getElementById('dash-edit-tipo').value = c.tipo || 'PALÉS';
   document.getElementById('dash-edit-destino').value = c.destino || 'ESPAÑA';
   document.getElementById('dash-edit-provincia').value = c.provincia || '';
+  document.getElementById('dash-edit-cp').value = c.cp || '';
   document.getElementById('dash-edit-pales').value = c.pales != null ? c.pales : '';
   document.getElementById('dash-edit-altura').value = c.altura != null ? c.altura : '';
   document.getElementById('dash-edit-elegido').value = c.elegido || 'PALLETWAYS';
@@ -356,6 +358,7 @@ async function guardarEdicionDashboard() {
   const tipo = document.getElementById('dash-edit-tipo').value;
   const destino = document.getElementById('dash-edit-destino').value;
   const provincia = document.getElementById('dash-edit-provincia').value.trim();
+  const cp = document.getElementById('dash-edit-cp').value.trim();
   const pales = parseInt(document.getElementById('dash-edit-pales').value) || 0;
   const alturaVal = document.getElementById('dash-edit-altura').value;
   const altura = alturaVal !== '' ? parseFloat(alturaVal) : null;
@@ -373,7 +376,7 @@ async function guardarEdicionDashboard() {
   btn.textContent = 'Guardando…';
   msgEl.textContent = '';
   try {
-    await window.fsActualizarCalculo(dashEditId, { cliente, tipo, destino, provincia, pales, altura, elegido, precioPall, precioCeva, ahorro, fecha });
+    await window.fsActualizarCalculo(dashEditId, { cliente, tipo, destino, provincia, cp, pales, altura, elegido, precioPall, precioCeva, ahorro, fecha });
     closeDashEditModal();
   } catch (e) {
     msgEl.textContent = '⚠ Error: ' + (e.message || e);
