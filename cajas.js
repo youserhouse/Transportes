@@ -77,24 +77,26 @@ function validateClienteCajas() {
 
 function calcularCajas() {
   const errEl = document.getElementById('error-cajas-msg');
-  errEl.style.display = 'none';
+  ocultarError(errEl);
 
   const cliente = document.getElementById('cliente-cajas-nombre').value.trim();
-  if (appSettings.requireCliente && !cliente) { errEl.textContent='⚠ Introduce el nombre del cliente.'; errEl.style.display='block'; return; }
+  const errCliente = validarCliente(cliente);
+  if (errCliente) { mostrarError(errEl, errCliente); return; }
 
   const numCajas = parseInt(document.getElementById('num-cajas').value);
-  if (!numCajas || numCajas < 1) { errEl.textContent='⚠ Introduce el número de cajas.'; errEl.style.display='block'; return; }
-  if (numCajas > CONFIG.CAJAS_MAX) { errEl.textContent=`⚠ Máximo ${CONFIG.CAJAS_MAX} cajas.`; errEl.style.display='block'; return; }
-  if (!stateCajas.prov) { errEl.textContent='⚠ Selecciona una provincia de destino.'; errEl.style.display='block'; return; }
+  if (!numCajas || numCajas < 1) { mostrarError(errEl, '⚠ Introduce el número de cajas.'); return; }
+  if (numCajas > CONFIG.CAJAS_MAX) { mostrarError(errEl, `⚠ Máximo ${CONFIG.CAJAS_MAX} cajas.`); return; }
+  if (!stateCajas.prov) { mostrarError(errEl, '⚠ Selecciona una provincia de destino.'); return; }
   const cpCajas = document.getElementById('cp-cajas-input').value.trim();
-  if (appSettings.requireCp && !/^\d{5}$/.test(cpCajas)) { errEl.textContent='⚠ Introduce el código postal completo de España (5 dígitos).'; errEl.style.display='block'; return; }
+  const errCp = validarCp(cpCajas, 5, 'España');
+  if (errCp) { mostrarError(errEl, errCp); return; }
 
   // Lógica: nº cajas × 0.15 × 250 = kg
   const altura = numCajas * CONFIG.CAJAS_ALTURA_POR_CAJA;
   const totalKg = Math.round(altura * CONFIG.CAJAS_KG_POR_UD_ALTURA * 100) / 100;
   const res = calcCevaByKg(stateCajas.prov, totalKg);
 
-  if (!res) { errEl.textContent='⚠ No se encontró tarifa para esta provincia.'; errEl.style.display='block'; return; }
+  if (!res) { mostrarError(errEl, '⚠ No se encontró tarifa para esta provincia.'); return; }
 
   lastCajasRes = { ...res, numCajas, altura, prov: stateCajas.prov };
 

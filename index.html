@@ -22,7 +22,7 @@
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=50">
+<link rel="stylesheet" href="styles.css?v=51">
 <script>
   (function () {
     var t = 'dark';
@@ -293,7 +293,7 @@ window.fsActualizarCalculo = async function(id, datos) {
     </div>
 
     <button id="calc-btn" onclick="iniciarCalculo()">▶ Calcular precio de envío</button>
-    <div id="error-msg"></div>
+    <div id="error-msg" class="error-banner"></div>
     <div class="divider"></div>
 
     <!-- RESULTADOS PALÉS -->
@@ -409,7 +409,7 @@ window.fsActualizarCalculo = async function(id, datos) {
     </div>
 
     <button id="calc-cajas-btn" onclick="calcularCajas()" class="calc-btn-cajas">▶ Calcular precio de cajas</button>
-    <div id="error-cajas-msg" style="display:none;padding:11px 14px;border-left:3px solid #ff5252;background:#ff52520a;font-family:var(--mono);font-size:0.78rem;color:#ff8a80;margin-top:8px;"></div>
+    <div id="error-cajas-msg" class="error-banner" style="margin-top:8px;"></div>
 
     <div class="divider" style="margin:32px 0;border-top:1px solid var(--border);position:relative;">
       <span style="position:absolute;top:-8px;left:50%;transform:translateX(-50%);background:var(--bg);padding:0 14px;font-family:var(--mono);font-size:0.62rem;color:var(--dim);letter-spacing:0.12em;">RESULTADO</span>
@@ -737,15 +737,15 @@ window.fsActualizarCalculo = async function(id, datos) {
     </div>
   </div>
 
-<script src="theme.js?v=50"></script>
-<script src="helpers.js?v=50"></script>
-<script src="data.js?v=50"></script>
-<script src="state.js?v=50"></script>
-<script src="guardar.js?v=50"></script>
-<script src="ui.js?v=50"></script>
-<script src="calcular.js?v=50"></script>
-<script src="cajas.js?v=50"></script>
-<script src="dashboard.js?v=50"></script>
+<script src="theme.js?v=51"></script>
+<script src="helpers.js?v=51"></script>
+<script src="data.js?v=51"></script>
+<script src="state.js?v=51"></script>
+<script src="guardar.js?v=51"></script>
+<script src="ui.js?v=51"></script>
+<script src="calcular.js?v=51"></script>
+<script src="cajas.js?v=51"></script>
+<script src="dashboard.js?v=51"></script>
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
