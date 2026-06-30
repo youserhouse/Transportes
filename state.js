@@ -69,3 +69,42 @@ function onCpPrtInput() {
 }
 
 // ═══════════════════════════════════════════════════════════════
+// AJUSTES DE LA APP — interruptores en Configuraciones, persistentes
+// vía localStorage. requireCp/requireCliente activan/desactivan las
+// validaciones de obligatoriedad en Palés y Cajas.
+// ═══════════════════════════════════════════════════════════════
+const APP_SETTINGS_KEY = 'transportes_settings';
+let appSettings = { requireCp: true, requireCliente: true };
+
+function loadAppSettings() {
+  try {
+    const raw = localStorage.getItem(APP_SETTINGS_KEY);
+    if (raw) appSettings = { ...appSettings, ...JSON.parse(raw) };
+  } catch (e) {}
+}
+
+function saveAppSettings() {
+  try { localStorage.setItem(APP_SETTINGS_KEY, JSON.stringify(appSettings)); } catch (e) {}
+}
+
+function applySettingsToggles() {
+  const cpToggle = document.getElementById('toggle-require-cp');
+  const clienteToggle = document.getElementById('toggle-require-cliente');
+  if (cpToggle) cpToggle.checked = appSettings.requireCp;
+  if (clienteToggle) clienteToggle.checked = appSettings.requireCliente;
+}
+
+function toggleRequireCp() {
+  appSettings.requireCp = document.getElementById('toggle-require-cp').checked;
+  saveAppSettings();
+}
+
+function toggleRequireCliente() {
+  appSettings.requireCliente = document.getElementById('toggle-require-cliente').checked;
+  saveAppSettings();
+}
+
+loadAppSettings();
+document.addEventListener('DOMContentLoaded', applySettingsToggles);
+
+// ═══════════════════════════════════════════════════════════════

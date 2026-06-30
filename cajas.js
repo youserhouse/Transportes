@@ -80,14 +80,14 @@ function calcularCajas() {
   errEl.style.display = 'none';
 
   const cliente = document.getElementById('cliente-cajas-nombre').value.trim();
-  if (!cliente) { errEl.textContent='⚠ Introduce el nombre del cliente.'; errEl.style.display='block'; return; }
+  if (appSettings.requireCliente && !cliente) { errEl.textContent='⚠ Introduce el nombre del cliente.'; errEl.style.display='block'; return; }
 
   const numCajas = parseInt(document.getElementById('num-cajas').value);
   if (!numCajas || numCajas < 1) { errEl.textContent='⚠ Introduce el número de cajas.'; errEl.style.display='block'; return; }
   if (numCajas > CONFIG.CAJAS_MAX) { errEl.textContent=`⚠ Máximo ${CONFIG.CAJAS_MAX} cajas.`; errEl.style.display='block'; return; }
   if (!stateCajas.prov) { errEl.textContent='⚠ Selecciona una provincia de destino.'; errEl.style.display='block'; return; }
   const cpCajas = document.getElementById('cp-cajas-input').value.trim();
-  if (!/^\d{5}$/.test(cpCajas)) { errEl.textContent='⚠ Introduce el código postal completo de España (5 dígitos).'; errEl.style.display='block'; return; }
+  if (appSettings.requireCp && !/^\d{5}$/.test(cpCajas)) { errEl.textContent='⚠ Introduce el código postal completo de España (5 dígitos).'; errEl.style.display='block'; return; }
 
   // Lógica: nº cajas × 0.15 × 250 = kg
   const altura = numCajas * CONFIG.CAJAS_ALTURA_POR_CAJA;

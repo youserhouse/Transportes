@@ -22,7 +22,7 @@
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=45">
+<link rel="stylesheet" href="styles.css?v=46">
 <script>
   (function () {
     var t = 'dark';
@@ -394,6 +394,33 @@ window.fsActualizarCalculo = async function(id, datos) {
     </div>
     <div class="section">
       <div class="section-label">
+        <div class="section-num active">✓</div>
+        <span class="section-title">Validaciones obligatorias</span>
+      </div>
+      <div class="field-hint" style="margin-bottom:8px">Activa o desactiva qué campos son obligatorios antes de calcular. Aplica a Palés y a Cajas.</div>
+      <div class="settings-toggle-row">
+        <div class="settings-toggle-info">
+          <span class="settings-toggle-label">Exigir código postal completo</span>
+          <span class="field-hint">5 dígitos en España, 7 en Portugal</span>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="toggle-require-cp" checked onchange="toggleRequireCp()">
+          <span class="switch-slider"></span>
+        </label>
+      </div>
+      <div class="settings-toggle-row">
+        <div class="settings-toggle-info">
+          <span class="settings-toggle-label">Exigir nombre del cliente</span>
+          <span class="field-hint">No se podrá calcular sin nombre si está activo</span>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="toggle-require-cliente" checked onchange="toggleRequireCliente()">
+          <span class="switch-slider"></span>
+        </label>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-label">
         <div class="section-num active">⚙</div>
         <span class="section-title">Exportar e imprimir</span>
       </div>
@@ -657,14 +684,14 @@ window.fsActualizarCalculo = async function(id, datos) {
     </div>
   </div>
 
-<script src="theme.js?v=45"></script>
-<script src="data.js?v=45"></script>
-<script src="state.js?v=45"></script>
-<script src="guardar.js?v=45"></script>
-<script src="ui.js?v=45"></script>
-<script src="calcular.js?v=45"></script>
-<script src="cajas.js?v=45"></script>
-<script src="dashboard.js?v=45"></script>
+<script src="theme.js?v=46"></script>
+<script src="data.js?v=46"></script>
+<script src="state.js?v=46"></script>
+<script src="guardar.js?v=46"></script>
+<script src="ui.js?v=46"></script>
+<script src="calcular.js?v=46"></script>
+<script src="cajas.js?v=46"></script>
+<script src="dashboard.js?v=46"></script>
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {

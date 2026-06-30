@@ -254,8 +254,8 @@ function iniciarCalculo() {
   const numPalets = parseInt(document.getElementById('num-palets').value);
   const alturaTotal = parseFloat(document.getElementById('altura-total').value);
   const destinoListo = state.country === 'PRT'
-    ? !!(state.cpPrt && state.cpPrt.length === 7)
-    : !!(state.prov && state.zona && document.getElementById('cp-input').value.trim().length === 5);
+    ? !!(state.cpPrt && (!appSettings.requireCp || state.cpPrt.length === 7))
+    : !!(state.prov && state.zona && (!appSettings.requireCp || document.getElementById('cp-input').value.trim().length === 5));
 
   if (numPalets > 0 && alturaTotal > PW_DESGLOSE_UMBRAL && alturaTotal <= numPalets * 2.2 && destinoListo) {
     abrirModalDesglose(numPalets, alturaTotal);

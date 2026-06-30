@@ -9,7 +9,7 @@ function calcular() {
   const cliente = document.getElementById('cliente-nombre').value.trim();
   const numPalets = parseInt(document.getElementById('num-palets').value);
   const alturaTotal = parseFloat(document.getElementById('altura-total').value);
-  if(!cliente){errEl.innerHTML='⚠ Introduce el nombre del cliente.';errEl.className='show';return;}
+  if(appSettings.requireCliente && !cliente){errEl.innerHTML='⚠ Introduce el nombre del cliente.';errEl.className='show';return;}
   if(!numPalets||numPalets<1){errEl.innerHTML='⚠ Introduce el número de palés.';errEl.className='show';return;}
   if(!alturaTotal||alturaTotal<=0){errEl.innerHTML='⚠ Introduce la altura total del envío.';errEl.className='show';return;}
   if(alturaTotal > numPalets * 2.2){errEl.innerHTML=`⚠ La altura total (${alturaTotal}) supera el máximo de ${(numPalets*2.2).toFixed(1)} para ${numPalets} palé${numPalets>1?'s':''} (220 cm/palé).`;errEl.className='show';return;}
@@ -22,7 +22,7 @@ function calcular() {
   // ── PORTUGAL ──
   if (state.country === 'PRT') {
     if (!state.cpPrt) { errEl.innerHTML='⚠ Introduce el código postal de Portugal.'; errEl.className='show'; return; }
-    if (!/^\d{7}$/.test(state.cpPrt)) { errEl.innerHTML='⚠ Introduce el código postal completo de Portugal (7 dígitos).'; errEl.className='show'; return; }
+    if (appSettings.requireCp && !/^\d{7}$/.test(state.cpPrt)) { errEl.innerHTML='⚠ Introduce el código postal completo de Portugal (7 dígitos).'; errEl.className='show'; return; }
     const cp2 = parseInt(state.cpPrt.substring(0,2));
     if (!CEVA_PRT[cp2]) { errEl.innerHTML='⚠ Código postal no encontrado en la tabla Portugal.'; errEl.className='show'; return; }
 
@@ -64,7 +64,7 @@ function calcular() {
   // ── ESPAÑA ──
   if(!state.prov||!state.zona){errEl.innerHTML='⚠ Selecciona una provincia de destino.';errEl.className='show';return;}
   const cpEsp = document.getElementById('cp-input').value.trim();
-  if(!/^\d{5}$/.test(cpEsp)){errEl.innerHTML='⚠ Introduce el código postal completo de España (5 dígitos).';errEl.className='show';return;}
+  if(appSettings.requireCp && !/^\d{5}$/.test(cpEsp)){errEl.innerHTML='⚠ Introduce el código postal completo de España (5 dígitos).';errEl.className='show';return;}
 
   const pwRes = useManual
     ? calcPallettaysManual(nSEL, nQ, nMQ, state.zona)
