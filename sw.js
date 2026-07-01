@@ -2,22 +2,22 @@
 // sw.js — Service Worker (PWA offline cache)
 // Versión: incrementar CACHE_NAME al actualizar archivos
 // ═══════════════════════════════════════════════════════════════
-const CACHE_NAME = 'transportes-v53';
+const CACHE_NAME = 'transportes-v54';
 
 const ASSETS = [
   './login.html',
   './splash.html',
   './index.html',
-  './styles.css?v=53',
-  './theme.js?v=53',
-  './helpers.js?v=53',
-  './data.js?v=53',
-  './state.js?v=53',
-  './guardar.js?v=53',
-  './ui.js?v=53',
-  './calcular.js?v=53',
-  './cajas.js?v=53',
-  './dashboard.js?v=53',
+  './styles.css?v=54',
+  './theme.js?v=54',
+  './helpers.js?v=54',
+  './data.js?v=54',
+  './state.js?v=54',
+  './guardar.js?v=54',
+  './ui.js?v=54',
+  './calcular.js?v=54',
+  './cajas.js?v=54',
+  './dashboard.js?v=54',
   './manifest.json',
   './icon-192.png',
   './icon-512.png',

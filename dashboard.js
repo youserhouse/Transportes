@@ -266,6 +266,7 @@ const DASH_HIST_COLUMNS = [
   { key: 'pales',     label: 'Palés',        width: '0.6fr', cell: c => c.pales != null ? c.pales : '—' },
   { key: 'altura',    label: 'Altura Total', width: '0.7fr', cell: c => c.altura != null ? String(c.altura).replace('.', ',') : '—' },
   { key: 'envio',     label: 'Envío',        width: '0.8fr', cell: c => c.elegido ? `<span class="dash-table-tag ${c.elegido === 'PALLETWAYS' ? 'pw' : 'ceva'}">${c.elegido === 'PALLETWAYS' ? 'Palletways' : 'CEVA'}</span>` : '—' },
+  { key: 'portes',    label: 'Portes',       width: '0.9fr', align: 'r', cellClass: 'dash-table-portes', cell: c => fmt(dashPrecioElegido(c)) },
   { key: 'pw',        label: 'Palletways €', width: '1fr',   align: 'r', cellClass: 'dash-table-pw',   cell: c => c.precioPall ? fmt(Number(c.precioPall)) : '—' },
   { key: 'ceva',      label: 'CEVA €',       width: '1fr',   align: 'r', cellClass: 'dash-table-ceva', cell: c => c.precioCeva ? fmt(Number(c.precioCeva)) : '—' },
 ];
@@ -321,12 +322,13 @@ function dashPageNext() { dashState.page++; renderDashboard(); }
 function exportarHistorialDashboardCSV() {
   const list = dashState._currentList || [];
   if (!list.length) return;
-  const header = ['Fecha', 'Cliente', 'Tipo', 'Destino', 'Provincia', 'Cód. Postal', 'Palés', 'Altura Total', 'Envío', 'Palletways €', 'CEVA €'];
+  const header = ['Fecha', 'Cliente', 'Tipo', 'Destino', 'Provincia', 'Cód. Postal', 'Palés', 'Altura Total', 'Envío', 'Portes', 'Palletways €', 'CEVA €'];
   const rows = list.map(c => [
     dashFechaLabel(c._fecha), c.cliente || '', c.tipo || '', c.destino || '', c.provincia || '', c.cp || '',
     c.pales != null ? c.pales : '',
     c.altura != null ? c.altura : '',
     c.elegido === 'PALLETWAYS' ? 'Palletways' : c.elegido === 'CEVA' ? 'CEVA' : '',
+    dashPrecioElegido(c).toFixed(2),
     c.precioPall ? Number(c.precioPall).toFixed(2) : '',
     c.precioCeva ? Number(c.precioCeva).toFixed(2) : '',
   ]);

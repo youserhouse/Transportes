@@ -3,12 +3,17 @@ rules_version = '2';
 // ═══════════════════════════════════════════════════════════════
 // Reglas de seguridad de Firestore para el proyecto transporte-99482.
 //
-// Este archivo refleja las reglas YA DESPLEGADAS en la consola de
-// Firebase (verificado 2026-06-30) — se versiona aquí únicamente para
-// tener historial de cambios en git. Si editas las reglas en la
-// consola, actualiza también este archivo (o despliega este archivo
-// con `firebase deploy --only firestore:rules` para que ambos sigan
+// Este archivo refleja las reglas de la consola de Firebase — se versiona
+// aquí para tener historial de cambios en git. Si editas las reglas en la
+// consola, actualiza también este archivo (o despliega este archivo con
+// `firebase deploy --only firestore:rules` para que ambos sigan
 // coincidiendo).
+//
+// PENDIENTE DE DESPLIEGUE: la regla `app_settings` de abajo se añadió en
+// el repo pero aún no se ha desplegado a la consola de Firebase — hace
+// falta `firebase deploy --only firestore:rules` (o pegarla a mano en
+// Firebase Console → Firestore Database → Reglas) para que la
+// configuración global de la app funcione en producción.
 //
 // Lo que hacen: replican del lado del servidor el mismo control de
 // acceso que index.html / login.html aplican en el cliente (chequeo
@@ -24,6 +29,11 @@ service cloud.firestore {
     }
 
     match /calculos/{docId} {
+      allow read, write: if request.auth != null &&
+        exists(/databases/$(database)/documents/authorized_users/$(request.auth.token.email));
+    }
+
+    match /app_settings/{docId} {
       allow read, write: if request.auth != null &&
         exists(/databases/$(database)/documents/authorized_users/$(request.auth.token.email));
     }

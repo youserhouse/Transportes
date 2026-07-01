@@ -69,26 +69,18 @@ function onCpPrtInput() {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// AJUSTES DE LA APP — interruptores en Configuraciones, persistentes
-// vía localStorage. requireCp/requireCliente activan/desactivan las
-// validaciones de obligatoriedad en Palés y Cajas. dashHiddenCols
-// controla qué columnas de la tabla "Historial de cálculos" del
-// Dashboard están ocultas (ver DASH_HIST_COLUMNS en dashboard.js).
+// AJUSTES DE LA APP — interruptores en Configuraciones, compartidos
+// globalmente entre todos los usuarios/dispositivos autenticados vía el
+// documento Firestore 'app_settings/global' (window.fsListenConfiguracion/
+// fsGuardarConfiguracion, definidos en index.html) — no localStorage.
+// requireCp/requireCliente activan/desactivan las validaciones de
+// obligatoriedad en Palés y Cajas. dashHiddenCols controla qué columnas
+// de la tabla "Historial de cálculos" del Dashboard están ocultas (ver
+// DASH_HIST_COLUMNS en dashboard.js).
 // ═══════════════════════════════════════════════════════════════
-const APP_SETTINGS_KEY = 'transportes_settings';
-const DASH_COL_KEYS = ['fecha', 'cliente', 'tipo', 'destino', 'provincia', 'cp', 'pales', 'altura', 'envio', 'pw', 'ceva'];
-let appSettings = { requireCp: true, requireCliente: true, dashHiddenCols: [] };
-
-function loadAppSettings() {
-  try {
-    const raw = localStorage.getItem(APP_SETTINGS_KEY);
-    if (raw) appSettings = { ...appSettings, ...JSON.parse(raw) };
-  } catch (e) {}
-}
-
-function saveAppSettings() {
-  try { localStorage.setItem(APP_SETTINGS_KEY, JSON.stringify(appSettings)); } catch (e) {}
-}
+const DASH_COL_KEYS = ['fecha', 'cliente', 'tipo', 'destino', 'provincia', 'cp', 'pales', 'altura', 'envio', 'portes', 'pw', 'ceva'];
+const APP_SETTINGS_DEFAULTS = { requireCp: true, requireCliente: true, dashHiddenCols: [] };
+let appSettings = { ...APP_SETTINGS_DEFAULTS };
 
 function applySettingsToggles() {
   const cpToggle = document.getElementById('toggle-require-cp');
@@ -99,6 +91,16 @@ function applySettingsToggles() {
     const el = document.getElementById('toggle-col-' + key);
     if (el) el.checked = !(appSettings.dashHiddenCols || []).includes(key);
   }
+}
+
+function onRemoteSettings(remote) {
+  appSettings = { ...APP_SETTINGS_DEFAULTS, ...remote };
+  applySettingsToggles();
+  if (typeof currentMode !== 'undefined' && currentMode === 'dashboard' && typeof renderDashboard === 'function') renderDashboard();
+}
+
+function saveAppSettings() {
+  if (window.fsGuardarConfiguracion) window.fsGuardarConfiguracion(appSettings);
 }
 
 function toggleRequireCp() {
@@ -120,7 +122,9 @@ function toggleDashColumn(key) {
   if (typeof currentMode !== 'undefined' && currentMode === 'dashboard' && typeof renderDashboard === 'function') renderDashboard();
 }
 
-loadAppSettings();
-document.addEventListener('DOMContentLoaded', applySettingsToggles);
+document.addEventListener('DOMContentLoaded', () => {
+  applySettingsToggles();
+  if (window.fsListenConfiguracion) window.fsListenConfiguracion(onRemoteSettings);
+});
 
 // ═══════════════════════════════════════════════════════════════
