@@ -251,6 +251,30 @@ function renderDashProvincia(list) {
 }
 
 // ── Historial paginado + export CSV ──
+
+// Configuración de columnas de la tabla de historial — controla qué se pinta
+// en cabecera/filas y qué anchos de grid usar. Las columnas ocultables se
+// eligen en Configuraciones (appSettings.dashHiddenCols, ver toggleDashColumn
+// en state.js). Las dos últimas (editar/eliminar) no son configurables.
+const DASH_HIST_COLUMNS = [
+  { key: 'fecha',     label: 'Fecha',        width: '1.1fr', cell: c => dashFechaLabel(c._fecha) },
+  { key: 'cliente',   label: 'Cliente',      width: '1fr',   cell: c => c.cliente ? escapeHtml(c.cliente) : '—' },
+  { key: 'tipo',      label: 'Tipo',         width: '0.7fr', cell: c => `<span class="dash-table-tag">${c.tipo || '—'}</span>` },
+  { key: 'destino',   label: 'Destino',      width: '0.9fr', cell: c => `<span class="dash-table-destino">${c.destino || '—'}</span>` },
+  { key: 'provincia', label: 'Provincia',    width: '1fr',   cell: c => c.provincia || '—' },
+  { key: 'cp',        label: 'Cód. Postal',  width: '0.8fr', cell: c => c.cp ? escapeHtml(c.cp) : '—' },
+  { key: 'pales',     label: 'Palés',        width: '0.6fr', cell: c => c.pales != null ? c.pales : '—' },
+  { key: 'altura',    label: 'Altura Total', width: '0.7fr', cell: c => c.altura != null ? String(c.altura).replace('.', ',') : '—' },
+  { key: 'envio',     label: 'Envío',        width: '0.8fr', cell: c => c.elegido ? `<span class="dash-table-tag ${c.elegido === 'PALLETWAYS' ? 'pw' : 'ceva'}">${c.elegido === 'PALLETWAYS' ? 'Palletways' : 'CEVA'}</span>` : '—' },
+  { key: 'pw',        label: 'Palletways €', width: '1fr',   align: 'r', cellClass: 'dash-table-pw',   cell: c => c.precioPall ? fmt(Number(c.precioPall)) : '—' },
+  { key: 'ceva',      label: 'CEVA €',       width: '1fr',   align: 'r', cellClass: 'dash-table-ceva', cell: c => c.precioCeva ? fmt(Number(c.precioCeva)) : '—' },
+];
+
+function dashVisibleColumns() {
+  const hidden = appSettings.dashHiddenCols || [];
+  return DASH_HIST_COLUMNS.filter(col => !hidden.includes(col.key));
+}
+
 function renderDashHistorial(list) {
   const totalPages = Math.max(1, Math.ceil(list.length / DASH_PAGE_SIZE));
   if (dashState.page > totalPages) dashState.page = totalPages;
@@ -258,18 +282,16 @@ function renderDashHistorial(list) {
   const start = (dashState.page - 1) * DASH_PAGE_SIZE;
   const pageItems = list.slice(start, start + DASH_PAGE_SIZE);
 
+  const cols = dashVisibleColumns();
+
+  document.getElementById('dash-table-inner').style.setProperty('--dash-cols', cols.map(c => c.width).join(' ') + ' 26px 26px');
+
+  document.getElementById('dash-table-head').innerHTML =
+    cols.map(c => `<div${c.align === 'r' ? ' class="r"' : ''}>${c.label}</div>`).join('') + '<div></div><div></div>';
+
   document.getElementById('dash-table-body').innerHTML = pageItems.map(c => `
     <div class="dash-table-row">
-      <div>${dashFechaLabel(c._fecha)}</div>
-      <div>${c.cliente ? escapeHtml(c.cliente) : '—'}</div>
-      <div><span class="dash-table-tag">${c.tipo || '—'}</span></div>
-      <div><span class="dash-table-destino">${c.destino || '—'}</span></div>
-      <div>${c.provincia || '—'}</div>
-      <div>${c.cp ? escapeHtml(c.cp) : '—'}</div>
-      <div>${c.pales != null ? c.pales : '—'}</div>
-      <div>${c.altura != null ? String(c.altura).replace('.', ',') : '—'}</div>
-      <div class="r dash-table-pw">${c.precioPall ? fmt(Number(c.precioPall)) : '—'}</div>
-      <div class="r dash-table-ceva">${c.precioCeva ? fmt(Number(c.precioCeva)) : '—'}</div>
+      ${cols.map(col => `<div${col.align === 'r' ? ` class="r ${col.cellClass || ''}"` : ''}>${col.cell(c)}</div>`).join('')}
       <div class="dash-table-actions"><button type="button" class="dash-action-btn edit" onclick="abrirEdicionDashboard('${c.id}')" title="Editar">✎</button></div>
       <div class="dash-table-actions"><button type="button" class="dash-action-btn delete" onclick="eliminarCalculoDashboard('${c.id}')" title="Eliminar">✕</button></div>
     </div>`).join('');
@@ -299,11 +321,12 @@ function dashPageNext() { dashState.page++; renderDashboard(); }
 function exportarHistorialDashboardCSV() {
   const list = dashState._currentList || [];
   if (!list.length) return;
-  const header = ['Fecha', 'Cliente', 'Tipo', 'Destino', 'Provincia', 'Cód. Postal', 'Palés', 'Altura Total', 'Palletways €', 'CEVA €'];
+  const header = ['Fecha', 'Cliente', 'Tipo', 'Destino', 'Provincia', 'Cód. Postal', 'Palés', 'Altura Total', 'Envío', 'Palletways €', 'CEVA €'];
   const rows = list.map(c => [
     dashFechaLabel(c._fecha), c.cliente || '', c.tipo || '', c.destino || '', c.provincia || '', c.cp || '',
     c.pales != null ? c.pales : '',
     c.altura != null ? c.altura : '',
+    c.elegido === 'PALLETWAYS' ? 'Palletways' : c.elegido === 'CEVA' ? 'CEVA' : '',
     c.precioPall ? Number(c.precioPall).toFixed(2) : '',
     c.precioCeva ? Number(c.precioCeva).toFixed(2) : '',
   ]);

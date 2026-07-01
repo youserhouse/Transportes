@@ -71,10 +71,13 @@ function onCpPrtInput() {
 // ═══════════════════════════════════════════════════════════════
 // AJUSTES DE LA APP — interruptores en Configuraciones, persistentes
 // vía localStorage. requireCp/requireCliente activan/desactivan las
-// validaciones de obligatoriedad en Palés y Cajas.
+// validaciones de obligatoriedad en Palés y Cajas. dashHiddenCols
+// controla qué columnas de la tabla "Historial de cálculos" del
+// Dashboard están ocultas (ver DASH_HIST_COLUMNS en dashboard.js).
 // ═══════════════════════════════════════════════════════════════
 const APP_SETTINGS_KEY = 'transportes_settings';
-let appSettings = { requireCp: true, requireCliente: true };
+const DASH_COL_KEYS = ['fecha', 'cliente', 'tipo', 'destino', 'provincia', 'cp', 'pales', 'altura', 'envio', 'pw', 'ceva'];
+let appSettings = { requireCp: true, requireCliente: true, dashHiddenCols: [] };
 
 function loadAppSettings() {
   try {
@@ -92,6 +95,10 @@ function applySettingsToggles() {
   const clienteToggle = document.getElementById('toggle-require-cliente');
   if (cpToggle) cpToggle.checked = appSettings.requireCp;
   if (clienteToggle) clienteToggle.checked = appSettings.requireCliente;
+  for (const key of DASH_COL_KEYS) {
+    const el = document.getElementById('toggle-col-' + key);
+    if (el) el.checked = !(appSettings.dashHiddenCols || []).includes(key);
+  }
 }
 
 function toggleRequireCp() {
@@ -102,6 +109,15 @@ function toggleRequireCp() {
 function toggleRequireCliente() {
   appSettings.requireCliente = document.getElementById('toggle-require-cliente').checked;
   saveAppSettings();
+}
+
+function toggleDashColumn(key) {
+  const checked = document.getElementById('toggle-col-' + key).checked;
+  const hidden = new Set(appSettings.dashHiddenCols || []);
+  if (checked) hidden.delete(key); else hidden.add(key);
+  appSettings.dashHiddenCols = [...hidden];
+  saveAppSettings();
+  if (typeof currentMode !== 'undefined' && currentMode === 'dashboard' && typeof renderDashboard === 'function') renderDashboard();
 }
 
 loadAppSettings();
