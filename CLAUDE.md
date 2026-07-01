@@ -26,7 +26,14 @@ python3 -m http.server 8080
 npx serve .
 ```
 
-Then open `http://localhost:8080`. No build step required. There are no tests or linters configured.
+Then open `http://localhost:8080`. No build step required. No linter configured.
+
+```bash
+# Unit tests (pricing logic — no browser, no build tool needed)
+node --test tests/pricing.test.mjs
+```
+
+The test file (`tests/pricing.test.mjs`) loads `data.js`, `ui.js`, and `cajas.js` together in a Node `vm` context (same shared lexical scope as when the browser loads them as `<script>` tags), then exercises the pure pricing functions: `calcPalletways`, `calcCeva`, `calcCevaByKg`, `calcCevaPrt`, `getPwZonaPrt`. When you update tariffs in `data.js`, run the tests before deploying — they will catch formula regressions and verify that the new rates flow correctly through each pricing path.
 
 ## Architecture
 

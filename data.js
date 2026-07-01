@@ -106,11 +106,12 @@ const PRT_KG_BREAKS = [10,20,24,30,40,50,60,70,80,90,100,200,300,400,500,1000,15
 // Palletways Portugal zone logic
 function getPwZonaPrt(cpStr) {
   const cp = parseInt(cpStr);
-  const cp4 = cpStr.length >= 4 ? parseInt(cpStr.substring(0,4)) : null;
+  const cp2 = parseInt(cpStr.substring(0, 2));
+  const cp4 = cpStr.length >= 4 ? parseInt(cpStr.substring(0, 4)) : null;
   // Zone 7: 10-19, 26-29, 40-45
   if ((cp>=10&&cp<=19)||(cp>=26&&cp<=29)||(cp>=40&&cp<=45)) return 7;
-  // Zone 7: 3860-3899 (needs 4 digits)
-  if (cp===38) {
+  // Zone 7: 3860-3899 (needs 4 digits to distinguish from zone-8 38xx)
+  if (cp2===38) {
     if (cp4!==null && cp4>=3860 && cp4<=3899) return 7;
     return 8; // default to zone 8, disclaimer shown
   }

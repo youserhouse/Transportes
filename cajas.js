@@ -224,5 +224,5 @@ function onCpCajasInput() {
   }
 }
 
-// Init
-renderCajaVisual();
+// Init (guard allows loading this file in Node for unit tests)
+if (typeof document !== 'undefined') renderCajaVisual();
