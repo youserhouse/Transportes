@@ -39,7 +39,7 @@ let lastCajasRes = null;
 // ── BREAKPOINTS peso CEVA España (índices 0–9 precio fijo, 10–13 €/kg) ──
 const KG_BREAKS = [10,20,30,40,50,60,70,80,90,100];
 
-function calcCevaByKg(prov, totalKg) {
+function calcCevaByKg(prov, totalKg, aplicarRecargo = true) {
   const upper = prov.toUpperCase();
   let tarifa = CEVA_ESP[upper];
   if (!tarifa) {
@@ -60,7 +60,7 @@ function calcCevaByKg(prov, totalKg) {
   else                         { basePrice = totalKg * tarifa[13]; rangeLabel = `${totalKg} kg × ${tarifa[13]}€/kg (2001+)`; }
 
   if (basePrice == null) return null;
-  const surcharge = basePrice * CONFIG.CEVA_RECARGO_PCT;
+  const surcharge = aplicarRecargo ? basePrice * CONFIG.CEVA_RECARGO_PCT : 0;
   return { total: basePrice + surcharge, basePrice, surcharge, totalKg, rangeLabel };
 }
 
@@ -94,7 +94,7 @@ function calcularCajas() {
   // Lógica: nº cajas × 0.15 × 250 = kg
   const altura = numCajas * CONFIG.CAJAS_ALTURA_POR_CAJA;
   const totalKg = Math.round(altura * CONFIG.CAJAS_KG_POR_UD_ALTURA * 100) / 100;
-  const res = calcCevaByKg(stateCajas.prov, totalKg);
+  const res = calcCevaByKg(stateCajas.prov, totalKg, appSettings.cevaRecargoActivo);
 
   if (!res) { mostrarError(errEl, '⚠ No se encontró tarifa para esta provincia.'); return; }
 
@@ -112,7 +112,7 @@ function calcularCajas() {
   html += `<div class="breakdown-line"><span class="bl-label">Peso total</span><span class="bl-val">${altura.toFixed(2)} × 250 = ${totalKg} kg</span></div>`;
   html += `<div class="breakdown-line"><span class="bl-label">Rango aplicado</span><span class="bl-val">${res.rangeLabel}</span></div>`;
   html += `<div class="breakdown-line"><span class="bl-label">Precio base</span><span class="bl-val">${fmt(res.basePrice)}</span></div>`;
-  html += `<div class="breakdown-line"><span class="bl-label">Recargo (+${(CONFIG.CEVA_RECARGO_PCT*100).toFixed(1)}%)</span><span class="bl-val">+${fmt(res.surcharge)}</span></div>`;
+  if (res.surcharge > 0) html += `<div class="breakdown-line"><span class="bl-label">Recargo (+${(CONFIG.CEVA_RECARGO_PCT*100).toFixed(1)}%)</span><span class="bl-val">+${fmt(res.surcharge)}</span></div>`;
   html += `<div class="breakdown-line total"><span class="bl-label">TOTAL</span><span class="bl-val">${fmt(res.total)}</span></div>`;
   document.getElementById('ceva-cajas-breakdown').innerHTML = html;
   document.getElementById('results-cajas').style.display = 'block';

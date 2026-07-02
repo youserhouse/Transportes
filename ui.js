@@ -133,7 +133,7 @@ function validateAltura() {
 // ═══════════════════════════════════════════════════════════════
 // CALCULATIONS
 // ═══════════════════════════════════════════════════════════════
-function calcPalletways(numPalets, alturaTotal, zona) {
+function calcPalletways(numPalets, alturaTotal, zona, aplicarPorte = true) {
   const t = PW_TARIFA[zona]; if (!t) return null;
   const SEL_BASE = 2.0; // altura "natural" de una postura SEL (en la práctica casi nunca se deja a su máximo de 220cm)
 
@@ -158,7 +158,7 @@ function calcPalletways(numPalets, alturaTotal, zona) {
   const subtotalSEL   = totalSEL * t.C;
   const subtotalExtra = extra ? extra.precio : 0;
   const subtotal      = subtotalSEL + subtotalExtra;
-  const porte         = subtotal * CONFIG.PW_PORTE_PCT;
+  const porte         = aplicarPorte ? subtotal * CONFIG.PW_PORTE_PCT : 0;
 
   return { total: subtotal + porte, subtotal, porte, totalSEL, extra, precioSEL: t.C };
 }
@@ -170,7 +170,7 @@ function getCevaTarifa(prov) {
   return null;
 }
 
-function calcCeva(numPalets, alturaTotal, prov) {
+function calcCeva(numPalets, alturaTotal, prov, aplicarRecargo = true) {
   const tarifa = getCevaTarifa(prov); if (!tarifa) return null;
   const totalKg = Math.round(alturaTotal * 250);
   let palets=[], remaining=alturaTotal;
@@ -199,7 +199,7 @@ function calcCeva(numPalets, alturaTotal, prov) {
   else if(totalKg<=2000){basePrice=totalKg*tarifa[12];rangeLabel=`1001–2000 kg (${tarifa[12]}€/kg × ${totalKg}kg)`;}
   else{basePrice=totalKg*tarifa[13];rangeLabel=`2001+ kg (${tarifa[13]}€/kg × ${totalKg}kg)`;}
   if(basePrice===null||basePrice===undefined) return null;
-  const surcharge=basePrice*CONFIG.CEVA_RECARGO_PCT;
+  const surcharge=aplicarRecargo?basePrice*CONFIG.CEVA_RECARGO_PCT:0;
   return {total:basePrice+surcharge,basePrice,surcharge,totalKg,rangeLabel,palets};
 }
 
@@ -215,7 +215,7 @@ function renderPW(res, isWinner) {
   html+=`<div class="breakdown-line"><span class="bl-label">Super Euro Light (${res.totalSEL} × ${fmt(res.precioSEL)})</span><span class="bl-val">${fmt(res.totalSEL * res.precioSEL)}</span></div>`;
   if(res.extra) html+=`<div class="breakdown-line"><span class="bl-label">${res.extra.tipo}${res.extra.cm != null ? ` — ${res.extra.cm} cm` : ''}</span><span class="bl-val">${fmt(res.extra.precio)}</span></div>`;
   html+=`<div class="breakdown-line"><span class="bl-label">Subtotal</span><span class="bl-val">${fmt(res.subtotal)}</span></div>`;
-  html+=`<div class="breakdown-line"><span class="bl-label">Porte adicional (+${(CONFIG.PW_PORTE_PCT*100).toFixed(1)}%)</span><span class="bl-val">+${fmt(res.porte)}</span></div>`;
+  if(res.porte>0) html+=`<div class="breakdown-line"><span class="bl-label">Porte adicional (+${(CONFIG.PW_PORTE_PCT*100).toFixed(1)}%)</span><span class="bl-val">+${fmt(res.porte)}</span></div>`;
   html+=`<div class="breakdown-line total"><span class="bl-label">TOTAL</span><span class="bl-val">${fmt(res.total)}</span></div>`;
   document.getElementById('pw-breakdown').innerHTML=html;
   let vis='';
@@ -237,7 +237,7 @@ function renderCEVA(res, isWinner) {
   html+=`<div class="breakdown-line"><span class="bl-label">Peso total</span><span class="bl-val">${res.totalKg} kg</span></div>`;
   html+=`<div class="breakdown-line"><span class="bl-label">Rango aplicado</span><span class="bl-val">${res.rangeLabel}</span></div>`;
   html+=`<div class="breakdown-line"><span class="bl-label">Precio base</span><span class="bl-val">${fmt(res.basePrice)}</span></div>`;
-  html+=`<div class="breakdown-line"><span class="bl-label">Recargo fijo (+${(CONFIG.CEVA_RECARGO_PCT*100).toFixed(1)}%)</span><span class="bl-val">+${fmt(res.surcharge)}</span></div>`;
+  if(res.surcharge>0) html+=`<div class="breakdown-line"><span class="bl-label">Recargo fijo (+${(CONFIG.CEVA_RECARGO_PCT*100).toFixed(1)}%)</span><span class="bl-val">+${fmt(res.surcharge)}</span></div>`;
   html+=`<div class="breakdown-line total"><span class="bl-label">TOTAL</span><span class="bl-val">${fmt(res.total)}</span></div>`;
   document.getElementById('ceva-breakdown').innerHTML=html;
   document.getElementById('ceva-detail').innerHTML=res.palets.map((p,i)=>`Palé ${i+1}: ${p.full?'100cm (completo)':`${Math.round(p.altura*100)}cm (parcial)`} → <span>${p.kg} kg</span>`).join('<br>');
@@ -316,7 +316,7 @@ function confirmarDesglose() {
   calcular();
 }
 
-function calcPallettaysManual(nSEL, nQ, nMQ, zona) {
+function calcPallettaysManual(nSEL, nQ, nMQ, zona, aplicarPorte = true) {
   const t = PW_TARIFA[zona]; if (!t) return null;
   let extra = null;
   if (nQ > 0 || nMQ > 0) {
@@ -327,7 +327,7 @@ function calcPallettaysManual(nSEL, nQ, nMQ, zona) {
     extra = { tipo: parts.join(' + '), cm: nQ > 0 ? 110 : 80, precio };
   }
   const subtotal = nSEL * t.C + (extra ? extra.precio : 0);
-  const porte = subtotal * CONFIG.PW_PORTE_PCT;
+  const porte = aplicarPorte ? subtotal * CONFIG.PW_PORTE_PCT : 0;
   return { total: subtotal + porte, subtotal, porte, totalSEL: nSEL, extra, precioSEL: t.C };
 }
 

@@ -30,9 +30,9 @@ function calcular() {
 
     const pwZona = getPwZonaPrt(state.cpPrt);
     const pwRes = useManual
-      ? calcPallettaysManual(nSEL, nQ, nMQ, pwZona)
-      : calcPalletways(numPalets, alturaTotal, pwZona);
-    const cevaRes = calcCevaPrt(numPalets, alturaTotal, state.cpPrt);
+      ? calcPallettaysManual(nSEL, nQ, nMQ, pwZona, appSettings.pwPorteActivo)
+      : calcPalletways(numPalets, alturaTotal, pwZona, appSettings.pwPorteActivo);
+    const cevaRes = calcCevaPrt(numPalets, alturaTotal, state.cpPrt, appSettings.cevaRecargoActivo);
 
     if(!pwRes&&!cevaRes){mostrarError(errEl, '⚠ No se encontraron tarifas.');return;}
 
@@ -70,9 +70,9 @@ function calcular() {
   if (errCpEsp) { mostrarError(errEl, errCpEsp); return; }
 
   const pwRes = useManual
-    ? calcPallettaysManual(nSEL, nQ, nMQ, state.zona)
-    : calcPalletways(numPalets, alturaTotal, state.zona);
-  const cevaRes = calcCeva(numPalets, alturaTotal, state.prov);
+    ? calcPallettaysManual(nSEL, nQ, nMQ, state.zona, appSettings.pwPorteActivo)
+    : calcPalletways(numPalets, alturaTotal, state.zona, appSettings.pwPorteActivo);
+  const cevaRes = calcCeva(numPalets, alturaTotal, state.prov, appSettings.cevaRecargoActivo);
   if(!pwRes&&!cevaRes){mostrarError(errEl, '⚠ No se encontraron tarifas para esta provincia.');return;}
 
   lastPwRes=pwRes; lastCevaRes=cevaRes;

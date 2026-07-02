@@ -118,7 +118,7 @@ function getPwZonaPrt(cpStr) {
   return 8;
 }
 
-function calcCevaPrt(numPalets, alturaTotal, cpStr) {
+function calcCevaPrt(numPalets, alturaTotal, cpStr, aplicarRecargo = true) {
   const cp2 = parseInt(cpStr.substring(0,2));
   const tarifa = CEVA_PRT[cp2];
   if (!tarifa) return null;
@@ -155,7 +155,7 @@ function calcCevaPrt(numPalets, alturaTotal, cpStr) {
     rangeLabel = `${totalKg} kg × ${(tableVal/100).toFixed(4)}€/kg (tabla ${kgBreak})`;
   }
 
-  const surcharge = basePrice * CONFIG.CEVA_RECARGO_PCT;
+  const surcharge = aplicarRecargo ? basePrice * CONFIG.CEVA_RECARGO_PCT : 0;
   return { total: basePrice+surcharge, basePrice, surcharge, totalKg, rangeLabel, palets, cp2 };
 }
 

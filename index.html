@@ -22,7 +22,7 @@
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=54">
+<link rel="stylesheet" href="styles.css?v=55">
 <script>
   (function () {
     var t = 'dark';
@@ -492,6 +492,33 @@ window.fsGuardarConfiguracion = async function(datos) {
     </div>
     <div class="section">
       <div class="section-label">
+        <div class="section-num active">%</div>
+        <span class="section-title">Recargos</span>
+      </div>
+      <div class="field-hint" style="margin-bottom:8px">Activa o desactiva los recargos porcentuales aplicados al calcular. Cambia el precio final mostrado, guardado y exportado.</div>
+      <div class="settings-toggle-row">
+        <div class="settings-toggle-info">
+          <span class="settings-toggle-label">Porte adicional Palletways (+4,7%)</span>
+          <span class="field-hint">Aplica a Palés (España y Portugal)</span>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="toggle-recargo-pw" checked onchange="toggleRecargoPw()">
+          <span class="switch-slider"></span>
+        </label>
+      </div>
+      <div class="settings-toggle-row">
+        <div class="settings-toggle-info">
+          <span class="settings-toggle-label">Recargo fijo CEVA (+10,7%)</span>
+          <span class="field-hint">Aplica a Palés (España y Portugal) y a Cajas</span>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="toggle-recargo-ceva" checked onchange="toggleRecargoCeva()">
+          <span class="switch-slider"></span>
+        </label>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-label">
         <div class="section-num active">👁</div>
         <span class="section-title">Columnas del historial (Dashboard)</span>
       </div>
@@ -808,15 +835,15 @@ window.fsGuardarConfiguracion = async function(datos) {
     </div>
   </div>
 
-<script src="theme.js?v=54"></script>
-<script src="helpers.js?v=54"></script>
-<script src="data.js?v=54"></script>
-<script src="state.js?v=54"></script>
-<script src="guardar.js?v=54"></script>
-<script src="ui.js?v=54"></script>
-<script src="calcular.js?v=54"></script>
-<script src="cajas.js?v=54"></script>
-<script src="dashboard.js?v=54"></script>
+<script src="theme.js?v=55"></script>
+<script src="helpers.js?v=55"></script>
+<script src="data.js?v=55"></script>
+<script src="state.js?v=55"></script>
+<script src="guardar.js?v=55"></script>
+<script src="ui.js?v=55"></script>
+<script src="calcular.js?v=55"></script>
+<script src="cajas.js?v=55"></script>
+<script src="dashboard.js?v=55"></script>
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {

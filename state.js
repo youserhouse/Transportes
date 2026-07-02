@@ -76,17 +76,27 @@ function onCpPrtInput() {
 // requireCp/requireCliente activan/desactivan las validaciones de
 // obligatoriedad en Palés y Cajas. dashHiddenCols controla qué columnas
 // de la tabla "Historial de cálculos" del Dashboard están ocultas (ver
-// DASH_HIST_COLUMNS en dashboard.js).
+// DASH_HIST_COLUMNS en dashboard.js). pwPorteActivo/cevaRecargoActivo
+// activan/desactivan los recargos porcentuales (Porte Palletways +4.7%,
+// Recargo CEVA +10.7%) en el cálculo — se pasan como parámetro explícito
+// a las funciones puras calcPalletways/calcPallettaysManual/calcCeva/
+// calcCevaByKg/calcCevaPrt (ver ui.js, cajas.js, data.js) en vez de leer
+// appSettings dentro de ellas, para que sigan siendo testeables sin
+// depender de state.js.
 // ═══════════════════════════════════════════════════════════════
 const DASH_COL_KEYS = ['fecha', 'cliente', 'tipo', 'destino', 'provincia', 'cp', 'pales', 'altura', 'envio', 'portes', 'pw', 'ceva'];
-const APP_SETTINGS_DEFAULTS = { requireCp: true, requireCliente: true, dashHiddenCols: [] };
+const APP_SETTINGS_DEFAULTS = { requireCp: true, requireCliente: true, dashHiddenCols: [], pwPorteActivo: true, cevaRecargoActivo: true };
 let appSettings = { ...APP_SETTINGS_DEFAULTS };
 
 function applySettingsToggles() {
   const cpToggle = document.getElementById('toggle-require-cp');
   const clienteToggle = document.getElementById('toggle-require-cliente');
+  const pwPorteToggle = document.getElementById('toggle-recargo-pw');
+  const cevaRecargoToggle = document.getElementById('toggle-recargo-ceva');
   if (cpToggle) cpToggle.checked = appSettings.requireCp;
   if (clienteToggle) clienteToggle.checked = appSettings.requireCliente;
+  if (pwPorteToggle) pwPorteToggle.checked = appSettings.pwPorteActivo;
+  if (cevaRecargoToggle) cevaRecargoToggle.checked = appSettings.cevaRecargoActivo;
   for (const key of DASH_COL_KEYS) {
     const el = document.getElementById('toggle-col-' + key);
     if (el) el.checked = !(appSettings.dashHiddenCols || []).includes(key);
@@ -110,6 +120,16 @@ function toggleRequireCp() {
 
 function toggleRequireCliente() {
   appSettings.requireCliente = document.getElementById('toggle-require-cliente').checked;
+  saveAppSettings();
+}
+
+function toggleRecargoPw() {
+  appSettings.pwPorteActivo = document.getElementById('toggle-recargo-pw').checked;
+  saveAppSettings();
+}
+
+function toggleRecargoCeva() {
+  appSettings.cevaRecargoActivo = document.getElementById('toggle-recargo-ceva').checked;
   saveAppSettings();
 }
 

@@ -30,7 +30,7 @@ const src =
 runInContext(src, ctx, { filename: 'pricing-bundle' });
 
 const { CONFIG, PW_TARIFA, CEVA_TARIFA, CEVA_PRT, PRT_KG_BREAKS } = ctx._data;
-const { calcPalletways, calcCeva, calcCevaByKg, calcCevaPrt, getPwZonaPrt } = ctx;
+const { calcPalletways, calcPallettaysManual, calcCeva, calcCevaByKg, calcCevaPrt, getPwZonaPrt } = ctx;
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 
@@ -97,6 +97,20 @@ describe('calcPalletways', () => {
     near(res.porte, res.subtotal * CONFIG.PW_PORTE_PCT);
     near(res.total, res.subtotal + res.porte);
   });
+
+  test('con aplicarPorte=false, el porte es 0 y el total es igual al subtotal', () => {
+    const res = calcPalletways(2, 2.0, 1, false);
+    assert.ok(res);
+    assert.equal(res.porte, 0);
+    near(res.total, res.subtotal);
+  });
+
+  test('calcPallettaysManual con aplicarPorte=false tampoco aplica el porte', () => {
+    const res = calcPallettaysManual(1, 0, 0, 1, false);
+    assert.ok(res);
+    assert.equal(res.porte, 0);
+    near(res.total, res.subtotal);
+  });
 });
 
 // ── calcCeva (España, palés) ──────────────────────────────────────────────────
@@ -139,6 +153,13 @@ describe('calcCeva', () => {
     const bcn = calcCeva(1, 1.0, 'BARCELONA');
     const mad = calcCeva(1, 1.0, 'MADRID');
     assert.notEqual(bcn.total, mad.total);
+  });
+
+  test('con aplicarRecargo=false, el recargo es 0 y el total es igual al precio base', () => {
+    const res = calcCeva(1, 1.0, 'MADRID', false);
+    assert.ok(res);
+    assert.equal(res.surcharge, 0);
+    near(res.total, res.basePrice);
   });
 });
 
@@ -183,6 +204,13 @@ describe('calcCevaByKg', () => {
     near(res.surcharge, res.basePrice * CONFIG.CEVA_RECARGO_PCT);
     near(res.total, res.basePrice + res.surcharge);
   });
+
+  test('con aplicarRecargo=false, el recargo es 0 y el total es igual al precio base', () => {
+    const res = calcCevaByKg('MADRID', 50, false);
+    assert.ok(res);
+    assert.equal(res.surcharge, 0);
+    near(res.total, res.basePrice);
+  });
 });
 
 // ── calcCevaPrt (Portugal) ────────────────────────────────────────────────────
@@ -222,6 +250,13 @@ describe('calcCevaPrt', () => {
     const res = calcCevaPrt(2, 1.5, '2600000');
     near(res.surcharge, res.basePrice * CONFIG.CEVA_RECARGO_PCT);
     near(res.total, res.basePrice + res.surcharge);
+  });
+
+  test('con aplicarRecargo=false, el recargo es 0 y el total es igual al precio base', () => {
+    const res = calcCevaPrt(2, 1.5, '2600000', false);
+    assert.ok(res);
+    assert.equal(res.surcharge, 0);
+    near(res.total, res.basePrice);
   });
 });
 
